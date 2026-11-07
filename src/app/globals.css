@@ -89,10 +89,10 @@ body {
   position: absolute;
   left: 0;
   right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, #10b981, #0d9488, #10b981, transparent);
-  box-shadow: 0 0 15px #10b981, 0 0 30px #0d9488;
-  animation: laserScan 2s ease-in-out infinite alternate;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #059669, #0d9488, #059669, transparent);
+  box-shadow: 0 0 8px rgba(5, 150, 105, 0.4);
+  animation: laserScan 2.5s ease-in-out infinite alternate;
 }
 
 /* Leaflet Container Fixes */

@@ -5,17 +5,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  AlertTriangle, 
-  Scan, 
+  Camera, 
+  Leaf, 
   MapPin, 
   Users, 
-  Sparkles, 
-  ArrowRight, 
   CheckCircle2, 
-  Trees, 
-  Leaf,
-  Layers,
-  Radio
+  ArrowRight, 
+  Compass,
+  FileText,
+  AlertTriangle,
+  Trees,
+  Layers
 } from 'lucide-react';
 
 interface StepData {
@@ -25,7 +25,8 @@ interface StepData {
   highlight: string;
   description: string;
   tagline: string;
-  ecoMetric: { label: string; value: string };
+  metricLabel: string;
+  metricValue: string;
   ctaText: string;
   ctaHref: string;
 }
@@ -33,58 +34,63 @@ interface StepData {
 const STEPS: StepData[] = [
   {
     number: '01',
-    badge: 'Deteksi Temuan Lapangan',
-    title: 'Warga Temukan Ancaman.',
-    highlight: 'Laporkan dalam Sekedip Mata.',
-    description: 'Dari tumpukan sampah plastik di Pantai Panjang hingga kekeringan sabuk mangrove di Pulau Baai, setiap temuan difoto langsung dengan titik koordinat otomatis.',
-    tagline: 'Setiap sudut pesisir dan hutan memiliki penjaganya.',
-    ecoMetric: { label: 'Titik Terancam', value: '82% Pesisir Bengkulu' },
-    ctaText: 'Coba Foto Lapangan',
+    badge: 'Observasi Warga',
+    title: 'Warga Temukan Ancaman Lapangan',
+    highlight: 'Dokumentasi Akurat dengan GPS Otomatis',
+    description: 'Setiap temuan timbunan sampah pesisir di Pantai Panjang hingga kerusakan sabuk bakau di Pulau Baai difoto langsung dari ponsel warga dengan koordinat geospasial presisi.',
+    tagline: 'Masyarakat lokal sebagai garda terdepan pengawasan bentang alam.',
+    metricLabel: 'Cakupan Observasi',
+    metricValue: 'Pesisir Barat Bengkulu',
+    ctaText: 'Coba Laporkan Temuan',
     ctaHref: '/lapor'
   },
   {
     number: '02',
-    badge: 'ScopeLens AI Vision',
-    title: 'Gemini AI Memindai.',
-    highlight: 'Diagnosis Presisi & Solusi Botani.',
-    description: 'Bukan sekadar form pengaduan. Computer Vision memvalidasi keaslian foto alam, menghitung skor keparahan 0-100, dan langsung merekomendasikan spesies bibit pemulih.',
-    tagline: 'Teknologi kecerdasan buatan untuk perlindungan hayati.',
-    ecoMetric: { label: 'Akurasi Rekomendasi Botani', value: '96.4%' },
-    ctaText: 'Pelajari Cara Kerja AI',
+    badge: 'Analisis Taksonomi AI',
+    title: 'Computer Vision Gemini Mendiagnosis',
+    highlight: 'Solusi Spesies Endemik & Skor Urgensi',
+    description: 'Sistem menganalisis indikator visual kerusakan, memvalidasi keaslian foto alam, dan langsung merekomendasikan bibit pemulih yang sesuai dengan salinitas habitat setempat.',
+    tagline: 'Kecerdasan buatan berbasis taksonomi botani terverifikasi.',
+    metricLabel: 'Rekomendasi Spesies',
+    metricValue: 'Rhizophora apiculata',
+    ctaText: 'Lihat Cara Kerja AI',
     ctaHref: '/lapor'
   },
   {
     number: '03',
-    badge: 'WebGIS ScopeMap',
-    title: 'Terpetakan Seketika.',
-    highlight: 'Tanpa Jebakan Scroll di Ponsel.',
-    description: 'Data laporan terintegrasi ke peta interaktif Bengkulu dan Nusantara. Lengkap dengan indikator keparahan berkedip dan panel drawer yang ramah jempol di layar HP.',
-    tagline: 'Transparansi data bentang alam secara real-time.',
-    ecoMetric: { label: 'Zona Prioritas Terpetakan', value: '4 Sektor Utama' },
-    ctaText: 'Buka ScopeMap Layar Penuh',
+    badge: 'Pemetaan Spasial',
+    title: 'Integrasi Spasial ScopeMap WebGIS',
+    highlight: 'Transparansi Data Tanpa Hambatan Navigasi',
+    description: 'Laporan terverifikasi langsung dipetakan ke peta geospasial Bengkulu. Koordinator dapat mengamati klaster kerusakan kritis dan menentukan zona intervensi secara terukur.',
+    tagline: 'Pemetaan terbuka untuk kolaborasi lintas komunitas lingkungan.',
+    metricLabel: 'Sektor Prioritas',
+    metricValue: '4 Titik Pantau Utama',
+    ctaText: 'Buka Peta Geospasial',
     ctaHref: '/peta'
   },
   {
     number: '04',
-    badge: 'AI Action Brief & Mobilisasi',
-    title: 'Koordinator Susun Rencana.',
-    highlight: 'Relawan Turun ke Lapangan.',
-    description: 'AI secara otomatis menyusun Action Brief: daftar karung pilah, bibit yang dibutuhkan, pembagian regu kerja relawan, dan protokol keselamatan kerja di pesisir.',
-    tagline: 'Mengubah kekhawatiran menjadi gerakan gotong royong.',
-    ecoMetric: { label: 'Waktu Perencanaan Aksi', value: '< 10 Detik' },
+    badge: 'Perencanaan Taktis',
+    title: 'Koordinator Menyusun Rencana Aksi',
+    highlight: 'Action Brief Siap Pakai & Tim Gotong Royong',
+    description: 'Sistem menyusun Action Brief terstruktur: daftar karung pilah, kebutuhan bibit tanaman, pembagian regu kerja relawan, dan protokol keselamatan kerja di lapangan.',
+    tagline: 'Menjembatani pelaporan warga menjadi aksi kolektif nyata.',
+    metricLabel: 'Status Kesiapan',
+    metricValue: '35 Relawan Terdaftar',
     ctaText: 'Lihat Kampanye Aksi',
     ctaHref: '/aksi'
   },
   {
     number: '05',
-    badge: 'Dampak Nyata & Karbon Pulih',
-    title: 'Ekosistem Bernafas Lega.',
-    highlight: 'Karbon Biru & Hijau Terserap.',
-    description: 'Aksi ditutup dengan dokumentasi Before-After transparan. Kalkulator karbon langsung menghitung estimasi serapan CO2e tahunan dan kilogram sampah yang terangkut.',
-    tagline: 'Satu amanah tertunaikan, bumi kembali tersenyum.',
-    ecoMetric: { label: 'Potensi Serapan Karbon', value: '5,350 kg CO2e/th' },
-    ctaText: 'Mulai Bersama GreenScope',
-    ctaHref: '/lapor'
+    badge: 'Restorasi Terpadu',
+    title: 'Pemulihan Bentang Alam & Serapan Karbon',
+    highlight: 'Dampak Terukur & Siklus Tertutup Selesai',
+    description: 'Aksi ditutup dengan dokumentasi Before-After transparan. Kalkulator karbon langsung memperkirakan serapan biomassa dan panjang garis pantai yang terlindungi dari abrasi.',
+    tagline: 'Siklus tertutup tuntas: deteksi, aksi, hingga pemulihan ekologis.',
+    metricLabel: 'Estimasi Serapan Karbon',
+    metricValue: '5.350 kg CO₂e/th',
+    ctaText: 'Pelajari Dashboard Dampak',
+    ctaHref: '/dashboard'
   }
 ];
 
@@ -114,176 +120,251 @@ export default function Scrollytelling() {
   const current = STEPS[activeStep];
 
   return (
-    <section ref={containerRef} className="relative h-[340vh] bg-slate-900 text-white">
+    <section ref={containerRef} className="relative h-[320vh] bg-[#f8faf9] text-slate-900 border-b border-slate-200">
       {/* Sticky Viewport Container */}
-      <div className="sticky top-16 h-[calc(100vh-4rem)] flex flex-col justify-between overflow-hidden px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto">
+      <div className="sticky top-16 sm:top-20 h-[calc(100vh-4rem)] sm:h-[calc(100vh-5rem)] flex flex-col justify-between overflow-hidden px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto">
         
-        {/* Main Content Split: Left Text + Right Interactive Scene */}
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        {/* Main Content Split: Left Text Narrative + Right Scientific Artifact */}
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
           {/* Left Column: Dynamic Storytelling Copy */}
-          <div className="lg:col-span-6 space-y-6">
+          <div className="lg:col-span-6 space-y-6 text-left">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeStep}
-                initial={{ opacity: 0, y: 18 }}
+                initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -18 }}
-                transition={{ duration: 0.35, ease: 'easeOut' }}
+                exit={{ opacity: 0, y: -14 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
                 className="space-y-4"
               >
-                {/* Step Badge */}
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-950/90 text-emerald-300 border border-emerald-500/30 shadow-xs">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                  <span className="text-emerald-400 font-mono tracking-wider">TAHAP {current.number}</span>
-                  <span className="text-emerald-600">•</span>
+                {/* Step Marker */}
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs font-semibold bg-emerald-100 text-emerald-900 border border-emerald-200">
+                  <span className="font-mono text-emerald-800 font-bold">FASE {current.number}</span>
+                  <span className="text-emerald-400">•</span>
                   <span>{current.badge}</span>
                 </div>
 
                 {/* Main Heading */}
-                <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.15]">
-                  <span>{current.title} </span>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-300">
+                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight leading-[1.2]">
+                  <span>{current.title}</span>
+                  <span className="block text-emerald-800 text-xl sm:text-2xl font-semibold mt-1">
                     {current.highlight}
                   </span>
                 </h3>
 
                 {/* Narrative Description */}
-                <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-xl">
+                <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-xl font-normal">
                   {current.description}
                 </p>
 
-                {/* Eco Metric Card & Tagline */}
-                <div className="pt-2 flex flex-col sm:flex-row sm:items-center gap-4">
-                  <div className="px-4 py-2.5 rounded-xl bg-slate-800/90 border border-slate-700/80 shadow-inner flex items-center gap-3 w-fit">
-                    <Sparkles className="w-5 h-5 text-emerald-400 shrink-0" />
-                    <div>
-                      <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-400">
-                        {current.ecoMetric.label}
-                      </div>
-                      <div className="text-base font-black text-white font-mono">
-                        {current.ecoMetric.value}
-                      </div>
+                {/* Scientific Metric Indicator & CTA */}
+                <div className="pt-2 flex flex-wrap items-center gap-4">
+                  <div className="px-4 py-2.5 rounded-lg bg-white border border-slate-200 shadow-2xs">
+                    <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-400">
+                      {current.metricLabel}
+                    </div>
+                    <div className="text-sm font-bold text-slate-900 font-mono mt-0.5">
+                      {current.metricValue}
                     </div>
                   </div>
 
                   <Link
                     href={current.ctaHref}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-900 bg-white hover:bg-emerald-400 hover:text-slate-950 transition-all shadow-md group w-fit"
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-xs font-semibold text-emerald-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors"
                   >
                     <span>{current.ctaText}</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
 
-                <div className="text-xs text-slate-400 italic pt-1">
+                <div className="text-xs text-slate-500 italic pt-1">
                   &ldquo;{current.tagline}&rdquo;
                 </div>
               </motion.div>
             </AnimatePresence>
           </div>
 
-          {/* Right Column: Visual Stage with Scopey & Ecosystem Transformation */}
+          {/* Right Column: Dynamic Conservation Artifact Dossier */}
           <div className="lg:col-span-6 relative flex items-center justify-center">
-            <div className="relative w-full max-w-md aspect-square rounded-3xl bg-radial from-emerald-950/60 via-slate-800/70 to-slate-900/90 border border-slate-700/80 p-6 flex flex-col items-center justify-center shadow-2xl overflow-hidden backdrop-blur-xl">
+            <div className="w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-sm p-6 overflow-hidden text-left space-y-4">
               
-              {/* Background Glow Ring */}
-              <div className="absolute w-72 h-72 rounded-full bg-emerald-500/15 blur-3xl -top-10 -right-10 pointer-events-none"></div>
-              <div className="absolute w-60 h-60 rounded-full bg-teal-500/15 blur-3xl -bottom-10 -left-10 pointer-events-none"></div>
-
-              {/* Dynamic Step Illustration Display */}
-              <div className="relative z-10 flex flex-col items-center text-center space-y-4">
-                
-                {/* Center Animated Mascot Scopey */}
-                <motion.div 
-                  className="relative w-44 h-44 sm:w-52 sm:h-52 rounded-full overflow-hidden p-1 border-2 border-emerald-400/50 shadow-2xl bg-slate-950/80"
-                  animate={{
-                    y: [0, -8, 0],
-                    rotate: activeStep % 2 === 0 ? [0, 1.5, 0] : [0, -1.5, 0]
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: 'easeInOut'
-                  }}
-                >
-                  <Image
-                    src="/mascot-scopey.jpg"
-                    alt="Scopey the AI Eco-Drone Mascot"
-                    fill
-                    className="object-cover rounded-full"
-                    sizes="(max-width: 640px) 176px, 208px"
-                    priority
-                  />
-                  
-                  {/* ScopeLens Scanning Beam Overlay (Active on Step 2) */}
-                  {activeStep === 1 && (
-                    <div className="laser-beam pointer-events-none"></div>
-                  )}
-
-                  {/* Pulsing Holo Ring */}
-                  <div className="absolute inset-0 rounded-full radar-glow pointer-events-none"></div>
-                </motion.div>
-
-                {/* Floating Interactive Badge based on Step */}
-                <motion.div
-                  key={`badge-${activeStep}`}
-                  initial={{ scale: 0.85, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="px-4 py-2 rounded-2xl bg-slate-800/95 border border-emerald-500/40 shadow-xl flex items-center gap-2.5 max-w-xs"
-                >
-                  {activeStep === 0 && (
-                    <>
-                      <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
-                      <span className="text-xs font-semibold text-rose-200">Deteksi Pesisir: Pantai Panjang</span>
-                    </>
-                  )}
-                  {activeStep === 1 && (
-                    <>
-                      <Scan className="w-4 h-4 text-emerald-400 shrink-0 animate-spin" />
-                      <span className="text-xs font-semibold text-emerald-200">ScopeLens: Rekomendasi Rhizophora</span>
-                    </>
-                  )}
-                  {activeStep === 2 && (
-                    <>
-                      <MapPin className="w-4 h-4 text-teal-400 shrink-0" />
-                      <span className="text-xs font-semibold text-teal-200">WebGIS: 4 Titik Kritis Bengkulu</span>
-                    </>
-                  )}
-                  {activeStep === 3 && (
-                    <>
-                      <Users className="w-4 h-4 text-amber-400 shrink-0" />
-                      <span className="text-xs font-semibold text-amber-200">Action Brief: 35 Relawan Bersiap</span>
-                    </>
-                  )}
-                  {activeStep === 4 && (
-                    <>
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span className="text-xs font-semibold text-emerald-300">Ekosistem Pulih: +150 Pohon Hidup</span>
-                    </>
-                  )}
-                </motion.div>
-
-                {/* Mini Ecosystem Icons Track */}
-                <div className="flex items-center gap-2 text-slate-400 text-[11px] pt-1">
-                  <span className="flex items-center gap-1 font-mono text-emerald-400 font-semibold">
-                    <Radio className="w-3 h-3 text-emerald-400 animate-pulse" />
-                    Status Ekosistem:
-                  </span>
-                  <span className="text-slate-300">
-                    {activeStep === 4 ? '🌱 Pulih Berkelanjutan' : '⚠️ Butuh Restorasi Terpadu'}
-                  </span>
-                </div>
-
+              {/* Header Bar of the Artifact */}
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 text-xs">
+                <span className="font-semibold text-slate-500 flex items-center gap-1.5 font-mono">
+                  <Compass className="w-3.5 h-3.5 text-emerald-700" />
+                  DOSIR KONSERVASI LAPANGAN
+                </span>
+                <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono">
+                  TAHAP 0{activeStep + 1}/05
+                </span>
               </div>
+
+              {/* Artifact Card Content Based on Active Step */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`stage-${activeStep}`}
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.25 }}
+                  className="space-y-4"
+                >
+                  {/* STEP 1 ARTIFACT: FIELD EVIDENCE */}
+                  {activeStep === 0 && (
+                    <div className="space-y-3">
+                      <div className="relative aspect-16/10 rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
+                        <Image
+                          src="https://images.unsplash.com/photo-1621451537084-482c73073a0f?auto=format&fit=crop&w=800&q=80"
+                          alt="Dokumentasi Lapangan"
+                          fill
+                          className="object-cover"
+                          sizes="400px"
+                        />
+                        <div className="absolute bottom-2 left-2 px-2 py-1 bg-black/75 backdrop-blur-xs rounded text-[10px] text-white font-mono">
+                          GPS: -3.8142° S, 102.2618° E
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="text-xs font-semibold text-slate-900">Temuan Warga: Pesisir Pantai Panjang</div>
+                        <p className="text-[11px] text-slate-500">
+                          Limbah anorganik menutupi sabuk perintis vegetasi pantai di zona pasang tertinggi.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* STEP 2 ARTIFACT: BOTANICAL TAXONOMY SHEET */}
+                  {activeStep === 1 && (
+                    <div className="space-y-3">
+                      <div className="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200 space-y-2">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-semibold text-emerald-900 flex items-center gap-1.5">
+                            <Leaf className="w-3.5 h-3.5 text-emerald-700" /> Diagnosis Taksonomi Botani
+                          </span>
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">
+                            Urgensi: 91/100
+                          </span>
+                        </div>
+                        <div className="font-bold text-slate-900 text-sm">
+                          Rhizophora apiculata (Bakau Minyak)
+                        </div>
+                        <p className="text-[11px] text-slate-600 leading-relaxed">
+                          Direkomendasikan karena memiliki sistem akar tunjang kuat untuk meredam abrasi gelombang dan toleransi salinitas tinggi pada substrat lumpur berpasir.
+                        </p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div className="p-2.5 rounded-lg border border-slate-200 bg-slate-50">
+                          <div className="text-[10px] text-slate-400 font-semibold uppercase">Kebutuhan Bibit</div>
+                          <div className="font-bold text-slate-800 font-mono mt-0.5">150 Bibit Siap Tanam</div>
+                        </div>
+                        <div className="p-2.5 rounded-lg border border-slate-200 bg-slate-50">
+                          <div className="text-[10px] text-slate-400 font-semibold uppercase">Zona Substrat</div>
+                          <div className="font-bold text-slate-800 font-mono mt-0.5">Pasang-Surut Berlumpur</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* STEP 3 ARTIFACT: GEOSPATIAL MAP CARD */}
+                  {activeStep === 2 && (
+                    <div className="space-y-3">
+                      <div className="p-3.5 rounded-xl bg-slate-900 text-white space-y-2.5">
+                        <div className="flex items-center justify-between text-xs text-emerald-400 font-mono">
+                          <span className="flex items-center gap-1.5">
+                            <MapPin className="w-3.5 h-3.5" /> ScopeMap WebGIS Spasial
+                          </span>
+                          <span>Bengkulu Barat</span>
+                        </div>
+                        <div className="space-y-1.5 pt-1">
+                          <div className="flex items-center justify-between text-xs py-1 border-b border-slate-800">
+                            <span className="text-slate-300">1. Pantai Panjang (Pesisir)</span>
+                            <span className="text-rose-400 font-semibold">Kritis</span>
+                          </div>
+                          <div className="flex items-center justify-between text-xs py-1 border-b border-slate-800">
+                            <span className="text-slate-300">2. Teluk Pulau Baai (Mangrove)</span>
+                            <span className="text-rose-400 font-semibold">Kritis</span>
+                          </div>
+                          <div className="flex items-center justify-between text-xs py-1 border-b border-slate-800">
+                            <span className="text-slate-300">3. Muara Sungai Jenggalu</span>
+                            <span className="text-amber-400 font-semibold">Sedang</span>
+                          </div>
+                          <div className="flex items-center justify-between text-xs py-1">
+                            <span className="text-slate-300">4. Koridor Bukit Barisan (Hutan)</span>
+                            <span className="text-emerald-400 font-semibold">Terpantau</span>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-[11px] text-slate-500">
+                        Sinkronisasi dua arah antara database laporan publik dan layer poligon zona konservasi.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* STEP 4 ARTIFACT: OPERATIONAL ACTION BRIEF */}
+                  {activeStep === 3 && (
+                    <div className="space-y-3">
+                      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-semibold text-slate-800 flex items-center gap-1.5">
+                            <FileText className="w-3.5 h-3.5 text-emerald-700" /> Action Brief Taktis
+                          </span>
+                          <span className="text-[10px] font-semibold text-emerald-700">Terbit Otomatis</span>
+                        </div>
+                        <div className="space-y-1.5 text-xs">
+                          <div className="flex items-center gap-2 text-slate-700">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <span>Logistik: 50 karung goni &amp; 30 sarung tangan</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-slate-700">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <span>Bibit: 200 bibit mangrove &amp; ajir bambu</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-slate-700">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <span>Regu: 15 relawan bersih, 10 relawan tanam</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-[11px] text-amber-900">
+                        SOP Lapangan: Wajib memakai alas kaki tertutup saat penyusuran zona pasang-surut.
+                      </div>
+                    </div>
+                  )}
+
+                  {/* STEP 5 ARTIFACT: RESTORATION IMPACT CERTIFICATE */}
+                  {activeStep === 4 && (
+                    <div className="space-y-3">
+                      <div className="p-4 rounded-xl bg-emerald-900 text-white space-y-2">
+                        <div className="flex items-center justify-between text-xs text-emerald-300">
+                          <span className="flex items-center gap-1 font-mono">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> HASIL PEMULIHAN
+                          </span>
+                          <span>Bengkulu 2026</span>
+                        </div>
+                        <div className="text-xl font-bold font-mono">
+                          5.350 <span className="text-sm font-normal text-emerald-300">kg CO₂e/tahun</span>
+                        </div>
+                        <p className="text-[11px] text-emerald-200">
+                          Estimasi serapan biomassa aktif dari 150 bibit bakau yang berhasil tertanam dan tumbuh subur.
+                        </p>
+                      </div>
+                      <div className="text-[11px] text-slate-500 flex items-center justify-between">
+                        <span>Status Siklus Konservasi:</span>
+                        <strong className="text-emerald-800">Closed-Loop Selesai ✓</strong>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+
             </div>
           </div>
 
         </div>
 
         {/* Bottom Interactive Step Progress Indicator Bar (Clickable) */}
-        <div className="pt-4 border-t border-slate-800/80">
+        <div className="pt-4 border-t border-slate-200">
           <div className="grid grid-cols-5 gap-2 sm:gap-4">
             {STEPS.map((step, idx) => {
               const isCurrent = activeStep === idx;
@@ -293,27 +374,27 @@ export default function Scrollytelling() {
                   key={step.number}
                   type="button"
                   onClick={() => setActiveStep(idx)}
-                  className={`text-left group transition-all py-1.5 focus:outline-hidden ${
-                    isCurrent ? 'opacity-100' : 'opacity-40 hover:opacity-75'
+                  className={`text-left group transition-all py-1.5 focus:outline-hidden cursor-pointer ${
+                    isCurrent ? 'opacity-100' : 'opacity-40 hover:opacity-80'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
                     <span className={`text-[10px] sm:text-xs font-mono font-bold ${
-                      isCurrent ? 'text-emerald-400' : isPassed ? 'text-teal-400' : 'text-slate-400'
+                      isCurrent ? 'text-emerald-800' : isPassed ? 'text-teal-700' : 'text-slate-400'
                     }`}>
                       {step.number}
                     </span>
-                    <span className="text-[10px] text-slate-400 hidden md:inline truncate ml-2">
-                      {step.badge.split(' ')[0]}
+                    <span className="text-[10px] text-slate-600 font-medium hidden md:inline truncate ml-2">
+                      {step.badge}
                     </span>
                   </div>
-                  <div className="h-1 sm:h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                  <div className="h-1 sm:h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
                     <div 
                       className={`h-full transition-all duration-300 rounded-full ${
                         isCurrent 
-                          ? 'bg-gradient-to-r from-emerald-400 to-teal-400 w-full' 
+                          ? 'bg-emerald-700 w-full' 
                           : isPassed 
-                            ? 'bg-emerald-500 w-full' 
+                            ? 'bg-emerald-800 w-full' 
                             : 'w-0'
                       }`}
                     ></div>

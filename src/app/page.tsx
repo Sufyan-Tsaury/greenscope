@@ -7,19 +7,15 @@ import Scrollytelling from '@/components/scrollytelling';
 import { 
   Camera, 
   MapPin, 
-  Sparkles, 
-  ShieldCheck, 
-  ArrowRight, 
-  Trees, 
-  Waves, 
-  CheckCircle2, 
-  TrendingUp, 
   Leaf, 
   SlidersHorizontal,
   Compass,
-  AlertTriangle
+  AlertTriangle,
+  CheckCircle2,
+  Trees,
+  Waves,
+  ArrowRight
 } from 'lucide-react';
-import { INITIAL_REPORTS } from '@/lib/mock-data';
 
 export default function HomePage() {
   const [sliderPosition, setSliderPosition] = useState(50);
@@ -29,14 +25,13 @@ export default function HomePage() {
   const calculatedCO2 = Math.round(carbonTrees * 12.5);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col bg-white">
       
       {/* 1. HERO SECTION: PANGGUNG NUSANTARA & INOVASI */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-white via-slate-50 to-slate-100/60 pt-10 pb-16 lg:pt-16 lg:pb-24 border-b border-slate-200/80">
+      <section className="relative overflow-hidden bg-[#fafbfa] pt-12 pb-16 lg:pt-20 lg:pb-24 border-b border-slate-200">
         
-        {/* Ambient Subtle Gradients */}
-        <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full bg-emerald-200/20 blur-3xl pointer-events-none"></div>
-        <div className="absolute top-1/3 left-10 w-80 h-80 rounded-full bg-teal-200/20 blur-3xl pointer-events-none"></div>
+        {/* Subtle Architectural Grid Lines */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -44,123 +39,111 @@ export default function HomePage() {
             {/* Left Content */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               
-              {/* Pill Tag */}
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-xs">
-                <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-                <span>IT RUSH 2026 • Subtema 1: Lingkungan dan Konservasi</span>
+              {/* Field Tag */}
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-semibold bg-emerald-100/70 text-emerald-900 border border-emerald-200">
+                <Leaf className="w-3.5 h-3.5 text-emerald-800" />
+                <span>Platform Konservasi Pesisir &amp; Hutan Tropis Bengkulu</span>
               </div>
 
               {/* Headline */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.12]">
-                Lensa Cerdas &amp; Aksi Nyata{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600">
-                  Konservasi Nusantara.
-                </span>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 tracking-tight leading-[1.12]">
+                Kecerdasan Buatan untuk Aksi Nyata Konservasi Alam Nusantara
               </h1>
 
               {/* Subtitle */}
-              <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                Menghubungkan pemantauan warga berbasis <strong>Gemini 3.8 Flash Computer Vision</strong> dengan pemetaan WebGIS dan mobilisasi aksi restorasi dalam satu siklus tertutup (<em className="text-emerald-700 font-semibold not-italic">Closed-Loop Conservation</em>).
+              <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
+                Menghubungkan pemantauan warga lapangan berbasis <strong>Computer Vision Gemini</strong> dengan pemetaan spasial WebGIS dan mobilisasi aksi restorasi dalam satu siklus tertutup (<em className="text-emerald-800 font-medium not-italic">Closed-Loop Conservation</em>).
               </p>
 
               {/* CTAs */}
-              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5">
                 <Link
                   href="/lapor"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl text-base font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-md hover:shadow-lg transition-all active:scale-95 group"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg text-sm font-semibold text-white bg-emerald-800 hover:bg-emerald-900 transition-colors shadow-xs"
                 >
-                  <Camera className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                  <span>Pindai Foto Lapangan</span>
+                  <Camera className="w-4 h-4" />
+                  <span>Pindai Bukti Lapangan</span>
                 </Link>
 
                 <Link
                   href="/peta"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-base font-bold text-slate-800 bg-white hover:bg-slate-50 border border-slate-300/80 shadow-xs hover:border-slate-400 transition-all active:scale-95"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg text-sm font-semibold text-slate-800 bg-white hover:bg-slate-50 border border-slate-300 transition-colors shadow-2xs"
                 >
-                  <MapPin className="w-5 h-5 text-teal-600" />
-                  <span>Jelajahi Peta Pantau</span>
-                  <span className="text-xs px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 font-mono font-semibold ml-1">
-                    Bengkulu
-                  </span>
+                  <MapPin className="w-4 h-4 text-emerald-700" />
+                  <span>Jelajahi Peta Pantau Bengkulu</span>
                 </Link>
               </div>
 
-              {/* Trust & Focus Points */}
-              <div className="pt-4 grid grid-cols-3 gap-4 border-t border-slate-200/60 max-w-lg mx-auto lg:mx-0 text-left">
+              {/* Key Scientific Attributes */}
+              <div className="pt-6 grid grid-cols-3 gap-6 border-t border-slate-200 max-w-xl mx-auto lg:mx-0 text-left">
                 <div>
-                  <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Fokus Utama</div>
-                  <div className="text-sm font-extrabold text-slate-800 flex items-center gap-1 mt-0.5">
-                    <Waves className="w-4 h-4 text-teal-600" /> Pesisir &amp; Hutan
+                  <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Wilayah Fokus</div>
+                  <div className="text-sm font-semibold text-slate-800 mt-1 flex items-center gap-1.5">
+                    <Waves className="w-4 h-4 text-emerald-700 shrink-0" />
+                    <span>Pesisir Barat Bengkulu</span>
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Mesin AI</div>
-                  <div className="text-sm font-extrabold text-slate-800 flex items-center gap-1 mt-0.5">
-                    <Sparkles className="w-4 h-4 text-emerald-600" /> Gemini Vision
+                  <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Analisis AI</div>
+                  <div className="text-sm font-semibold text-slate-800 mt-1 flex items-center gap-1.5">
+                    <Leaf className="w-4 h-4 text-emerald-700 shrink-0" />
+                    <span>Taksonomi &amp; Kerusakan</span>
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Navigasi</div>
-                  <div className="text-sm font-extrabold text-slate-800 flex items-center gap-1 mt-0.5">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600" /> Bebas Scroll-Trap
+                  <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Siklus Aksi</div>
+                  <div className="text-sm font-semibold text-slate-800 mt-1 flex items-center gap-1.5">
+                    <Trees className="w-4 h-4 text-emerald-700 shrink-0" />
+                    <span>Restorasi Terpadu</span>
                   </div>
                 </div>
               </div>
 
             </div>
 
-            {/* Right Hero Graphic: Bentang Alam Nusantara + Scopey Badge */}
+            {/* Right Hero Graphic: Real Scientific Field Dossier */}
             <div className="lg:col-span-5 relative flex justify-center">
-              <div className="relative w-full max-w-md aspect-4/3 sm:aspect-square rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-slate-900 group">
-                <Image
-                  src="https://images.unsplash.com/photo-1544979590-37e9b47eb705?auto=format&fit=crop&w=1200&q=80"
-                  alt="Ekosistem Mangrove & Pesisir Bengkulu"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-700"
-                  sizes="(max-width: 1024px) 100vw, 500px"
-                  priority
-                />
+              <div className="relative w-full max-w-md rounded-2xl overflow-hidden shadow-xl border border-slate-200 bg-slate-900 group">
                 
-                {/* Overlay Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent"></div>
-
-                {/* Floating Mascot Badge in Hero */}
-                <div className="absolute top-4 left-4 p-2.5 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/80 shadow-lg flex items-center gap-3">
-                  <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-500 shrink-0">
-                    <Image
-                      src="/mascot-scopey.jpg"
-                      alt="Scopey"
-                      fill
-                      className="object-cover"
-                      sizes="40px"
-                    />
-                  </div>
-                  <div className="pr-1 text-left">
-                    <div className="text-[11px] font-bold text-slate-900 flex items-center gap-1">
-                      <span>Hai, Aku Scopey!</span>
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                {/* Field Photography of Bengkulu Coastal Mangrove */}
+                <div className="relative aspect-4/3 w-full bg-slate-800">
+                  <Image
+                    src="https://images.unsplash.com/photo-1544979590-37e9b47eb705?auto=format&fit=crop&w=1200&q=80"
+                    alt="Sabuk Mangrove Pesisir Bengkulu"
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-102"
+                    sizes="(max-width: 1024px) 100vw, 500px"
+                    priority
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent"></div>
+                  
+                  {/* Top Coordinate Stamp */}
+                  <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                    <div className="px-2.5 py-1 rounded bg-black/70 backdrop-blur-md text-[11px] font-mono font-medium text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
+                      <Compass className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>3°48&apos;56.2&quot;S 102°15&apos;32.4&quot;E</span>
                     </div>
-                    <div className="text-[10px] text-slate-500">Pemandu AI Konservasi Anda</div>
+                    <span className="px-2 py-0.5 rounded bg-emerald-900/90 text-[10px] font-semibold text-emerald-200 border border-emerald-600/40">
+                      Terverifikasi
+                    </span>
                   </div>
                 </div>
 
-                {/* Bottom Card: Bengkulu Focus Spotlight */}
-                <div className="absolute bottom-4 left-4 right-4 p-4 rounded-2xl bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-white text-left space-y-1">
-                  <div className="flex items-center justify-between text-xs text-emerald-400 font-bold">
-                    <span className="flex items-center gap-1.5">
-                      <Compass className="w-3.5 h-3.5" /> Titik Pantau Utama
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-950 border border-emerald-700 text-[10px]">
-                      Aktif
-                    </span>
+                {/* Bottom Metadata Panel */}
+                <div className="p-4 bg-slate-950 text-white border-t border-slate-800 space-y-2 text-left">
+                  <div className="text-xs font-semibold text-emerald-400 flex items-center justify-between">
+                    <span>Sektor Prioritas Restorasi</span>
+                    <span className="text-slate-400 font-mono text-[11px]">ID: BKL-002</span>
                   </div>
-                  <div className="text-sm font-bold text-white">
-                    Pesisir Pantai Panjang &amp; Mangrove Pulau Baai
+                  <div className="text-base font-bold text-white">
+                    Sabuk Mangrove Pantai Panjang &amp; Teluk Baai
                   </div>
-                  <p className="text-[11px] text-slate-300 line-clamp-1">
-                    Bengkulu, Sumatera — Sabuk pertahanan abrasi barat Nusantara.
-                  </p>
+                  <div className="text-xs text-slate-300 flex items-center justify-between pt-1 border-t border-slate-800/80">
+                    <span>Rekomendasi Spesies: <strong className="text-emerald-300 font-normal">Rhizophora apiculata</strong></span>
+                    <span className="text-slate-400 text-[11px]">Bengkulu, Sumatera</span>
+                  </div>
                 </div>
+
               </div>
             </div>
 
@@ -168,29 +151,29 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. SCROLLYTELLING INTERACTIVE SECTION (ALA ZAKY) */}
+      {/* 2. SCROLLYTELLING INTERACTIVE SECTION */}
       <Scrollytelling />
 
       {/* 3. BEFORE VS AFTER RESTORATION SHOWCASE SLIDER */}
-      <section className="py-16 sm:py-24 bg-white border-b border-slate-200/80">
+      <section className="py-16 sm:py-20 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto space-y-3 mb-12">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-teal-50 text-teal-800 border border-teal-200">
-              <SlidersHorizontal className="w-3.5 h-3.5 text-teal-600" />
-              <span>Bukti Nyata Restorasi</span>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+              <SlidersHorizontal className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Dokumentasi Pemulihan Ekosistem</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-              Dari Laporan Kerusakan Menjadi Ekosistem Asri.
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
+              Dari Laporan Kerusakan Menjadi Bentang Alam Pulih
             </h2>
             <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-              Geser garis pemisah ke kiri dan kanan untuk melihat transformasi nyata area pesisir setelah intervensi aksi relawan bersama GreenScope.
+              Tarik garis pemisah ke kiri dan kanan untuk membandingkan kondisi riil area pesisir sebelum dan sesudah intervensi gotong royong bersama GreenScope.
             </p>
           </div>
 
           {/* Interactive Split-Screen Slider */}
           <div className="max-w-4xl mx-auto">
-            <div className="relative aspect-16/9 sm:aspect-21/9 rounded-3xl overflow-hidden shadow-2xl border-4 border-slate-100 select-none bg-slate-900">
+            <div className="relative aspect-16/9 sm:aspect-21/9 rounded-2xl overflow-hidden shadow-lg border border-slate-200 select-none bg-slate-900">
               
               {/* After Image (Full Background) */}
               <div className="absolute inset-0">
@@ -201,8 +184,8 @@ export default function HomePage() {
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 896px"
                 />
-                <span className="absolute bottom-4 right-4 z-10 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600/90 text-white backdrop-blur-md shadow-md flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Pulih: Sabuk Mangrove Asri
+                <span className="absolute bottom-4 right-4 z-10 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-800/90 text-white backdrop-blur-md shadow-sm flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" /> Pulih: Sabuk Pesisir Asri
                 </span>
               </div>
 
@@ -218,22 +201,22 @@ export default function HomePage() {
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 896px"
                 />
-                <span className="absolute bottom-4 left-4 z-10 px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-600/90 text-white backdrop-blur-md shadow-md flex items-center gap-1.5">
-                  <AlertTriangle className="w-3.5 h-3.5" /> Laporan Awal: Timbunan Sampah &amp; Abrasi
+                <span className="absolute bottom-4 left-4 z-10 px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-800/90 text-white backdrop-blur-md shadow-sm flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 text-rose-300" /> Awal: Timbunan Sampah &amp; Abrasi
                 </span>
               </div>
 
               {/* Draggable Divider Handle */}
               <div 
-                className="absolute top-0 bottom-0 w-1 bg-white shadow-2xl z-20 flex items-center justify-center pointer-events-none"
+                className="absolute top-0 bottom-0 w-0.5 bg-white shadow-2xl z-20 flex items-center justify-center pointer-events-none"
                 style={{ left: `${sliderPosition}%` }}
               >
-                <div className="w-9 h-9 rounded-full bg-white shadow-xl flex items-center justify-center text-slate-800 border-2 border-emerald-500 font-bold text-xs">
+                <div className="w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-slate-800 border border-slate-300 font-bold text-xs">
                   ↔
                 </div>
               </div>
 
-              {/* Hidden Range Input for full touch/mouse drag accessibility */}
+              {/* Hidden Range Input for accessibility */}
               <input
                 type="range"
                 min="0"
@@ -245,8 +228,8 @@ export default function HomePage() {
               />
             </div>
 
-            <div className="mt-3 text-center text-xs text-slate-400">
-              *Tarik atau sentuh slider gambar di atas untuk menggeser perbandingan.
+            <div className="mt-3 text-center text-xs text-slate-500">
+              *Geser pegangan slider di atas untuk mengamati perbedaan kondisi ekosistem.
             </div>
           </div>
 
@@ -254,27 +237,27 @@ export default function HomePage() {
       </section>
 
       {/* 4. BLUE & GREEN CARBON CALCULATOR */}
-      <section className="py-16 sm:py-20 bg-slate-900 text-white relative overflow-hidden">
+      <section className="py-16 sm:py-20 bg-[#062c23] text-white relative overflow-hidden border-b border-emerald-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             
             <div className="lg:col-span-6 space-y-4">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-950 text-emerald-400 border border-emerald-700">
-                <Leaf className="w-3.5 h-3.5" />
-                <span>Kalkulator Dampak Karbon Biru</span>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-emerald-900/80 text-emerald-300 border border-emerald-700/60">
+                <Leaf className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Kalkulator Estimasi Biomassa Karbon Biru</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl font-black tracking-tight">
-                Hitung Potensi Penyerapan Karbon Bersama GreenScope.
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+                Potensi Penyerapan Karbon Pesisir Bengkulu
               </h2>
               <p className="text-slate-300 text-sm leading-relaxed">
-                Hutan mangrove pesisir mampu menyerap karbon hingga <strong>4–5 kali lebih banyak</strong> daripada hutan daratan biasa. Geser target penanaman untuk melihat estimasi serapan emisi karbon gas rumah kaca tahunan.
+                Hutan mangrove pesisir memiliki kapasitas mitigasi iklim luar biasa, mampu menyimpan karbon organik hingga <strong>4–5 kali lebih padat</strong> dibandingkan hutan daratan. Simulasikan target bibit restorasi untuk memperkirakan serapan tahunan.
               </p>
               
               {/* Slider Control */}
-              <div className="pt-4 space-y-3 bg-slate-800/80 p-5 rounded-2xl border border-slate-700">
+              <div className="pt-4 space-y-3 bg-[#0a382d] p-5 rounded-xl border border-emerald-800/60">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="font-semibold text-slate-300">Target Bibit Ditanam:</span>
-                  <span className="text-xl font-black text-emerald-400 font-mono">{carbonTrees} Bibit</span>
+                  <span className="font-medium text-slate-300">Target Bibit Ditanam:</span>
+                  <span className="text-xl font-bold text-emerald-300 font-mono">{carbonTrees} Bibit</span>
                 </div>
                 <input
                   type="range"
@@ -283,49 +266,49 @@ export default function HomePage() {
                   step="25"
                   value={carbonTrees}
                   onChange={(e) => setCarbonTrees(Number(e.target.value))}
-                  className="w-full accent-emerald-500 cursor-pointer h-2 bg-slate-700 rounded-lg"
+                  className="w-full accent-emerald-400 cursor-pointer h-2 bg-emerald-950 rounded-lg"
                 />
-                <div className="flex justify-between text-[11px] text-slate-400 font-mono">
-                  <span>50 Pohon</span>
-                  <span>500 Pohon</span>
-                  <span>1.000 Pohon</span>
+                <div className="flex justify-between text-[11px] text-emerald-400/80 font-mono">
+                  <span>50 Bibit</span>
+                  <span>500 Bibit</span>
+                  <span>1.000 Bibit</span>
                 </div>
               </div>
             </div>
 
             {/* Metric Display Card */}
             <div className="lg:col-span-6 flex justify-center">
-              <div className="w-full max-w-md p-8 rounded-3xl bg-gradient-to-br from-emerald-950 via-slate-800 to-slate-900 border border-emerald-500/40 shadow-2xl text-center space-y-6">
+              <div className="w-full max-w-md p-8 rounded-2xl bg-[#09352b] border border-emerald-700/50 shadow-xl text-center space-y-6">
                 <div>
-                  <div className="text-xs uppercase tracking-widest font-bold text-emerald-400">
+                  <div className="text-xs uppercase tracking-wider font-semibold text-emerald-300">
                     Estimasi Serapan Karbon Tahunan
                   </div>
-                  <div className="text-5xl sm:text-6xl font-black text-white font-mono mt-2 tracking-tight">
+                  <div className="text-5xl font-bold text-white font-mono mt-2 tracking-tight">
                     {calculatedCO2.toLocaleString('id-ID')}
-                    <span className="text-lg sm:text-xl font-normal text-emerald-300 ml-2">kg CO₂e/th</span>
+                    <span className="text-lg font-normal text-emerald-300 ml-2">kg CO₂e/th</span>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-700 text-left">
-                  <div className="p-3 rounded-xl bg-slate-800/60 border border-slate-700">
-                    <div className="text-[10px] text-slate-400 uppercase font-semibold">Setara Jejak Karbon</div>
-                    <div className="text-sm font-bold text-white mt-0.5">
-                      {Math.round(calculatedCO2 / 120)} Penerbangan Domestik
+                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-emerald-800/80 text-left">
+                  <div className="p-3 rounded-lg bg-emerald-950/60 border border-emerald-800/60">
+                    <div className="text-[10px] text-emerald-300/80 uppercase font-medium">Equivalensi Emisi</div>
+                    <div className="text-sm font-semibold text-white mt-0.5">
+                      ~{Math.round(calculatedCO2 / 120)} Perjalanan Udara
                     </div>
                   </div>
-                  <div className="p-3 rounded-xl bg-slate-800/60 border border-slate-700">
-                    <div className="text-[10px] text-slate-400 uppercase font-semibold">Benteng Pantai</div>
-                    <div className="text-sm font-bold text-white mt-0.5">
-                      +{Math.round(carbonTrees * 0.8)} Meter Sabuk Erosi
+                  <div className="p-3 rounded-lg bg-emerald-950/60 border border-emerald-800/60">
+                    <div className="text-[10px] text-emerald-300/80 uppercase font-medium">Sabuk Penahan Erosi</div>
+                    <div className="text-sm font-semibold text-white mt-0.5">
+                      +{Math.round(carbonTrees * 0.8)} Meter Garis Pantai
                     </div>
                   </div>
                 </div>
 
                 <Link
                   href="/aksi"
-                  className="block w-full py-3 rounded-xl font-bold text-sm text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition-colors shadow-md"
+                  className="block w-full py-3 rounded-lg font-semibold text-sm text-emerald-950 bg-emerald-300 hover:bg-emerald-200 transition-colors shadow-xs"
                 >
-                  Ikut Tanam Bibit Sekarang
+                  Daftar Aksi Penanaman Lapangan
                 </Link>
               </div>
             </div>
@@ -334,27 +317,26 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. JURY QUICK TEST BANNER (PINTASAN UJI CEPAT) */}
-      <section className="py-12 bg-emerald-50 border-t border-emerald-200/80">
+      {/* 5. JURY QUICK TEST BANNER */}
+      <section className="py-10 bg-slate-50 border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-2xl bg-white border border-emerald-300/80 p-6 sm:p-8 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="space-y-1.5 text-center md:text-left">
-              <div className="inline-flex items-center gap-1.5 text-xs font-extrabold text-emerald-800 uppercase tracking-wide">
-                <Sparkles className="w-4 h-4 text-emerald-600" />
-                <span>Kemudahan Evaluasi Dewan Juri IT RUSH 2026</span>
+          <div className="rounded-xl bg-white border border-slate-200 p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xs">
+            <div className="space-y-1 text-center md:text-left">
+              <div className="text-xs font-semibold text-emerald-800 uppercase tracking-wider">
+                Pengujian Cepat Dewan Evaluator
               </div>
-              <h3 className="text-xl sm:text-2xl font-black text-slate-900">
-                Uji Fitur AI Tanpa Repot Mencari Foto Lapangan.
+              <h3 className="text-lg font-bold text-slate-900">
+                Uji Fitur Computer Vision dengan Data Sampel Bengkulu
               </h3>
-              <p className="text-sm text-slate-600 max-w-2xl">
-                Kami menyediakan <strong>4 Foto Sampel Instan</strong> (Sampah Pantai, Kerusakan Mangrove, Hutan Tropis, dan Uji Tolak Foto Non-Alam) serta <strong>Akun Demo 1-Klik</strong> agar dewan juri dapat menguji seluruh fungsi sistem dalam 1 menit.
+              <p className="text-xs text-slate-600 max-w-2xl">
+                Tersedia 4 set data foto lapangan riil (Sampah Pantai Panjang, Mangrove Pulau Baai, Lereng Hutan, dan Uji Filter Validitas) untuk menguji diagnosis AI secara instan.
               </p>
             </div>
 
             <div className="flex items-center gap-3 shrink-0">
               <Link
                 href="/lapor"
-                className="px-5 py-3 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition-all flex items-center gap-2"
+                className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-emerald-800 hover:bg-emerald-900 transition-colors flex items-center gap-2"
               >
                 <Camera className="w-4 h-4" />
                 <span>Buka ScopeLens AI</span>

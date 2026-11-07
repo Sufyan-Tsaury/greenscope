@@ -227,39 +227,39 @@ export default function LaporPage() {
         {/* Header with Mascot Scopey */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-200">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
-              <span>ScopeLens Computer Vision • Powered by Gemini 3.8 Flash</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs font-semibold bg-emerald-100 text-emerald-900 border border-emerald-200">
+              <Leaf className="w-3.5 h-3.5 text-emerald-800" />
+              <span>ScopeLens Computer Vision • Model Analisis Multimodal</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-              Pindai &amp; Diagnosis Kerusakan Alam.
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+              Pindai &amp; Diagnosis Kerusakan Bentang Alam
             </h1>
             <p className="text-slate-600 text-sm max-w-2xl leading-relaxed">
-              Unggah foto kondisi pesisir, mangrove, atau hutan tropis. AI akan memvalidasi keaslian lanskap, menilai skor urgensi, dan menyusun rekomendasi botani pemulih secara otomatis.
+              Unggah foto kondisi pesisir, mangrove, atau hutan tropis. Sistem akan memvalidasi keaslian lanskap, menilai skor urgensi penanganan, dan menyusun rekomendasi botani pemulih secara terstruktur.
             </p>
           </div>
 
-          {/* Scopey Assistant Card */}
-          <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white border border-emerald-200/80 shadow-xs max-w-sm shrink-0">
-            <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-emerald-500 shrink-0">
-              <Image src="/mascot-scopey.jpg" alt="Scopey" fill className="object-cover" sizes="48px" />
+          {/* Diagnostic System Info */}
+          <div className="flex items-center gap-3 p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs max-w-sm shrink-0">
+            <div className="w-10 h-10 rounded-lg bg-emerald-800 text-emerald-200 flex items-center justify-center shrink-0">
+              <Leaf className="w-5 h-5 text-emerald-300" />
             </div>
             <div className="text-xs">
-              <span className="font-bold text-slate-900 block">Scopey Siap Menganalisis!</span>
-              <span className="text-slate-500">Pilih salah satu contoh di bawah atau unggah foto Anda sendiri.</span>
+              <span className="font-semibold text-slate-900 block">Sistem Diagnosis Terbuka</span>
+              <span className="text-slate-500">Pilih salah satu set sampel Bengkulu atau unggah foto Anda.</span>
             </div>
           </div>
         </div>
 
-        {/* JURY QUICK TEST CHIPS (4 CONTOH INSTAN) */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
+        {/* FIELD TEST DATA CHIPS */}
+        <div className="p-4 sm:p-5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-              <Info className="w-4 h-4 text-emerald-600" />
-              Mode Uji Cepat Dewan Juri IT RUSH:
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+              <Info className="w-4 h-4 text-emerald-700" />
+              Sampel Foto Lapangan Siap Uji (Bengkulu):
             </span>
-            <span className="text-[11px] text-emerald-700 font-semibold hidden sm:inline">
-              1-Klik Foto Sampel Siap Uji
+            <span className="text-[11px] text-emerald-800 font-medium hidden sm:inline">
+              1-Klik Data Riil Lapangan
             </span>
           </div>
 
@@ -271,18 +271,18 @@ export default function LaporPage() {
                   key={sample.id}
                   type="button"
                   onClick={() => handleSelectSample(sample)}
-                  className={`text-left p-3 rounded-xl border text-xs transition-all relative cursor-pointer ${
+                  className={`text-left p-3 rounded-lg border text-xs transition-colors relative cursor-pointer ${
                     isSelected 
-                      ? 'bg-emerald-50/90 border-emerald-500 ring-2 ring-emerald-500/20 shadow-xs' 
+                      ? 'bg-emerald-50 border-emerald-600 text-slate-900 shadow-2xs' 
                       : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700'
                   }`}
                 >
                   {isSelected && (
-                    <span className="absolute top-2 right-2 w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px]">
+                    <span className="absolute top-2 right-2 w-4 h-4 rounded-full bg-emerald-800 text-white flex items-center justify-center text-[10px]">
                       <Check className="w-2.5 h-2.5 stroke-[3]" />
                     </span>
                   )}
-                  <div className="font-bold text-slate-900 line-clamp-1 pr-4">{sample.label}</div>
+                  <div className="font-semibold text-slate-900 line-clamp-1 pr-4">{sample.label}</div>
                   <div className="text-[10px] text-slate-500 mt-0.5 line-clamp-1">{sample.location}</div>
                 </button>
               );
