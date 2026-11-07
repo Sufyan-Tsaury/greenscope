@@ -9,7 +9,7 @@ import {
   Trash2, 
   Calendar, 
   MapPin, 
-  Sparkles, 
+ 
   CheckCircle2, 
   ArrowRight, 
   ShieldCheck, 
@@ -299,8 +299,8 @@ export default function AksiPage() {
             <div className="flex items-start justify-between pb-4 border-b border-slate-100">
               <div className="space-y-1">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200">
-                  <Sparkles className="w-3 h-3 text-teal-600" />
-                  Rencana Teknis AI (Action Brief)
+                  <FileText className="w-4 h-4" />
+                  Rencana Operasional Lapangan (Action Brief)
                 </span>
                 <h3 className="text-xl font-black text-slate-900">
                   {selectedBrief.title}
@@ -464,10 +464,10 @@ export default function AksiPage() {
               className="w-full py-3 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-md transition-all active:scale-95 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
             >
               {isGeneratingBrief ? (
-                <span>AI Sedang Menyusun Rencana Teknis...</span>
+                <span>Menyusun Rencana Operasional Lapangan...</span>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4" />
+                  <FileText className="w-4 h-4" />
                   <span>Susun Action Brief &amp; Terbitkan Aksi</span>
                 </>
               )}

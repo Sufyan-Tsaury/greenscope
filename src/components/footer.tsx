@@ -29,7 +29,7 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-2 text-xs text-emerald-400 font-semibold bg-emerald-950/60 border border-emerald-800/60 px-3 py-1.5 rounded-lg w-fit">
               <Trees className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Subtema 1: Lingkungan dan Konservasi — IT RUSH 2026</span>
+              <span>Inisiatif Konservasi Pesisir Barat &amp; Hutan Tropis Bengkulu</span>
             </div>
           </div>
 
@@ -41,27 +41,27 @@ export default function Footer() {
                 <Link href="/" className="hover:text-emerald-400 transition-colors">Beranda &amp; Alur Konservasi</Link>
               </li>
               <li>
-                <Link href="/lapor" className="hover:text-emerald-400 transition-colors">ScopeLens (Pindai AI)</Link>
+                <Link href="/lapor" className="hover:text-emerald-400 transition-colors">ScopeLens (Pindai Lapangan)</Link>
               </li>
               <li>
-                <Link href="/peta" className="hover:text-emerald-400 transition-colors">ScopeMap (WebGIS Pesisir)</Link>
+                <Link href="/peta" className="hover:text-emerald-400 transition-colors">ScopeMap (WebGIS Spasial)</Link>
               </li>
               <li>
                 <Link href="/aksi" className="hover:text-emerald-400 transition-colors">Kampanye Restorasi</Link>
               </li>
               <li>
-                <Link href="/dashboard" className="hover:text-emerald-400 transition-colors">Dashboard Demo</Link>
+                <Link href="/dashboard" className="hover:text-emerald-400 transition-colors">Dashboard Operasi</Link>
               </li>
             </ul>
           </div>
 
-          {/* Tech Stack & Competition Info */}
+          {/* Tech Stack Info */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Spesifikasi Karya</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Spesifikasi Arsitektur</h4>
             <div className="space-y-2 text-xs text-slate-400">
               <p><span className="text-slate-200 font-medium">Framework:</span> Next.js 16 (App Router) + TypeScript</p>
-              <p><span className="text-slate-200 font-medium">AI Engine:</span> Google Gemini 3.8 Flash (@google/genai)</p>
-              <p><span className="text-slate-200 font-medium">Database:</span> Supabase PostgreSQL</p>
+              <p><span className="text-slate-200 font-medium">Model Analisis:</span> Gemini Multimodal Vision</p>
+              <p><span className="text-slate-200 font-medium">Basis Data:</span> Supabase PostgreSQL</p>
               <p><span className="text-slate-200 font-medium">WebGIS:</span> Leaflet + OpenStreetMap</p>
             </div>
             <div className="pt-2 flex items-center gap-3">
@@ -92,7 +92,7 @@ export default function Footer() {
 
         {/* Bottom Credits */}
         <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
-          <p>© 2026 GreenScope. Dikembangkan untuk Kompetisi Web Development IT RUSH 2026.</p>
+          <p>© 2026 GreenScope. Platform Pemantauan &amp; Restorasi Ekosistem Nusantara.</p>
           <div className="flex items-center gap-1.5 text-slate-400">
             <span>Didedikasikan untuk kelestarian pesisir &amp; hutan Bengkulu</span>
             <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 inline" />

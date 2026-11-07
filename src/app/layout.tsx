@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'GreenScope — Platform Pemantauan & Aksi Konservasi Pesisir dan Hutan Tropis',
   description: 'Inovasi WebGIS & Computer Vision AI untuk pemantauan degradasi lingkungan pesisir dan hutan tropis serta mobilisasi aksi restorasi terukur.',
-  keywords: ['Konservasi', 'Mangrove', 'Pesisir', 'Bengkulu', 'Hutan Tropis', 'Gemini AI', 'IT RUSH 2026', 'GreenScope'],
+  keywords: ['Konservasi', 'Mangrove', 'Pesisir', 'Bengkulu', 'Hutan Tropis', 'Gemini AI', 'WebGIS', 'GreenScope'],
   authors: [{ name: 'Sufyan Tsaury' }],
   icons: {
     icon: '/mascot-scopey.jpg',

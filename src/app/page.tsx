@@ -317,19 +317,19 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. JURY QUICK TEST BANNER */}
+      {/* 5. QUICK FIELD SCANNER BANNER */}
       <section className="py-10 bg-slate-50 border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-xl bg-white border border-slate-200 p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xs">
             <div className="space-y-1 text-center md:text-left">
               <div className="text-xs font-semibold text-emerald-800 uppercase tracking-wider">
-                Pengujian Cepat Dewan Evaluator
+                Pusat Pemindaian Cepat Lapangan
               </div>
               <h3 className="text-lg font-bold text-slate-900">
-                Uji Fitur Computer Vision dengan Data Sampel Bengkulu
+                Diagnosis Otomatis dengan Sampel Lapangan Bengkulu
               </h3>
               <p className="text-xs text-slate-600 max-w-2xl">
-                Tersedia 4 set data foto lapangan riil (Sampah Pantai Panjang, Mangrove Pulau Baai, Lereng Hutan, dan Uji Filter Validitas) untuk menguji diagnosis AI secara instan.
+                Tersedia set data foto lapangan riil kawasan pesisir dan hutan Bengkulu untuk simulasi diagnosis ekologi secara instan.
               </p>
             </div>
 
@@ -339,7 +339,7 @@ export default function HomePage() {
                 className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-emerald-800 hover:bg-emerald-900 transition-colors flex items-center gap-2"
               >
                 <Camera className="w-4 h-4" />
-                <span>Buka ScopeLens AI</span>
+                <span>Mulai Pindai Lapangan</span>
               </Link>
             </div>
           </div>

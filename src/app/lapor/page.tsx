@@ -8,7 +8,7 @@ import confetti from 'canvas-confetti';
 import { 
   Camera, 
   UploadCloud, 
-  Sparkles, 
+  Scan, 
   AlertTriangle, 
   CheckCircle2, 
   MapPin, 
@@ -24,7 +24,7 @@ import {
 import { AIAnalysisResult, EcosystemType, Report } from '@/types';
 import { saveReport } from '@/lib/supabase';
 
-// 4 Foto Contoh Uji Cepat Dewan Juri (High Quality Unsplash Web-Optimized)
+// 4 Set Data Foto Lapangan Bengkulu (High Quality Web-Optimized)
 const JURY_SAMPLES = [
   {
     id: 'sample-pantai',
@@ -398,17 +398,17 @@ export default function LaporPage() {
                 type="button"
                 onClick={handleRunAnalysis}
                 disabled={isAnalyzing || !selectedImage}
-                className="w-full py-3.5 px-6 rounded-xl font-bold text-base text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-3 px-6 rounded-lg font-semibold text-sm text-white bg-emerald-800 hover:bg-emerald-900 shadow-xs transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
               >
                 {isAnalyzing ? (
                   <>
-                    <RefreshCw className="w-5 h-5 animate-spin" />
+                    <RefreshCw className="w-4 h-4 animate-spin" />
                     <span>ScopeLens Sedang Mendiagnosis...</span>
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-5 h-5" />
-                    <span>Jalankan Analisis AI ScopeLens</span>
+                    <Scan className="w-4 h-4" />
+                    <span>Mulai Diagnosis Lapangan</span>
                   </>
                 )}
               </button>

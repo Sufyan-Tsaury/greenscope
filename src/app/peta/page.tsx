@@ -13,7 +13,7 @@ import {
   Camera, 
   Leaf, 
   Users, 
-  Sparkles, 
+ 
   Trees, 
   Layers,
   ArrowRight,

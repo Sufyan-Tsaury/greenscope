@@ -94,7 +94,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* 1. ALERT BANNER RINGKAS EVALUASI JURI */}
+        {/* 1. ALERT BANNER AKSES SISTEM LAPANGAN */}
         <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
@@ -102,9 +102,9 @@ export default function DashboardPage() {
             </div>
             <div className="text-slate-600">
               <span className="font-bold text-slate-900 mr-2">
-                Akses Evaluasi Juri Aktif — Akun Demo Terverifikasi:
+                Akses Demonstrasi Sistem — Akun Operasi Terverifikasi:
               </span>
-              <span className="font-mono text-slate-700">relawan@greenscope.id</span> / <span className="font-mono text-slate-700">juri@greenscope.id</span> (Sandi: <strong className="font-mono text-slate-900">GreenScope2026!</strong>)
+              <span className="font-mono text-slate-700">relawan@greenscope.id</span> / <span className="font-mono text-slate-700">koordinator@greenscope.id</span> (Sandi: <strong className="font-mono text-slate-900">GreenScope2026!</strong>)
             </div>
           </div>
 
