@@ -56,9 +56,9 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
         scrollWheelZoom: true,
       });
 
-      // CartoDB Voyager tiles (ringan, modern, kontras tinggi)
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+      // OpenStreetMap Official Tiles (100% gratis, tanpa API Key, peta detail Bengkulu)
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 19,
       }).addTo(map);
 
