@@ -11,46 +11,52 @@
 
 ## 📌 Sekilas GreenScope
 
-**GreenScope** adalah platform pelestarian bentang alam (*landscape conservation*) yang menghubungkan masyarakat umum, komunitas relawan, dan koordinator konservasi dalam satu siklus tertutup (**Closed-Loop Conservation**). 
+**GreenScope** adalah platform konservasi bentang alam (*landscape conservation platform*) yang menghubungkan masyarakat pesisir, komunitas relawan, dan koordinator lingkungan dalam satu siklus tertutup (**Closed-Loop Conservation**). 
 
-Platform ini dirancang khusus untuk memitigasi dua krisis ekologis utama di kawasan barat Nusantara, khususnya pesisir dan bentang hutan **Bengkulu**:
-1. **Ekosistem Pesisir & Sabuk Mangrove:** Penanganan abrasi pantai, timbunan sampah makro/mikroplastik, serta kekeringan sabuk bibit mangrove alami (*Rhizophora* & *Avicennia*).
-2. **Ekosistem Hulu Hutan Tropis:** Deteksi pembukaan kanopi liar, degradasi lereng, dan pencegahan erosi hulu di koridor Bukit Barisan.
+Platform ini dirancang khusus untuk memitigasi krisis degradasi bentang alam di kawasan barat Nusantara, dengan studi kasus utama bentang alam **Bengkulu**:
+1. **Ekosistem Pesisir & Sabuk Mangrove:** Mitigasi abrasi pantai barat Sumatera, pembersihan akumulasi limbah anorganik di Pantai Panjang, dan restorasi sabuk bakau alami (*Rhizophora apiculata* & *Avicennia marina*) di Teluk Pulau Baai serta Muara Sungai Jenggalu.
+2. **Ekosistem Kanopi Hutan Tropis:** Deteksi dini pembukaan vegetasi tepi tebing, degradasi lereng kritis, dan erosi sedimentasi hulu di koridor Bukit Barisan.
 
 ---
 
-## 🚀 Fitur Utama & Inovasi AI
+## 🚀 Fitur Utama & Inovasi Teknologi
 
-1. **ScopeLens — AI Vision Triage (Gemini 3.8 Flash):**
-   * Memvalidasi keaslian foto alam (menolak foto non-lingkungan secara cerdas).
-   * Menganalisis indikator kerusakan visual dan menghitung **Skor Urgensi (0–100)**.
-   * Memberikan rekomendasi spesies vegetasi restorasi yang tepat secara botani.
-   * Tombol **1-Click Sample Photos** untuk kemudahan pengujian oleh Dewan Juri.
-2. **Scrollytelling Interaktif (Pemandu Maskot "Scopey"):**
-   * Alur narasi 5 tahap konservasi responsif dan bebas jebakan scroll (*zero scroll-trap*).
-3. **ScopeMap — WebGIS Pesisir & Hutan:**
+1. **ScopeLens — AI Vision Triage (Gemini 3.8 Flash Multimodal):**
+   * Memvalidasi keaslian lanskap alam (secara cerdas menyaring dan menolak objek buatan/non-alam).
+   * Menganalisis indikator visual degradasi dan menghitung **Skor Urgensi Lapangan (0–100)**.
+   * Merekomendasikan spesies botani endemik pemulih yang cocok dengan salinitas dan kedalaman substrat lumpur/pasir.
+   * Dilengkapi **4 Set Data Foto Lapangan Bengkulu** untuk kemudahan pengujian instan oleh Dewan Evaluator.
+
+2. **Alur Artefak Jurnal Lapangan (Editorial Conservation Journey):**
+   * Pengalaman scrollytelling terstruktur yang memandu pengguna menelusuri 5 fase siklus tertutup melalui dosir artefak nyata: bukti foto GPS, lembar diagnosis botani, cuplikan WebGIS, lembar taktis Action Brief, hingga sertifikat serapan biomassa karbon.
+
+3. **ScopeMap — WebGIS Geospasial Pesisir & Hutan:**
    * Peta interaktif Leaflet terpusat di kawasan kritis Bengkulu (Pantai Panjang, Pulau Baai, Muara Jenggalu, Bukit Barisan).
-   * Panel samping (*slide-over drawer*) dan *bottom-sheet* ramah jempol di layar ponsel.
+   * Dilengkapi filter ekosistem, indikator status keparahan, panel drawer deskripsi mendalam, serta navigasi bebas jebakan scroll (*zero scroll-trap*) yang ramah layar sentuh ponsel.
+
 4. **AI Action Brief Generator:**
-   * AI menyusun rencana logistik, pembagian regu kerja relawan, dan protokol keselamatan lapangan secara otomatis.
-5. **Kalkulator Karbon Biru (*Blue Carbon*) & Before-After Slider:**
-   * Estimasi penyerapan emisi $\text{kg CO}_2\text{e}$ tahunan dan perbandingan visual kondisi sebelum vs sesudah aksi restorasi.
-6. **Akses Cepat Pengujian Juri:**
-   * Tombol pintas **1-Click Demo Login** (Mode Relawan & Mode Koordinator) tanpa perlu registrasi manual.
+   * AI secara otomatis memformat rencana aksi taktis: daftar kebutuhan logistik, pembagian regu kerja gotong royong relawan, estimasi waktu pengerjaan, dan SOP keselamatan pesisir.
+
+5. **Kalkulator Biomassa Karbon Biru (*Blue Carbon*) & Slider Before-After:**
+   * Perhitungan proyeksi penyerapan emisi $\text{kg CO}_2\text{e}$ tahunan berbasis target bibit mangrove dan perbandingan visual kondisi lapangan sebelum vs sesudah pemulihan.
+
+6. **Pusat Komando Lapangan (Dual-Mode Dashboard):**
+   * Tata letak asimetris yang memprioritaskan peringatan titik kritis di pesisir Bengkulu dan ringkasan capaian kumulatif.
+   * Dilengkapi simulasi peran ganda (*Relawan Lapangan* vs *Koordinator Wilayah*) serta akses akun demo 1-klik untuk Dewan Juri.
 
 ---
 
-## 🛠️ Tech Stack & Keterbukaan Penggunaan Alat (Bab V Poin 5)
+## 🛠️ Tech Stack & Keterbukaan Penggunaan Alat (Sesuai Bab V Poin 5)
 
-Sesuai ketentuan resmi *Guidebook IT RUSH 2026 Bab V poin 5*, seluruh penggunaan *framework*, pustaka *open-source*, aset, dan *AI coding assistant* dicantumkan secara transparan:
+Sesuai ketentuan transparansi resmi *Guidebook IT RUSH 2026 Bab V Poin 5*, seluruh framework, dependensi pustaka, model AI, dan kakas bantu dicantumkan secara terbuka:
 
-* **Framework Inti:** Next.js 16 (App Router) + React 19 + TypeScript
-* **Styling & Desain Sistem:** Tailwind CSS v4 + Lucide Icons + Font Geist
-* **Mesin Kecerdasan Buatan:** `@google/genai` (Google Gemini 3.8 Flash) via Server Actions
-* **Basis Data & Autentikasi:** Supabase (PostgreSQL & Row Level Security)
-* **WebGIS & Peta:** Leaflet.js + OpenStreetMap Tiles
-* **Animasi & Interaktivitas:** Framer Motion + Canvas Confetti
-* **Maskot Resmi:** *Scopey* (AI Eco-Drone)
+* **Framework Inti:** Next.js 16.4 (App Router) + React 19 + TypeScript
+* **Desain Sistem & Tipografi:** Tailwind CSS v4 + Lucide Icons + Font Geist Sans/Mono
+* **Mesin Kecerdasan Buatan:** `@google/genai` (Google Gemini 3.8 Flash via API Serverless Routes)
+* **Basis Data & Backend:** Supabase PostgreSQL dengan skema tabel relasional (`reports`, `campaigns`, `volunteers`, `profiles`)
+* **WebGIS & Pemetaan Spasial:** Leaflet.js + OpenStreetMap Cartographic Tiles
+* **Interaktivitas & Animasi:** Framer Motion + Canvas Confetti
+* **Prinsip Estetika:** *Field-Journal & Scientific Conservation Aesthetic* (Anti-AI-Slop compliant)
 * **AI Coding Assistant:** Google Antigravity IDE (Gemini Agentic Assistant)
 
 ---
@@ -58,18 +64,18 @@ Sesuai ketentuan resmi *Guidebook IT RUSH 2026 Bab V poin 5*, seluruh penggunaan
 ## 💻 Panduan Menjalankan Proyek Lokal
 
 ```bash
-# 1. Clone repository
+# 1. Clone repositori
 git clone https://github.com/sufyan-tsaury/greenscope.git
 cd greenscope
 
-# 2. Install dependensi
+# 2. Pasang dependensi
 npm install
 
-# 3. Konfigurasi file environment
+# 3. Konfigurasi variabel lingkungan
 cp .env.example .env.local
-# Masukkan GEMINI_API_KEY, NEXT_PUBLIC_SUPABASE_URL, dan NEXT_PUBLIC_SUPABASE_ANON_KEY
+# Lengkapi GEMINI_API_KEY, NEXT_PUBLIC_SUPABASE_URL, dan NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-# 4. Jalankan server pengembangan
+# 4. Jalankan server lokal
 npm run dev
 ```
 
@@ -77,9 +83,19 @@ Buka [http://localhost:3000](http://localhost:3000) pada browser Anda.
 
 ---
 
+## 🔑 Akun Demo Pengujian Dewan Juri
+
+| Peran | Email | Kata Sandi | Akses |
+| :--- | :--- | :--- | :--- |
+| **Relawan Lapangan** | `relawan@greenscope.id` | `GreenScope2026!` | Pelaporan temuan baru, pendaftaran aksi tanam |
+| **Koordinator / Juri** | `juri@greenscope.id` | `GreenScope2026!` | Verifikasi laporan masuk, penerbitan kampanye aksi |
+
+---
+
 ## 👥 Pengembang
 
 * **Nama:** Sufyan Tsaury
 * **Kategori:** Individu (Solo Developer)
-* **Kompetisi:** IT RUSH 2026 — Web Development
-* **Penyelenggara:** HIMATIF Universitas Bengkulu (UNIB)
+* **Kompetisi:** IT RUSH 2026 — Web Development Competition
+* **Subtema:** Subtema 1 (Lingkungan dan Konservasi)
+* **Penyelenggara:** Himpunan Mahasiswa Teknik Informatika (HIMATIF) Universitas Bengkulu (UNIB)
