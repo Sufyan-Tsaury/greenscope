@@ -48,14 +48,14 @@ const STEPS: StepData[] = [
   },
   {
     number: '02',
-    badge: 'Analisis Taksonomi AI',
+    badge: 'Analisis Taksonomi',
     title: 'Computer Vision Mendiagnosis Kerusakan',
     highlight: 'Solusi Spesies Endemik & Skor Urgensi',
     description: 'Model multimodal menganalisis indikator visual kerusakan, memeriksa salinitas zona habitat, dan merekomendasikan bibit pemulih endemik yang sesuai untuk peredam abrasi.',
     tagline: 'Kecerdasan buatan berbasis taksonomi botani terverifikasi.',
     metricLabel: 'Rekomendasi Spesies',
     metricValue: 'Rhizophora apiculata',
-    ctaText: 'Lihat Cara Kerja AI',
+    ctaText: 'Uji Diagnosis Lapangan',
     ctaHref: '/lapor'
   },
   {
@@ -163,39 +163,39 @@ export default function Scrollytelling() {
                 </div>
 
                 {/* Main Heading */}
-                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight leading-[1.2]">
+                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-normal text-stone-900 tracking-tight leading-[1.2]">
                   <span>{current.title}</span>
-                  <span className="block text-emerald-800 text-xl sm:text-2xl font-semibold mt-1">
+                  <span className="block font-serif italic font-normal text-emerald-900 text-xl sm:text-2xl mt-1">
                     {current.highlight}
                   </span>
                 </h3>
 
                 {/* Narrative Description */}
-                <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-xl font-normal">
+                <p className="text-stone-600 text-sm sm:text-base leading-relaxed max-w-xl font-normal">
                   {current.description}
                 </p>
 
                 {/* Scientific Metric Indicator & CTA */}
-                <div className="pt-2 flex flex-wrap items-center gap-4">
-                  <div className="border-l-2 border-emerald-700 pl-3 py-1">
-                    <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 font-mono">
+                <div className="pt-2 flex flex-wrap items-center gap-5">
+                  <div className="border-l-2 border-emerald-800 pl-3 py-1">
+                    <div className="text-[10px] uppercase tracking-wider font-semibold text-stone-400 font-mono">
                       {current.metricLabel}
                     </div>
-                    <div className="text-sm font-bold text-slate-900 font-mono mt-0.5">
+                    <div className="text-sm font-bold text-stone-900 font-mono mt-0.5">
                       {current.metricValue}
                     </div>
                   </div>
 
                   <Link
                     href={current.ctaHref}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-emerald-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 transition-colors"
+                    className="inline-flex items-center gap-2 text-xs font-mono font-bold text-stone-900 hover:text-emerald-800 border-b-2 border-stone-800 hover:border-emerald-800 pb-0.5 transition-colors uppercase tracking-wider"
                   >
                     <span>{current.ctaText}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
 
-                <div className="text-xs text-slate-500 italic pt-1">
+                <div className="text-xs text-stone-500 italic pt-1 font-serif">
                   &ldquo;{current.tagline}&rdquo;
                 </div>
               </motion.div>
@@ -204,15 +204,15 @@ export default function Scrollytelling() {
 
           {/* Right Column: Dynamic Conservation Artifact Dossier */}
           <div className="lg:col-span-6 relative flex items-center justify-center">
-            <div className="w-full max-w-lg bg-white rounded-2xl border border-slate-300 shadow-md p-6 overflow-hidden text-left space-y-4">
+            <div className="w-full max-w-lg bg-white rounded-none border border-stone-300 p-5 overflow-hidden text-left space-y-4 shadow-none">
               
               {/* Header Bar of the Field Dossier */}
-              <div className="flex items-center justify-between pb-3 border-b border-slate-200 text-xs">
-                <span className="font-semibold text-slate-600 flex items-center gap-1.5 font-mono">
-                  <Compass className="w-3.5 h-3.5 text-emerald-700" />
+              <div className="flex items-center justify-between pb-3 border-b border-stone-200 text-xs">
+                <span className="font-semibold text-stone-600 flex items-center gap-1.5 font-mono text-[11px]">
+                  <Compass className="w-3.5 h-3.5 text-emerald-800" />
                   DOSIR JURNAL KONSERVASI LAPANGAN
                 </span>
-                <span className="px-2.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono">
+                <span className="px-2 py-0.5 rounded-none text-[10px] font-mono font-semibold bg-stone-100 text-stone-700 border border-stone-300">
                   STEP 0{activeStep + 1} / 05
                 </span>
               </div>
@@ -231,7 +231,7 @@ export default function Scrollytelling() {
                   {/* STEP 1: FOTO BUKTI LAPANGAN WARGA DI PANTAI PANJANG */}
                   {activeStep === 0 && (
                     <div className="space-y-3">
-                      <div className="relative aspect-16/10 rounded-xl overflow-hidden bg-slate-900 border border-slate-200">
+                      <div className="relative aspect-16/10 rounded-none overflow-hidden bg-stone-900 border border-stone-300">
                         <Image
                           src="https://images.unsplash.com/photo-1621451537084-482c73073a0f?auto=format&fit=crop&w=800&q=80"
                           alt="Foto Bukti Lapangan Pantai Panjang"
@@ -240,21 +240,21 @@ export default function Scrollytelling() {
                           sizes="500px"
                           priority
                         />
-                        <div className="absolute top-2 left-2 px-2.5 py-1 bg-black/80 backdrop-blur-xs rounded text-[10px] text-emerald-300 font-mono flex items-center gap-1.5 border border-emerald-500/30">
-                          <Compass className="w-3 h-3 text-emerald-400" />
-                          <span>GPS: -3.8142° S, 102.2618° E</span>
-                        </div>
-                        <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-emerald-900/90 text-white rounded text-[10px] font-semibold">
-                          Terverifikasi Lapangan
+                        <div className="absolute top-0 inset-x-0 px-2.5 py-1 bg-black/85 text-emerald-300 font-mono text-[10px] flex items-center justify-between border-b border-white/10">
+                          <div className="flex items-center gap-1.5">
+                            <Compass className="w-3 h-3 text-emerald-400" />
+                            <span>GPS: 3°48&apos;51.1&quot;S, 102°15&apos;42.5&quot;E</span>
+                          </div>
+                          <span className="text-[9px] uppercase tracking-wider text-emerald-400 font-bold">Terverifikasi</span>
                         </div>
                       </div>
                       
-                      <div className="space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs">
-                        <div className="flex items-center justify-between font-bold text-slate-900">
+                      <div className="space-y-1 bg-stone-50 p-3 rounded-none border border-stone-300 text-xs">
+                        <div className="flex items-center justify-between font-bold text-stone-900">
                           <span>Lokasi: Pesisir Pantai Panjang, Bengkulu</span>
-                          <span className="text-[10px] text-slate-500 font-mono">Lap. #BKL-082</span>
+                          <span className="text-[10px] text-stone-500 font-mono">Lap. #BKL-082</span>
                         </div>
-                        <p className="text-slate-600 leading-relaxed text-[11px]">
+                        <p className="text-stone-600 leading-relaxed text-[11px]">
                           Timbunan sampah anorganik (botol, kantong plastik, residu jaring) menutupi zona pasang tertinggi. Vegetasi tapak kuda alami terancam mati tertimbun.
                         </p>
                       </div>
@@ -264,10 +264,10 @@ export default function Scrollytelling() {
                   {/* STEP 2: KARTU HASIL DIAGNOSIS BOTANI TERSTRUKTUR */}
                   {activeStep === 1 && (
                     <div className="space-y-3">
-                      <div className="p-4 rounded-lg bg-white border border-slate-300 space-y-3 shadow-2xs">
-                        <div className="flex items-center justify-between text-xs pb-2 border-b border-slate-200">
-                          <span className="font-bold text-slate-900 flex items-center gap-1.5 uppercase tracking-wide text-[11px] font-mono">
-                            <Leaf className="w-3.5 h-3.5 text-emerald-700" /> HASIL DIAGNOSIS TAKSONOMI
+                      <div className="p-4 rounded-none bg-white border border-stone-300 space-y-3">
+                        <div className="flex items-center justify-between text-xs pb-2 border-b border-stone-200">
+                          <span className="font-bold text-stone-900 flex items-center gap-1.5 uppercase tracking-wide text-[11px] font-mono">
+                            <Leaf className="w-3.5 h-3.5 text-emerald-800" /> HASIL DIAGNOSIS TAKSONOMI
                           </span>
                           <span className="font-mono text-[11px] font-semibold text-rose-700 flex items-center gap-1">
                             ● Kritis (91/100)
@@ -307,15 +307,15 @@ export default function Scrollytelling() {
                   {/* STEP 3: LEMBAR REGISTER INDEKS GEOSPASIAL BENGKULU */}
                   {activeStep === 2 && (
                     <div className="space-y-2.5">
-                      <div className="rounded-lg border border-slate-300 bg-white overflow-hidden text-xs shadow-2xs">
+                      <div className="rounded-none border border-stone-300 bg-white overflow-hidden text-xs">
                         
                         {/* Register Header */}
-                        <div className="bg-slate-100/90 px-3.5 py-2 border-b border-slate-200 flex items-center justify-between font-mono text-[11px] text-slate-700">
+                        <div className="bg-stone-100 px-3.5 py-2 border-b border-stone-200 flex items-center justify-between font-mono text-[11px] text-stone-700">
                           <span className="flex items-center gap-1.5 font-semibold">
-                            <MapPin className="w-3.5 h-3.5 text-emerald-700" />
+                            <MapPin className="w-3.5 h-3.5 text-emerald-800" />
                             REGISTER GEOSPASIAL BENGKULU (BKL-REG-2026)
                           </span>
-                          <span className="text-[10px] text-slate-500">4 Titik Pantau</span>
+                          <span className="text-[10px] text-stone-500">4 Titik Pantau</span>
                         </div>
 
                         {/* List of Coordinates as Structured Register Rows */}
@@ -384,30 +384,30 @@ export default function Scrollytelling() {
                   {/* STEP 4: DOKUMEN ACTION BRIEF LAPANGAN */}
                   {activeStep === 3 && (
                     <div className="space-y-3">
-                      <div className="p-4 rounded-lg bg-white border border-slate-300 shadow-2xs space-y-3 text-xs">
-                        <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-                          <span className="font-bold text-slate-900 flex items-center gap-1.5 uppercase tracking-wider text-[11px] font-mono">
-                            <FileText className="w-3.5 h-3.5 text-emerald-700" /> LEMBAR AKSI LAPANGAN (ACTION BRIEF)
+                      <div className="p-4 rounded-none bg-white border border-stone-300 space-y-3 text-xs">
+                        <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+                          <span className="font-bold text-stone-900 flex items-center gap-1.5 uppercase tracking-wider text-[11px] font-mono">
+                            <FileText className="w-3.5 h-3.5 text-emerald-800" /> LEMBAR AKSI LAPANGAN (ACTION BRIEF)
                           </span>
-                          <span className="font-mono text-[10px] text-slate-600 font-semibold border-b border-slate-300">
+                          <span className="font-mono text-[10px] text-stone-600 font-semibold border-b border-stone-300">
                             DOC-ACT-2026
                           </span>
                         </div>
 
                         {/* Daftar Peralatan & Bibit */}
                         <div className="grid grid-cols-2 gap-3 text-xs">
-                          <div className="border-l-2 border-slate-300 pl-2.5">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase block font-mono">Daftar Peralatan</span>
-                            <ul className="text-[11px] text-slate-700 space-y-0.5 mt-1 list-disc list-inside font-sans">
+                          <div className="border-l-2 border-stone-300 pl-2.5">
+                            <span className="text-[10px] font-bold text-stone-400 uppercase block font-mono">Daftar Peralatan</span>
+                            <ul className="text-[11px] text-stone-700 space-y-0.5 mt-1 list-disc list-inside font-sans">
                               <li>50 Karung goni pilah</li>
                               <li>30 Pasang sarung tangan</li>
                               <li>200 Ajir bambu penopang</li>
                             </ul>
                           </div>
 
-                          <div className="border-l-2 border-slate-300 pl-2.5">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase block font-mono">Bibit &amp; Alokasi Regu</span>
-                            <ul className="text-[11px] text-slate-700 space-y-0.5 mt-1 list-disc list-inside font-sans">
+                          <div className="border-l-2 border-stone-300 pl-2.5">
+                            <span className="text-[10px] font-bold text-stone-400 uppercase block font-mono">Bibit &amp; Alokasi Regu</span>
+                            <ul className="text-[11px] text-stone-700 space-y-0.5 mt-1 list-disc list-inside font-sans">
                               <li><strong>200 Bibit</strong> Rhizophora</li>
                               <li>Regu Bersih: 15 relawan</li>
                               <li>Regu Tanam: 10 relawan</li>
@@ -416,12 +416,12 @@ export default function Scrollytelling() {
                         </div>
 
                         {/* SOP Relawan */}
-                        <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-700 space-y-1">
-                          <div className="font-bold flex items-center gap-1 text-slate-900 font-mono text-[11px]">
-                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+                        <div className="pt-2 border-t border-stone-200 text-[11px] text-stone-700 space-y-1">
+                          <div className="font-bold flex items-center gap-1 text-stone-900 font-mono text-[11px]">
+                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-800" />
                             SOP Keselamatan Relawan Pesisir:
                           </div>
-                          <p className="text-[11px] text-slate-600 leading-relaxed font-sans">
+                          <p className="text-[11px] text-stone-600 leading-relaxed font-sans">
                             Wajib mengenakan alas kaki tertutup saat penyusuran lumpur pasang-surut; dilarang menginjak anakan akar nafas liar; briefing keselamatan pukul 08.00 WIB di posko Pantai Panjang.
                           </p>
                         </div>
@@ -432,10 +432,10 @@ export default function Scrollytelling() {
                   {/* STEP 5: SERTIFIKAT DAMPAK PEMULIHAN EKOSISTEM */}
                   {activeStep === 4 && (
                     <div className="space-y-3">
-                      <div className="p-5 rounded-lg bg-[#07241c] text-white space-y-4 border border-emerald-800 shadow-xs relative overflow-hidden">
+                      <div className="p-5 rounded-none bg-[#07241c] text-white space-y-4 border border-emerald-900 relative overflow-hidden">
                         
                         {/* Header Bar */}
-                        <div className="flex items-center justify-between text-xs border-b border-emerald-800/80 pb-2.5">
+                        <div className="flex items-center justify-between text-xs border-b border-emerald-900/80 pb-2.5">
                           <div className="flex items-center gap-1.5 font-mono text-emerald-300 text-[11px]">
                             <Award className="w-4 h-4 text-emerald-400" />
                             <span>SERTIFIKAT AUDIT PEMULIHAN EKOSISTEM</span>

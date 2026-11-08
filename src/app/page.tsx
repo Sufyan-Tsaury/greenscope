@@ -46,54 +46,54 @@ export default function HomePage() {
               </div>
 
               {/* Headline */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 tracking-tight leading-[1.12]">
-                Kecerdasan Buatan untuk Aksi Nyata Konservasi Alam Nusantara
+              <h1 className="font-serif font-normal text-2xl sm:text-4xl lg:text-5xl text-stone-900 tracking-tight leading-[1.18] break-words">
+                Sistem Integrasi Pengawasan Lanskap Pesisir &amp; Hutan Bengkulu
               </h1>
 
               {/* Subtitle */}
-              <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
-                Menghubungkan pemantauan warga lapangan berbasis <strong>Computer Vision Gemini</strong> dengan pemetaan spasial WebGIS dan mobilisasi aksi restorasi dalam satu siklus tertutup (<em className="text-emerald-800 font-medium not-italic">Closed-Loop Conservation</em>).
+              <p className="text-base sm:text-lg text-stone-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
+                Menghubungkan pemantauan warga lapangan dengan pemetaan spasial WebGIS dan mobilisasi aksi restorasi dalam satu siklus tertutup (<em className="text-emerald-900 font-serif italic not-italic font-normal">Closed-Loop Conservation</em>).
               </p>
 
               {/* CTAs */}
-              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5">
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
                 <Link
                   href="/lapor"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg text-sm font-semibold text-white bg-emerald-800 hover:bg-emerald-900 transition-colors shadow-xs"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-none text-xs font-mono uppercase tracking-wider font-bold text-white bg-emerald-900 hover:bg-emerald-950 transition-colors"
                 >
-                  <Camera className="w-4 h-4" />
+                  <Camera className="w-3.5 h-3.5" />
                   <span>Pindai Bukti Lapangan</span>
                 </Link>
 
                 <Link
                   href="/peta"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg text-sm font-semibold text-slate-800 bg-white hover:bg-slate-50 border border-slate-300 transition-colors shadow-2xs"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-none text-xs font-mono uppercase tracking-wider font-semibold text-stone-800 bg-white hover:bg-stone-100 border border-stone-300 transition-colors"
                 >
-                  <MapPin className="w-4 h-4 text-emerald-700" />
+                  <MapPin className="w-3.5 h-3.5 text-emerald-800" />
                   <span>Jelajahi Peta Pantau Bengkulu</span>
                 </Link>
               </div>
 
               {/* Key Scientific Attributes */}
-              <div className="pt-6 grid grid-cols-3 gap-6 border-t border-slate-200 max-w-xl mx-auto lg:mx-0 text-left">
+              <div className="pt-6 grid grid-cols-3 gap-6 border-t border-stone-200 max-w-xl mx-auto lg:mx-0 text-left">
                 <div>
-                  <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Wilayah Fokus</div>
-                  <div className="text-sm font-semibold text-slate-800 mt-1 flex items-center gap-1.5">
-                    <Waves className="w-4 h-4 text-emerald-700 shrink-0" />
-                    <span>Pesisir Barat Bengkulu</span>
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-stone-400">Wilayah Fokus</div>
+                  <div className="text-xs sm:text-sm font-semibold text-stone-800 mt-1 flex items-center gap-1.5">
+                    <Waves className="w-3.5 h-3.5 text-emerald-800 shrink-0" />
+                    <span>Pesisir Bengkulu</span>
                   </div>
                 </div>
                 <div>
-                  <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Analisis AI</div>
-                  <div className="text-sm font-semibold text-slate-800 mt-1 flex items-center gap-1.5">
-                    <Leaf className="w-4 h-4 text-emerald-700 shrink-0" />
-                    <span>Taksonomi &amp; Kerusakan</span>
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-stone-400">Diagnosis Citra</div>
+                  <div className="text-xs sm:text-sm font-semibold text-stone-800 mt-1 flex items-center gap-1.5">
+                    <Leaf className="w-3.5 h-3.5 text-emerald-800 shrink-0" />
+                    <span>Taksonomi Botani</span>
                   </div>
                 </div>
                 <div>
-                  <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Siklus Aksi</div>
-                  <div className="text-sm font-semibold text-slate-800 mt-1 flex items-center gap-1.5">
-                    <Trees className="w-4 h-4 text-emerald-700 shrink-0" />
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-stone-400">Siklus Aksi</div>
+                  <div className="text-xs sm:text-sm font-semibold text-stone-800 mt-1 flex items-center gap-1.5">
+                    <Trees className="w-3.5 h-3.5 text-emerald-800 shrink-0" />
                     <span>Restorasi Terpadu</span>
                   </div>
                 </div>
@@ -103,7 +103,7 @@ export default function HomePage() {
 
             {/* Right Hero Graphic: Real Scientific Field Dossier */}
             <div className="lg:col-span-5 relative flex justify-center">
-              <div className="relative w-full max-w-md rounded-lg overflow-hidden border border-slate-300 bg-slate-900 group shadow-sm">
+              <div className="relative w-full max-w-md rounded-none overflow-hidden border border-stone-300 bg-stone-900 group shadow-none">
                 
                 {/* Field Photography of Bengkulu Coastal Mangrove */}
                 <div className="relative aspect-4/3 w-full bg-slate-800">
@@ -165,17 +165,17 @@ export default function HomePage() {
               <span>DOKUMENTASI PEMULIHAN BENTANG ALAM</span>
               <span className="w-5 h-px bg-emerald-700"></span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
+            <h2 className="text-2xl sm:text-4xl font-serif font-normal text-stone-900 tracking-tight">
               Dari Laporan Kerusakan Menjadi Bentang Alam Pulih
             </h2>
-            <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+            <p className="text-stone-600 text-sm sm:text-base leading-relaxed">
               Tarik garis pemisah ke kiri dan kanan untuk membandingkan kondisi riil area pesisir sebelum dan sesudah intervensi gotong royong bersama GreenScope.
             </p>
           </div>
 
           {/* Interactive Split-Screen Slider */}
           <div className="max-w-4xl mx-auto">
-            <div className="relative aspect-16/9 sm:aspect-21/9 rounded-lg overflow-hidden border border-slate-300 select-none bg-slate-900 shadow-sm">
+            <div className="relative aspect-16/9 sm:aspect-21/9 rounded-none overflow-hidden border border-stone-300 select-none bg-stone-900 shadow-none">
               
               {/* After Image (Full Background) */}
               <div className="absolute inset-0">
@@ -186,8 +186,8 @@ export default function HomePage() {
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 896px"
                 />
-                <span className="absolute bottom-4 right-4 z-10 px-3 py-1 rounded text-xs font-mono font-medium bg-slate-950/85 text-emerald-300 border border-emerald-500/30 backdrop-blur-xs flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Pulih: Sabuk Pesisir Asri
+                <span className="absolute bottom-4 right-4 z-10 px-2.5 py-1 rounded-none text-[10px] font-mono uppercase font-semibold bg-stone-950/90 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Pulih: Sabuk Pesisir Asri
                 </span>
               </div>
 
@@ -203,17 +203,17 @@ export default function HomePage() {
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 896px"
                 />
-                <span className="absolute bottom-4 left-4 z-10 px-3 py-1 rounded text-xs font-mono font-medium bg-slate-950/85 text-rose-300 border border-rose-500/30 backdrop-blur-xs flex items-center gap-1.5">
-                  <AlertTriangle className="w-3.5 h-3.5 text-rose-400" /> Awal: Timbunan Sampah &amp; Abrasi
+                <span className="absolute bottom-4 left-4 z-10 px-2.5 py-1 rounded-none text-[10px] font-mono uppercase font-semibold bg-stone-950/90 text-rose-300 border border-rose-500/30 flex items-center gap-1.5">
+                  <AlertTriangle className="w-3 h-3 text-rose-400" /> Awal: Timbunan Sampah &amp; Abrasi
                 </span>
               </div>
 
               {/* Draggable Divider Handle */}
               <div 
-                className="absolute top-0 bottom-0 w-0.5 bg-white shadow-2xl z-20 flex items-center justify-center pointer-events-none"
+                className="absolute top-0 bottom-0 w-0.5 bg-white z-20 flex items-center justify-center pointer-events-none"
                 style={{ left: `${sliderPosition}%` }}
               >
-                <div className="w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-slate-800 border border-slate-300 font-bold text-xs">
+                <div className="w-7 h-7 rounded-none bg-white shadow-sm flex items-center justify-center text-stone-900 border border-stone-400 font-mono text-xs">
                   ↔
                 </div>
               </div>
@@ -255,7 +255,7 @@ export default function HomePage() {
                   <span className="w-6 h-px bg-emerald-500"></span>
                   <span>LEMBAR METRIK BIOMASSA KARBON BIRU PESISIR BENGKULU</span>
                 </div>
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
+                <h2 className="text-2xl sm:text-4xl lg:text-5xl font-serif font-normal tracking-tight text-white leading-tight">
                   Potensi Mitigasi Iklim Sabuk Mangrove Pesisir Bengkulu
                 </h2>
                 <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-normal">
@@ -367,7 +367,7 @@ export default function HomePage() {
               <div className="pt-2">
                 <Link
                   href="/aksi"
-                  className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg font-semibold text-sm text-emerald-950 bg-emerald-300 hover:bg-emerald-200 transition-colors shadow-xs"
+                  className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-none font-mono uppercase tracking-wider font-bold text-xs text-emerald-950 bg-emerald-300 hover:bg-emerald-200 transition-colors"
                 >
                   <span>Daftar Aksi Penanaman Lapangan</span>
                   <ArrowRight className="w-4 h-4" />
@@ -386,13 +386,13 @@ export default function HomePage() {
       {/* 5. QUICK FIELD SCANNER BANNER: CLEAN FIELD REGISTER */}
       <section className="py-12 bg-[#fafbfa] border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-lg bg-white border border-slate-300 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xs">
+          <div className="rounded-none bg-white border border-stone-300 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-none">
             <div className="space-y-1.5 text-center md:text-left">
               <div className="text-xs font-mono font-medium text-emerald-800 uppercase tracking-wider flex items-center justify-center md:justify-start gap-2">
                 <span className="w-4 h-px bg-emerald-700"></span>
                 <span>PUSAT PEMINDAIAN CEPAT LAPANGAN</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+              <h3 className="text-xl sm:text-2xl font-serif font-normal text-stone-900 tracking-tight">
                 Diagnosis Otomatis dengan Sampel Lapangan Bengkulu
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
@@ -403,7 +403,7 @@ export default function HomePage() {
             <div className="flex items-center gap-3 shrink-0">
               <Link
                 href="/lapor"
-                className="px-5 py-3 rounded-lg text-xs font-semibold text-white bg-emerald-800 hover:bg-emerald-900 transition-colors flex items-center gap-2 shadow-xs"
+                className="px-5 py-3 rounded-none text-xs font-mono uppercase tracking-wider font-bold text-white bg-emerald-900 hover:bg-emerald-950 transition-colors flex items-center gap-2 shadow-none"
               >
                 <Camera className="w-4 h-4" />
                 <span>Mulai Pindai Lapangan</span>

@@ -20,14 +20,14 @@ export default function Footer() {
                   sizes="40px"
                 />
               </div>
-              <span className="text-2xl font-black tracking-tight text-white">
+              <span className="text-2xl font-serif font-bold tracking-tight text-white">
                 Green<span className="text-emerald-400">Scope</span>
               </span>
             </div>
             <p className="text-sm text-slate-400 max-w-md leading-relaxed">
-              Platform Pemantauan dan Aksi Konservasi Terintegrasi untuk Ekosistem Pesisir dan Hutan Tropis Indonesia. Menggabungkan Computer Vision Gemini AI dan WebGIS untuk restorasi bentang alam Nusantara.
+              Platform Pemantauan dan Aksi Konservasi Terintegrasi untuk Ekosistem Pesisir dan Hutan Tropis Indonesia. Menggabungkan Computer Vision dan WebGIS untuk restorasi bentang alam Nusantara.
             </p>
-            <div className="flex items-center gap-2 text-xs text-emerald-400 font-semibold bg-emerald-950/60 border border-emerald-800/60 px-3 py-1.5 rounded-lg w-fit">
+            <div className="flex items-center gap-2 text-xs text-emerald-400 font-mono bg-emerald-950 border border-emerald-900 px-3 py-1.5 rounded-none w-fit">
               <Trees className="w-3.5 h-3.5 text-emerald-400" />
               <span>Inisiatif Konservasi Pesisir Barat &amp; Hutan Tropis Bengkulu</span>
             </div>

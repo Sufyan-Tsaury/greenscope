@@ -137,26 +137,26 @@ export default function AksiPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-200">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-stone-300">
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-xs font-mono font-medium text-emerald-800 tracking-wider uppercase">
-              <Users className="w-3.5 h-3.5 text-teal-700" />
+              <Users className="w-3.5 h-3.5 text-emerald-800" />
               <span>Gerakan Gotong Royong Konservasi Pesisir &amp; Hutan Tropis</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+            <h1 className="text-3xl sm:text-5xl font-serif font-normal text-stone-900 tracking-tight">
               Aksi Nyata &amp; Lembar Rencana Lapangan
             </h1>
-            <p className="text-slate-600 text-sm max-w-2xl leading-relaxed">
-              Ubah laporan lapangan menjadi kampanye aksi nyata. Dilengkapi <strong>AI Action Brief Generator</strong> yang otomatis menyusun logistik, pembagian regu kerja relawan, dan protokol keselamatan kerja.
+            <p className="text-stone-600 text-sm max-w-2xl leading-relaxed">
+              Ubah laporan lapangan menjadi kampanye aksi nyata. Dilengkapi generator rencana taktis (Action Brief) yang otomatis menyusun logistik, pembagian regu kerja relawan, dan protokol keselamatan kerja.
             </p>
           </div>
 
           <button
             type="button"
             onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 shadow-md transition-all active:scale-95 shrink-0 cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-none text-xs font-mono uppercase tracking-wider font-bold text-white bg-emerald-900 hover:bg-emerald-950 shadow-none transition-colors shrink-0 cursor-pointer"
           >
-            <Plus className="w-4 h-4 text-emerald-400" />
+            <Plus className="w-4 h-4 text-emerald-300" />
             <span>Buat Rencana Aksi Baru</span>
           </button>
         </div>

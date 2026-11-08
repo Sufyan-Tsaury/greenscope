@@ -25,7 +25,7 @@ export async function analyzeEnvironmentalImage(
     const cleanBase64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
 
     const promptText = `
-Anda adalah sistem "ScopeLens AI", pakar konservasi lingkungan pesisir dan hutan tropis Indonesia.
+Anda adalah sistem "ScopeLens", pakar konservasi lingkungan pesisir dan hutan tropis Indonesia.
 Tugas Anda adalah memvalidasi dan menganalisis foto lapangan dari ekosistem: "${ecosystem}" di lokasi: "${locationName}".
 
 Periksa gambar dengan teliti:
