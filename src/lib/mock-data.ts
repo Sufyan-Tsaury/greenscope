@@ -21,6 +21,7 @@ export const INITIAL_REPORTS: Report[] = [
       judul_rekomendasi: 'Restorasi Garis Pasir Pantai Panjang',
       skor_urgensi: 82,
       tingkat_keparahan: 'tinggi',
+      confidence_score: 94,
       indikator_visual: [
         'Kepadatan sampah plastik mikro & makro > 45 kg/100m²',
         'Erosi garis pantai akibat gelombang barat',
@@ -56,6 +57,7 @@ export const INITIAL_REPORTS: Report[] = [
       judul_rekomendasi: 'Rehabilitasi Sabuk Hijau Pesisir Pulau Baai',
       skor_urgensi: 91,
       tingkat_keparahan: 'kritis',
+      confidence_score: 97,
       indikator_visual: [
         'Kematian anakan mangrove mencapai 40% area petak',
         'Sedimentasi lumpur pekat menyumbat akar nafas',
@@ -91,6 +93,7 @@ export const INITIAL_REPORTS: Report[] = [
       judul_rekomendasi: 'Restorasi Muara Bersih Jenggalu',
       skor_urgensi: 68,
       tingkat_keparahan: 'sedang',
+      confidence_score: 89,
       indikator_visual: [
         'Endapan sedimentasi tepi setinggi 30 cm',
         'Flotasi sampah kantong plastik di hilir',
@@ -126,6 +129,7 @@ export const INITIAL_REPORTS: Report[] = [
       judul_rekomendasi: 'Pemulihan Sabuk Hijau Bukit Barisan',
       skor_urgensi: 76,
       tingkat_keparahan: 'tinggi',
+      confidence_score: 93,
       indikator_visual: [
         'Pembukaan kanopi tepi jalan hutan selebar 15 meter',
         'Garis longsor mikro di tebing lereng',

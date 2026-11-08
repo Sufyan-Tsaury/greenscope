@@ -8,7 +8,7 @@ export type EcosystemType =
 
 export type SeverityLevel = 'rendah' | 'sedang' | 'tinggi' | 'kritis';
 
-export type ReportStatus = 'menunggu' | 'terverifikasi' | 'dalam_aksi' | 'pulih';
+export type ReportStatus = 'menunggu' | 'terverifikasi' | 'dalam_aksi' | 'pulih' | 'ditolak';
 
 export type CampaignStatus = 'direncanakan' | 'berlangsung' | 'selesai';
 
@@ -18,6 +18,7 @@ export interface AIAnalysisResult {
   judul_rekomendasi?: string;
   skor_urgensi: number; // 0 - 100
   tingkat_keparahan: SeverityLevel;
+  confidence_score?: number; // 0 - 100 % (Computer Vision detection confidence)
   indikator_visual: string[];
   spesies_rekomendasi: string;
   tindakan_konservasi: string[];

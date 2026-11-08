@@ -19,7 +19,7 @@ import {
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeRole, setActiveRole] = useState<'volunteer' | 'coordinator'>('volunteer');
+  const [activeRole, setActiveRole] = useState<'volunteer' | 'coordinator'>('coordinator');
 
   const navLinks = [
     { href: '/', label: 'Beranda', icon: Compass },
@@ -35,42 +35,40 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#E7ECE5] transition-all">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#E3EAE3] transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-20">
+          <div className="flex items-center justify-between h-16 sm:h-18">
             
             {/* Logo Brand GreenScope */}
             <Link href="/" className="flex items-center gap-3 group focus:outline-hidden">
-              {/* Logo Icon Mark */}
-              <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border border-[#E7ECE5] shadow-xs group-hover:scale-105 transition-transform shrink-0 bg-white">
+              <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg overflow-hidden border border-[#E3EAE3] shadow-xs group-hover:scale-102 transition-transform shrink-0 bg-white">
                 <Image 
                   src="/logo-icon.jpg" 
                   alt="GreenScope Logo Icon" 
                   fill 
                   className="object-cover" 
-                  sizes="40px"
+                  sizes="36px"
                   priority
                 />
               </div>
 
-              {/* Brand Typography */}
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xl sm:text-2xl font-bold tracking-tight text-[#202820]">
-                    Green<span className="text-[#52B040]">Scope</span>
+                  <span className="text-lg sm:text-xl font-bold tracking-tight text-[#17251B]">
+                    Green<span className="text-[#329F45]">Scope</span>
                   </span>
-                  <span className="text-[10px] font-semibold tracking-wider text-[#72BF59] bg-[#EAF5E6] px-2 py-0.5 rounded-full uppercase hidden sm:inline">
+                  <span className="text-[10px] font-semibold tracking-wider text-[#176B35] bg-[#EAF5E9] px-2 py-0.5 rounded-md uppercase hidden sm:inline">
                     BENGKULU
                   </span>
                 </div>
-                <span className="text-[11px] text-[#7A8278] hidden sm:block font-normal">
-                  Konservasi Pesisir &amp; Hutan Tropis
+                <span className="text-[11px] text-[#78847B] hidden sm:block font-normal">
+                  Environmental Intelligence &amp; GIS
                 </span>
               </div>
             </Link>
 
-            {/* Desktop Navigation Links (Carbonery Pill Styling) */}
-            <nav className="hidden md:flex items-center gap-1.5 bg-[#F7F9F6] p-1.5 rounded-full border border-[#E7ECE5]">
+            {/* Desktop Navigation Links (Enterprise SaaS Style - Rounded-lg, Clear Active State) */}
+            <nav className="hidden md:flex items-center gap-1 bg-[#F5F7F4] p-1 rounded-lg border border-[#E3EAE3]">
               {navLinks.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href;
@@ -78,45 +76,45 @@ export default function Navbar() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs transition-colors ${
                       isActive 
-                        ? 'bg-white text-[#348D32] font-semibold shadow-xs border border-[#E7ECE5]' 
-                        : 'text-[#7A8278] hover:text-[#202820] hover:bg-white/60'
+                        ? 'bg-white text-[#176B35] font-semibold shadow-xs border border-[#E3EAE3]' 
+                        : 'text-[#78847B] hover:text-[#17251B] hover:bg-white/50 font-medium'
                     }`}
                   >
-                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#52B040]' : 'text-[#7A8278]'}`} />
+                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#329F45]' : 'text-[#78847B]'}`} />
                     <span>{item.label}</span>
                   </Link>
                 );
               })}
             </nav>
 
-            {/* Action Buttons: Role Simulator & CTA Lapor */}
-            <div className="hidden lg:flex items-center gap-3">
+            {/* Action Buttons: Role Simulator & Primary CTA */}
+            <div className="hidden lg:flex items-center gap-2.5">
               <button
                 type="button"
                 onClick={toggleRole}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-[#E7ECE5] text-xs text-[#202820] bg-white hover:bg-[#F7F9F6] transition-colors cursor-pointer shadow-xs"
-                title="Beralih peran simulasi"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E3EAE3] text-xs text-[#17251B] bg-white hover:bg-[#F5F7F4] transition-colors cursor-pointer shadow-xs"
+                title="Beralih mode peran demonstrasi"
               >
                 {activeRole === 'volunteer' ? (
                   <>
-                    <Leaf className="w-3.5 h-3.5 text-[#52B040]" />
-                    <span>Peran: <strong className="text-[#348D32]">Relawan</strong></span>
+                    <Leaf className="w-3.5 h-3.5 text-[#329F45]" />
+                    <span>Mode: <strong className="text-[#176B35]">Relawan</strong></span>
                   </>
                 ) : (
                   <>
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#348D32]" />
-                    <span>Peran: <strong className="text-[#202820]">Koordinator</strong></span>
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#176B35]" />
+                    <span>Mode: <strong className="text-[#17251B]">Koordinator</strong></span>
                   </>
                 )}
               </button>
 
               <Link
                 href="/lapor"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] shadow-sm transition-all transform active:scale-95"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] shadow-xs transition-all transform active:scale-98"
               >
-                <Camera className="w-4 h-4" />
+                <Camera className="w-3.5 h-3.5" />
                 <span>Laporkan Temuan</span>
               </Link>
             </div>
@@ -125,7 +123,7 @@ export default function Navbar() {
             <div className="flex md:hidden items-center gap-2">
               <Link
                 href="/lapor"
-                className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-xs font-semibold text-white bg-[#52B040]"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#329F45]"
               >
                 <Camera className="w-3.5 h-3.5" />
                 <span>Lapor</span>
@@ -133,10 +131,10 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 text-[#202820] hover:text-[#52B040] focus:outline-hidden"
+                className="p-2 text-[#17251B] hover:text-[#329F45] focus:outline-hidden"
                 aria-label="Toggle menu"
               >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
             </div>
 
@@ -145,13 +143,13 @@ export default function Navbar() {
 
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-[#E7ECE5] bg-white px-4 pt-3 pb-5 space-y-1">
-            <div className="flex items-center justify-between py-2 border-b border-[#EEF1EC] mb-2">
-              <span className="text-xs text-[#7A8278]">Simulasi Peran:</span>
+          <div className="md:hidden border-t border-[#E3EAE3] bg-white px-4 pt-3 pb-5 space-y-1">
+            <div className="flex items-center justify-between py-2 border-b border-[#E3EAE3] mb-2">
+              <span className="text-xs text-[#78847B]">Mode Operasi:</span>
               <button
                 type="button"
                 onClick={toggleRole}
-                className="inline-flex items-center gap-1 px-3 py-1 text-xs rounded-full border border-[#E7ECE5] bg-[#F7F9F6] text-[#202820]"
+                className="inline-flex items-center gap-1 px-3 py-1 text-xs rounded-md border border-[#E3EAE3] bg-[#F5F7F4] text-[#17251B] font-medium"
               >
                 {activeRole === 'volunteer' ? 'Relawan' : 'Koordinator'} (Ganti)
               </button>
@@ -165,11 +163,11 @@ export default function Navbar() {
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-colors ${
-                    isActive ? 'bg-[#EAF5E6] text-[#348D32] font-semibold' : 'text-[#7A8278] hover:bg-[#F7F9F6]'
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                    isActive ? 'bg-[#EAF5E9] text-[#176B35] font-semibold' : 'text-[#78847B] hover:bg-[#F5F7F4]'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-[#52B040]' : 'text-[#7A8278]'}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-[#329F45]' : 'text-[#78847B]'}`} />
                   <span>{item.label}</span>
                 </Link>
               );
@@ -178,8 +176,8 @@ export default function Navbar() {
         )}
       </header>
 
-      {/* Docked Clean Bottom Navigation Bar for Mobile */}
-      <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E7ECE5] px-2 py-2">
+      {/* Mobile Docked Bar */}
+      <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E3EAE3] px-2 py-1.5">
         <div className="flex items-center justify-around">
           {navLinks.map((item) => {
             const Icon = item.icon;
@@ -188,8 +186,8 @@ export default function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-full transition-colors ${
-                  isActive ? 'text-[#348D32] font-semibold' : 'text-[#7A8278] hover:text-[#202820]'
+                className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-lg transition-colors ${
+                  isActive ? 'text-[#176B35] font-semibold' : 'text-[#78847B] hover:text-[#17251B]'
                 }`}
               >
                 <Icon className="w-4 h-4" />
