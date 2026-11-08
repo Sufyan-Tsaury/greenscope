@@ -26,8 +26,8 @@ export const metadata: Metadata = {
   keywords: ['Konservasi', 'Mangrove', 'Pesisir', 'Bengkulu', 'Hutan Tropis', 'Gemini AI', 'WebGIS', 'GreenScope'],
   authors: [{ name: 'Sufyan Tsaury' }],
   icons: {
-    icon: '/mascot-scopey.jpg',
-    apple: '/mascot-scopey.jpg',
+    icon: '/logo-icon.jpg',
+    apple: '/logo-icon.jpg',
   },
 };
 
@@ -47,7 +47,7 @@ export default function RootLayout({
           crossOrigin=""
         />
       </head>
-      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 selection:bg-emerald-500 selection:text-white">
+      <body className="min-h-full flex flex-col bg-[#F7F9F6] text-[#202820] selection:bg-[#52B040] selection:text-white">
         <Navbar />
         <main className="flex-1 flex flex-col">
           {children}

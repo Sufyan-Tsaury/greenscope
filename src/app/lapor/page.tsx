@@ -19,7 +19,8 @@ import {
   Info,
   Layers,
   Trees,
-  Check
+  Check,
+  Sparkles
 } from 'lucide-react';
 import { AIAnalysisResult, EcosystemType, Report } from '@/types';
 import { saveReport } from '@/lib/supabase';
@@ -221,49 +222,55 @@ export default function LaporPage() {
   };
 
   return (
-    <div className="py-8 sm:py-12 bg-slate-50 min-h-[calc(100vh-4rem)]">
+    <div className="py-8 sm:py-12 bg-[#F7F9F6] min-h-[calc(100vh-4rem)] text-[#202820]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-stone-300">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#E7ECE5]">
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-xs font-mono font-medium text-emerald-800 tracking-wider uppercase">
-              <span className="w-4 h-px bg-emerald-700"></span>
-              <span>SCOPELENS COMPUTER VISION • MODEL DIAGNOSIS EKOLOGI</span>
+            <div className="inline-flex items-center gap-2 text-xs font-semibold text-[#348D32] bg-[#EAF5E6] border border-[#d2ebd0] px-3.5 py-1 rounded-full uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5 text-[#52B040]" />
+              <span>ScopeLens Computer Vision • Model Diagnosis Ekologi</span>
             </div>
-            <h1 className="text-2xl sm:text-4xl font-serif font-normal text-stone-900 tracking-tight">
+            <h1 className="text-2xl sm:text-4xl font-bold text-[#202820] tracking-tight">
               Pindai &amp; Diagnosis Kerusakan Bentang Alam
             </h1>
-            <p className="text-stone-600 text-sm max-w-2xl leading-relaxed">
+            <p className="text-[#7A8278] text-sm max-w-2xl leading-relaxed">
               Unggah foto kondisi pesisir, mangrove, atau hutan tropis. Sistem akan memvalidasi keaslian lanskap, menilai skor urgensi penanganan, dan menyusun rekomendasi botani pemulih secara terstruktur.
             </p>
           </div>
 
-          {/* Diagnostic System Info */}
-          <div className="flex items-center gap-3 p-3.5 rounded-none bg-white border border-stone-300 max-w-sm shrink-0">
-            <div className="w-9 h-9 rounded-none border border-emerald-950 bg-emerald-900 text-white flex items-center justify-center shrink-0">
-              <Leaf className="w-4 h-4 text-emerald-300" />
+          {/* Diagnostic System Info with Scopey Avatar */}
+          <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white border border-[#E7ECE5] max-w-sm shrink-0 shadow-xs">
+            <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#E7ECE5] shrink-0 bg-[#EAF5E6]">
+              <Image 
+                src="/mascot-scopey.jpg" 
+                alt="Scopey Assistant" 
+                fill 
+                className="object-cover" 
+                sizes="40px" 
+              />
             </div>
             <div className="text-xs">
-              <span className="font-semibold text-stone-900 block font-mono text-[11px] uppercase tracking-wider">Sistem Diagnosis Terbuka</span>
-              <span className="text-stone-500">Pilih salah satu spesimen Bengkulu atau unggah citra Anda.</span>
+              <span className="font-bold text-[#202820] block">Scopey Assistant Aktif</span>
+              <span className="text-[#7A8278]">Pilih spesimen Bengkulu atau unggah citra Anda sendiri.</span>
             </div>
           </div>
         </div>
 
         {/* FIELD SPECIMEN REGISTER STRIP */}
-        <div className="border border-stone-300 bg-white p-4 space-y-3">
+        <div className="rounded-3xl border border-[#E7ECE5] bg-white p-5 space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-stone-700 flex items-center gap-1.5">
-              <Info className="w-3.5 h-3.5 text-emerald-800" />
+            <span className="text-xs font-bold uppercase tracking-wider text-[#202820] flex items-center gap-1.5">
+              <Info className="w-4 h-4 text-[#52B040]" />
               Katalog Spesimen &amp; Citra Lapangan Bengkulu:
             </span>
-            <span className="text-[11px] text-stone-500 font-mono hidden sm:inline">
+            <span className="text-[11px] text-[#7A8278] hidden sm:inline font-medium">
               Data Terstandarisasi Lapangan
             </span>
           </div>
 
-          <div className="border border-stone-300 divide-y sm:divide-y-0 sm:divide-x divide-stone-300 grid grid-cols-2 lg:grid-cols-4 bg-white rounded-none">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
             {FIELD_SPECIMEN_SAMPLES.map((sample, idx) => {
               const isSelected = selectedImage === sample.imageUrl;
               return (
@@ -271,24 +278,24 @@ export default function LaporPage() {
                   key={sample.id}
                   type="button"
                   onClick={() => handleSelectSample(sample)}
-                  className={`text-left p-3.5 transition-colors relative cursor-pointer ${
+                  className={`text-left p-3.5 rounded-2xl border transition-all cursor-pointer ${
                     isSelected 
-                      ? 'bg-stone-900 text-white' 
-                      : 'bg-white hover:bg-stone-50 text-stone-900'
+                      ? 'bg-[#EAF5E6] border-[#52B040] shadow-xs' 
+                      : 'bg-[#F7F9F6] border-[#E7ECE5] hover:bg-white text-[#202820]'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className={`font-mono text-[10px] ${isSelected ? 'text-stone-400' : 'text-stone-500'}`}>
+                    <span className={`text-[10px] font-mono font-semibold ${isSelected ? 'text-[#348D32]' : 'text-[#7A8278]'}`}>
                       SP-0{idx + 1}
                     </span>
                     {isSelected && (
-                      <span className="font-mono text-[9px] uppercase tracking-wider text-emerald-400 font-bold">
+                      <span className="text-[9px] uppercase tracking-wider text-[#348D32] bg-white px-2 py-0.5 rounded-full font-bold border border-[#d2ebd0]">
                         AKTIF ✓
                       </span>
                     )}
                   </div>
-                  <div className="font-semibold text-xs line-clamp-1">{sample.label}</div>
-                  <div className={`text-[10px] mt-0.5 line-clamp-1 font-mono ${isSelected ? 'text-stone-400' : 'text-stone-500'}`}>
+                  <div className="font-semibold text-xs line-clamp-1 text-[#202820]">{sample.label}</div>
+                  <div className="text-[10px] mt-0.5 line-clamp-1 text-[#7A8278]">
                     {sample.location}
                   </div>
                 </button>
@@ -302,24 +309,24 @@ export default function LaporPage() {
           
           {/* Left Column: Image Uploader & Metadata */}
           <div className="lg:col-span-6 space-y-5">
-            <div className="p-6 rounded-lg bg-white border border-slate-300 shadow-xs space-y-5">
+            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-[#E7ECE5] shadow-xs space-y-5">
               
               <div className="flex items-center justify-between">
-                <label className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                  <Camera className="w-4 h-4 text-emerald-600" />
+                <label className="text-sm font-bold text-[#202820] flex items-center gap-2">
+                  <Camera className="w-4 h-4 text-[#52B040]" />
                   <span>Foto Kondisi Lapangan</span>
                 </label>
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="text-xs font-bold text-emerald-600 hover:text-emerald-700 cursor-pointer"
+                  className="text-xs font-semibold text-[#52B040] hover:text-[#348D32] cursor-pointer"
                 >
                   Unggah dari Perangkat
                 </button>
               </div>
 
               {/* Photo Viewport with Laser Beam Overlay */}
-              <div className="relative aspect-4/3 rounded-none overflow-hidden bg-stone-950 border border-stone-300 group">
+              <div className="relative aspect-4/3 rounded-2xl overflow-hidden bg-stone-950 border border-[#E7ECE5] group shadow-xs">
                 {selectedImage ? (
                   <>
                     <Image
@@ -334,8 +341,8 @@ export default function LaporPage() {
                     {isAnalyzing && (
                       <>
                         <div className="laser-beam pointer-events-none"></div>
-                        <div className="absolute inset-0 bg-emerald-950/40 backdrop-blur-xs flex flex-col items-center justify-center text-white p-4 text-center space-y-3">
-                          <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-emerald-400 radar-glow">
+                        <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex flex-col items-center justify-center text-white p-4 text-center space-y-3">
+                          <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#52B040] radar-glow">
                             <Image src="/mascot-scopey.jpg" alt="Scopey" fill className="object-cover" sizes="64px" />
                           </div>
                           <div className="space-y-1">
@@ -355,11 +362,11 @@ export default function LaporPage() {
                 ) : (
                   <div 
                     onClick={() => fileInputRef.current?.click()}
-                    className="h-full flex flex-col items-center justify-center p-6 text-center text-stone-400 cursor-pointer hover:bg-stone-900 transition-colors"
+                    className="h-full flex flex-col items-center justify-center p-6 text-center text-[#7A8278] cursor-pointer hover:bg-[#F7F9F6] transition-colors"
                   >
-                    <UploadCloud className="w-12 h-12 text-stone-500 mb-2" />
-                    <span className="text-sm font-semibold text-stone-300">Klik untuk unggah foto lapangan</span>
-                    <span className="text-xs text-stone-500 mt-1 font-mono">Mendukung JPG, PNG, WEBP (Maks 10MB)</span>
+                    <UploadCloud className="w-12 h-12 text-[#A2AAA0] mb-2" />
+                    <span className="text-sm font-semibold text-[#202820]">Klik untuk unggah foto lapangan</span>
+                    <span className="text-xs text-[#7A8278] mt-1">Mendukung JPG, PNG, WEBP (Maks 10MB)</span>
                   </div>
                 )}
 
@@ -375,11 +382,11 @@ export default function LaporPage() {
               {/* Form Metadata Fields */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-mono font-bold text-stone-700 uppercase tracking-wider block">Tipe Ekosistem</label>
+                  <label className="text-xs font-semibold text-[#202820] uppercase tracking-wider block">Tipe Ekosistem</label>
                   <select
                     value={ecosystem}
                     onChange={(e) => setEcosystem(e.target.value as EcosystemType)}
-                    className="w-full px-3 py-2 rounded-none border border-stone-300 bg-white text-xs font-mono text-stone-900 focus:outline-emerald-800"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7ECE5] bg-white text-xs text-[#202820] focus:ring-2 focus:ring-[#52B040] focus:outline-hidden"
                   >
                     <option value="pesisir_pantai">🏖️ Pantai &amp; Pesisir</option>
                     <option value="mangrove">🌿 Hutan Mangrove</option>
@@ -389,23 +396,23 @@ export default function LaporPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-mono font-bold text-stone-700 uppercase tracking-wider block">Nama Lokasi</label>
+                  <label className="text-xs font-semibold text-[#202820] uppercase tracking-wider block">Nama Lokasi</label>
                   <input
                     type="text"
                     value={locationName}
                     onChange={(e) => setLocationName(e.target.value)}
                     placeholder="Contoh: Pantai Panjang, Bengkulu"
-                    className="w-full px-3 py-2 rounded-none border border-stone-300 bg-white text-xs font-mono text-stone-900 focus:outline-emerald-800"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7ECE5] bg-white text-xs text-[#202820] focus:ring-2 focus:ring-[#52B040] focus:outline-hidden"
                   />
                 </div>
               </div>
 
-              {/* Run Scan Button */}
+              {/* Run Scan Button (Carbonery Pill CTA) */}
               <button
                 type="button"
                 onClick={handleRunAnalysis}
                 disabled={isAnalyzing || !selectedImage}
-                className="w-full py-3.5 px-6 rounded-none font-mono uppercase tracking-wider font-bold text-xs text-white bg-emerald-900 hover:bg-emerald-950 shadow-none transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-3.5 px-6 rounded-full font-semibold text-xs text-white bg-[#52B040] hover:bg-[#348D32] shadow-sm transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
               >
                 {isAnalyzing ? (
                   <>
@@ -426,13 +433,13 @@ export default function LaporPage() {
           {/* Right Column: AI Output Diagnostic Card */}
           <div className="lg:col-span-6 space-y-5">
             {analysisResult ? (
-              <div className="p-6 sm:p-7 rounded-lg bg-white border border-slate-300 shadow-sm space-y-6 animate-in fade-in-50 duration-500">
+              <div className="p-6 sm:p-7 rounded-3xl bg-white border border-[#E7ECE5] shadow-sm space-y-6 animate-in fade-in-50 duration-500">
                 
                 {/* Result Status: Valid or Non-Environment Rejection */}
                 {!analysisResult.valid ? (
-                  <div className="p-4 rounded-none bg-amber-50 border border-amber-300 space-y-2">
-                    <div className="flex items-center gap-2 text-amber-900 font-bold text-xs uppercase font-mono">
-                      <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0" />
+                  <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 space-y-2">
+                    <div className="flex items-center gap-2 text-amber-900 font-bold text-xs uppercase">
+                      <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
                       <span>Validasi Ditolak: Bukan Bentang Alam Alami</span>
                     </div>
                     <p className="text-xs text-amber-950 leading-relaxed font-sans">
@@ -442,25 +449,25 @@ export default function LaporPage() {
                 ) : (
                   <>
                     {/* Header Score & Urgency Banner */}
-                    <div className="flex items-center justify-between pb-4 border-b border-stone-200">
+                    <div className="flex items-center justify-between pb-4 border-b border-[#EEF1EC]">
                       <div>
-                        <span className="text-[10px] font-mono font-bold text-stone-400 uppercase tracking-wider block">
+                        <span className="text-[10px] font-semibold text-[#7A8278] uppercase tracking-wider block">
                           DIAGNOSIS EKOLOGI SCOPELENS
                         </span>
-                        <h3 className="text-xl sm:text-2xl font-serif font-normal text-stone-900 mt-0.5">
+                        <h3 className="text-xl sm:text-2xl font-bold text-[#202820] mt-0.5">
                           {analysisResult.kategori}
                         </h3>
                       </div>
 
                       {/* Score Badge */}
-                      <div className={`px-3 py-1.5 rounded-none text-center border font-mono ${
+                      <div className={`px-3.5 py-1.5 rounded-2xl text-center border font-mono ${
                         analysisResult.tingkat_keparahan === 'kritis'
-                          ? 'bg-rose-50 border-rose-300 text-rose-800'
+                          ? 'bg-rose-50 border-rose-200 text-rose-700'
                           : analysisResult.tingkat_keparahan === 'tinggi'
-                            ? 'bg-amber-50 border-amber-300 text-amber-800'
-                            : 'bg-emerald-50 border-emerald-300 text-emerald-800'
+                            ? 'bg-amber-50 border-amber-200 text-amber-700'
+                            : 'bg-[#EAF5E6] border-[#d2ebd0] text-[#348D32]'
                       }`}>
-                        <div className="text-[9px] font-bold uppercase tracking-wider">Skor Urgensi</div>
+                        <div className="text-[9px] font-bold uppercase tracking-wider font-sans">Skor Urgensi</div>
                         <div className="text-xl sm:text-2xl font-bold tabular-nums">
                           {analysisResult.skor_urgensi}<span className="text-xs font-normal">/100</span>
                         </div>
@@ -469,14 +476,14 @@ export default function LaporPage() {
 
                     {/* Detected Visual Indicators */}
                     <div className="space-y-2">
-                      <span className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                        <Layers className="w-3.5 h-3.5 text-teal-600" />
+                      <span className="text-xs font-bold text-[#202820] uppercase tracking-wider flex items-center gap-1.5">
+                        <Layers className="w-3.5 h-3.5 text-[#52B040]" />
                         Indikator Visual yang Terdeteksi:
                       </span>
-                      <ul className="space-y-1.5 text-xs text-slate-600">
+                      <ul className="space-y-1.5 text-xs text-[#7A8278]">
                         {analysisResult.indikator_visual.map((item, i) => (
-                          <li key={i} className="flex items-start gap-2 bg-slate-50 p-2 rounded-lg">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0"></span>
+                          <li key={i} className="flex items-start gap-2 bg-[#F7F9F6] p-2.5 rounded-xl border border-[#E7ECE5]">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#52B040] mt-1.5 shrink-0"></span>
                             <span>{item}</span>
                           </li>
                         ))}
@@ -484,43 +491,43 @@ export default function LaporPage() {
                     </div>
 
                     {/* Recommended Botanical Species */}
-                    <div className="p-3.5 rounded-none bg-stone-50 border border-emerald-800 space-y-1">
-                      <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-emerald-900 uppercase tracking-wider">
-                        <Leaf className="w-3.5 h-3.5 text-emerald-700" />
+                    <div className="p-4 rounded-2xl bg-[#EAF5E6] border border-[#d2ebd0] space-y-1">
+                      <div className="flex items-center gap-1.5 text-xs font-semibold text-[#348D32] uppercase tracking-wider">
+                        <Leaf className="w-3.5 h-3.5 text-[#52B040]" />
                         <span>Rekomendasi Spesies Vegetasi Pemulih:</span>
                       </div>
-                      <div className="text-base font-serif italic font-normal text-emerald-950">
+                      <div className="text-base font-bold text-[#202820]">
                         {analysisResult.spesies_rekomendasi}
                       </div>
                     </div>
 
                     {/* Conservation Actions */}
                     <div className="space-y-2">
-                      <span className="text-xs font-mono font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5">
-                        <Trees className="w-3.5 h-3.5 text-emerald-800" />
+                      <span className="text-xs font-bold text-[#202820] uppercase tracking-wider flex items-center gap-1.5">
+                        <Trees className="w-3.5 h-3.5 text-[#52B040]" />
                         Rekomendasi Langkah Restorasi:
                       </span>
-                      <div className="space-y-1.5 text-xs text-stone-700">
+                      <div className="space-y-1.5 text-xs text-[#7A8278]">
                         {analysisResult.tindakan_konservasi.map((act, i) => (
-                          <div key={i} className="flex items-center gap-2">
-                            <span className="w-4 h-4 rounded-none border border-emerald-900 bg-emerald-900 text-white flex items-center justify-center font-mono font-bold text-[10px] shrink-0">
+                          <div key={i} className="flex items-center gap-2 p-2 rounded-xl bg-[#F7F9F6] border border-[#E7ECE5]">
+                            <span className="w-5 h-5 rounded-full bg-[#52B040] text-white flex items-center justify-center font-bold text-[10px] shrink-0">
                               {i + 1}
                             </span>
-                            <span className="font-sans">{act}</span>
+                            <span className="text-[#202820]">{act}</span>
                           </div>
                         ))}
                       </div>
                     </div>
 
                     {/* Ecological Risk & Blue Carbon */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-stone-200">
-                      <div className="p-3 rounded-none bg-stone-50 border border-stone-300 text-xs">
-                        <span className="font-mono font-bold text-stone-800 uppercase tracking-wider text-[10px] block mb-1">Potensi Risiko Lanjutan:</span>
-                        <p className="text-stone-600 line-clamp-2 font-sans">{analysisResult.estimasi_risiko}</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-[#EEF1EC]">
+                      <div className="p-3.5 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] text-xs">
+                        <span className="font-semibold text-[#202820] text-[10px] uppercase tracking-wider block mb-1">Potensi Risiko Lanjutan:</span>
+                        <p className="text-[#7A8278] line-clamp-2">{analysisResult.estimasi_risiko}</p>
                       </div>
-                      <div className="p-3 rounded-none bg-teal-50/40 border border-teal-300 text-xs">
-                        <span className="font-mono font-bold text-teal-900 uppercase tracking-wider text-[10px] block mb-1">Estimasi Serapan Karbon:</span>
-                        <p className="text-teal-900 font-mono font-bold text-sm">
+                      <div className="p-3.5 rounded-2xl bg-[#EAF5E6] border border-[#d2ebd0] text-xs">
+                        <span className="font-semibold text-[#348D32] text-[10px] uppercase tracking-wider block mb-1">Estimasi Serapan Karbon:</span>
+                        <p className="text-[#348D32] font-mono font-bold text-sm">
                           +{analysisResult.estimasi_serapan_karbon_tahunan_kg || 450} kg CO₂e/th
                         </p>
                       </div>
@@ -532,11 +539,11 @@ export default function LaporPage() {
                         type="button"
                         onClick={handleSaveToMap}
                         disabled={isSaving || savedSuccess}
-                        className="w-full py-3.5 px-6 rounded-none font-mono uppercase tracking-wider font-bold text-xs text-white bg-emerald-900 hover:bg-emerald-950 transition-colors shadow-none disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+                        className="w-full py-3.5 px-6 rounded-full font-semibold text-xs text-white bg-[#52B040] hover:bg-[#348D32] transition-colors shadow-sm disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
                       >
                         {savedSuccess ? (
                           <>
-                            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                            <CheckCircle2 className="w-4 h-4 text-white" />
                             <span>Tersimpan! Mengalihkan ke ScopeMap...</span>
                           </>
                         ) : isSaving ? (
@@ -558,13 +565,13 @@ export default function LaporPage() {
               </div>
             ) : (
               /* Placeholder State when no analysis has been run yet */
-              <div className="h-full min-h-[420px] rounded-none border border-dashed border-stone-300 bg-white p-8 flex flex-col items-center justify-center text-center space-y-4">
-                <div className="relative w-16 h-16 rounded-full overflow-hidden border border-stone-300 opacity-80">
+              <div className="h-full min-h-[420px] rounded-3xl border border-dashed border-[#E7ECE5] bg-white p-8 flex flex-col items-center justify-center text-center space-y-4 shadow-xs">
+                <div className="relative w-16 h-16 rounded-full overflow-hidden border border-[#E7ECE5] shadow-xs bg-[#EAF5E6]">
                   <Image src="/mascot-scopey.jpg" alt="Scopey" fill className="object-cover" sizes="64px" />
                 </div>
                 <div className="max-w-sm space-y-1.5">
-                  <h4 className="text-base font-serif font-normal text-stone-900">Menunggu Pemindaian Foto</h4>
-                  <p className="text-xs text-stone-500 leading-relaxed font-sans">
+                  <h4 className="text-base font-bold text-[#202820]">Menunggu Pemindaian Foto</h4>
+                  <p className="text-xs text-[#7A8278] leading-relaxed">
                     Klik tombol <strong>&ldquo;Mulai Diagnosis Lapangan&rdquo;</strong> di sebelah kiri untuk melihat pembacaan piksel, skor urgensi, dan rekomendasi taksonomi botani pemulihan.
                   </p>
                 </div>

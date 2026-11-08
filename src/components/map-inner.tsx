@@ -5,9 +5,9 @@ import L from 'leaflet';
 import { Report } from '@/types';
 
 function createCustomIcon(severity: string, status: string, isSelected: boolean = false) {
-  let color = '#059669'; // emerald
+  let color = '#52B040'; // Carbonery nature green
   if (status === 'pulih') {
-    color = '#10b981';
+    color = '#52B040';
   } else if (severity === 'kritis') {
     color = '#e11d48'; // rose-600
   } else if (severity === 'tinggi') {
@@ -25,7 +25,7 @@ function createCustomIcon(severity: string, status: string, isSelected: boolean 
   const svgIcon = `
     <div style="position: relative; display: flex; align-items: center; justify-content: center; transform: ${scale}; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
       ${pulseRing}
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="32" height="46" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.35));">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="32" height="46" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));">
         <path d="M12 0C5.37 0 0 5.37 0 12c0 9 12 24 12 24s12-15 12-24c0-6.63-5.37-12-12-12z" fill="${color}" stroke="#ffffff" stroke-width="${isSelected ? 2.5 : 2}"/>
         <circle cx="12" cy="12" r="5" fill="#ffffff"/>
       </svg>
@@ -109,11 +109,11 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
         });
 
       marker.bindPopup(`
-        <div style="font-family: inherit; padding: 4px; max-width: 210px;">
-          <strong style="font-size: 12px; display: block; color: #0f172a; margin-bottom: 2px; line-height: 1.3;">${report.title}</strong>
-          <span style="font-size: 11px; color: #64748b; display: block; margin-bottom: 4px;">${report.location_name}</span>
-          <div style="font-size: 10px; font-weight: bold; color: ${report.severity === 'kritis' ? '#e11d48' : report.severity === 'tinggi' ? '#d97706' : '#059669'};">
-            Skor Urgensi: ${report.urgency_score}/100 • ${report.status.toUpperCase()}
+        <div style="font-family: inherit; padding: 6px; max-width: 220px; border-radius: 12px;">
+          <strong style="font-size: 12px; display: block; color: #202820; margin-bottom: 2px; line-height: 1.35; font-weight: 700;">${report.title}</strong>
+          <span style="font-size: 11px; color: #7A8278; display: block; margin-bottom: 5px;">${report.location_name}</span>
+          <div style="display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 600; background: ${report.severity === 'kritis' ? '#fff1f2' : report.severity === 'tinggi' ? '#fffbeb' : '#EAF5E6'}; color: ${report.severity === 'kritis' ? '#e11d48' : report.severity === 'tinggi' ? '#d97706' : '#348D32'};">
+            Urgensi ${report.urgency_score}/100 • ${report.status.toUpperCase()}
           </div>
         </div>
       `, { closeButton: false, offset: [0, -10] });

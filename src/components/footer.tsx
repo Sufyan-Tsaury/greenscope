@@ -1,75 +1,75 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Globe, Heart, Shield, Trees, Code2 } from 'lucide-react';
+import { Globe, Heart, Trees } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-300 border-t border-slate-800 mt-auto pb-20 md:pb-8">
+    <footer className="bg-[#F7F9F6] text-[#7A8278] border-t border-[#E7ECE5] mt-auto pb-20 md:pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
           
-          {/* Brand & Mascot */}
+          {/* Brand & Mission */}
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-400 ring-2 ring-emerald-500/30 shadow-xs shrink-0">
+              <div className="relative w-9 h-9 rounded-full overflow-hidden border border-[#E7ECE5] shadow-xs shrink-0 bg-white">
                 <Image 
-                  src="/mascot-scopey.jpg" 
-                  alt="GreenScope Mascot Scopey" 
+                  src="/logo-icon.jpg" 
+                  alt="GreenScope Logo Icon" 
                   fill
                   className="object-cover"
-                  sizes="40px"
+                  sizes="36px"
                 />
               </div>
-              <span className="text-2xl font-serif font-bold tracking-tight text-white">
-                Green<span className="text-emerald-400">Scope</span>
+              <span className="text-xl font-bold tracking-tight text-[#202820]">
+                Green<span className="text-[#52B040]">Scope</span>
               </span>
             </div>
-            <p className="text-sm text-slate-400 max-w-md leading-relaxed">
-              Platform Pemantauan dan Aksi Konservasi Terintegrasi untuk Ekosistem Pesisir dan Hutan Tropis Indonesia. Menggabungkan Computer Vision dan WebGIS untuk restorasi bentang alam Nusantara.
+            <p className="text-sm text-[#7A8278] max-w-md leading-relaxed">
+              Platform Pemantauan dan Aksi Konservasi Terintegrasi untuk Ekosistem Pesisir dan Hutan Tropis Indonesia. Menggabungkan Computer Vision AI dan WebGIS untuk restorasi bentang alam Nusantara.
             </p>
-            <div className="flex items-center gap-2 text-xs text-emerald-400 font-mono bg-emerald-950 border border-emerald-900 px-3 py-1.5 rounded-none w-fit">
-              <Trees className="w-3.5 h-3.5 text-emerald-400" />
+            <div className="flex items-center gap-2 text-xs text-[#348D32] bg-[#EAF5E6] border border-[#d2ebd0] px-3.5 py-1.5 rounded-full w-fit font-medium">
+              <Trees className="w-3.5 h-3.5 text-[#52B040]" />
               <span>Inisiatif Konservasi Pesisir Barat &amp; Hutan Tropis Bengkulu</span>
             </div>
           </div>
 
           {/* Quick Links */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Navigasi Utama</h4>
-            <ul className="space-y-2 text-sm text-slate-400">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#202820]">Navigasi Utama</h4>
+            <ul className="space-y-2 text-sm text-[#7A8278]">
               <li>
-                <Link href="/" className="hover:text-emerald-400 transition-colors">Beranda &amp; Alur Konservasi</Link>
+                <Link href="/" className="hover:text-[#348D32] transition-colors">Beranda &amp; Alur Konservasi</Link>
               </li>
               <li>
-                <Link href="/lapor" className="hover:text-emerald-400 transition-colors">ScopeLens (Pindai Lapangan)</Link>
+                <Link href="/lapor" className="hover:text-[#348D32] transition-colors">ScopeLens (Pindai Lapangan)</Link>
               </li>
               <li>
-                <Link href="/peta" className="hover:text-emerald-400 transition-colors">ScopeMap (WebGIS Spasial)</Link>
+                <Link href="/peta" className="hover:text-[#348D32] transition-colors">ScopeMap (WebGIS Spasial)</Link>
               </li>
               <li>
-                <Link href="/aksi" className="hover:text-emerald-400 transition-colors">Kampanye Restorasi</Link>
+                <Link href="/aksi" className="hover:text-[#348D32] transition-colors">Kampanye Restorasi</Link>
               </li>
               <li>
-                <Link href="/dashboard" className="hover:text-emerald-400 transition-colors">Dashboard Operasi</Link>
+                <Link href="/dashboard" className="hover:text-[#348D32] transition-colors">Dashboard Operasi</Link>
               </li>
             </ul>
           </div>
 
           {/* Tech Stack Info */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Spesifikasi Arsitektur</h4>
-            <div className="space-y-2 text-xs text-slate-400">
-              <p><span className="text-slate-200 font-medium">Framework:</span> Next.js 16 (App Router) + TypeScript</p>
-              <p><span className="text-slate-200 font-medium">Model Analisis:</span> Gemini Multimodal Vision</p>
-              <p><span className="text-slate-200 font-medium">Basis Data:</span> Supabase PostgreSQL</p>
-              <p><span className="text-slate-200 font-medium">WebGIS:</span> Leaflet + OpenStreetMap</p>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#202820]">Spesifikasi Arsitektur</h4>
+            <div className="space-y-2 text-xs text-[#7A8278]">
+              <p><span className="text-[#202820] font-medium">Framework:</span> Next.js 16 (App Router) + TypeScript</p>
+              <p><span className="text-[#202820] font-medium">Model Analisis:</span> Gemini Multimodal Vision</p>
+              <p><span className="text-[#202820] font-medium">Basis Data:</span> Supabase PostgreSQL</p>
+              <p><span className="text-[#202820] font-medium">WebGIS:</span> Leaflet + OpenStreetMap</p>
             </div>
-            <div className="pt-2 flex items-center gap-3">
+            <div className="pt-2 flex items-center gap-2">
               <a 
                 href="https://github.com/sufyan-tsaury/greenscope" 
                 target="_blank" 
                 rel="noreferrer"
-                className="p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors"
+                className="p-2 rounded-full bg-white border border-[#E7ECE5] text-[#7A8278] hover:text-[#202820] hover:bg-[#F7F9F6] shadow-xs transition-colors"
                 title="GitHub Repository"
               >
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -80,7 +80,7 @@ export default function Footer() {
                 href="https://greenscope-phi.vercel.app" 
                 target="_blank" 
                 rel="noreferrer"
-                className="p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors"
+                className="p-2 rounded-full bg-white border border-[#E7ECE5] text-[#7A8278] hover:text-[#202820] hover:bg-[#F7F9F6] shadow-xs transition-colors"
                 title="Live Vercel Production"
               >
                 <Globe className="w-4 h-4" />
@@ -91,9 +91,9 @@ export default function Footer() {
         </div>
 
         {/* Bottom Credits */}
-        <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
+        <div className="pt-6 border-t border-[#E7ECE5] flex flex-col sm:flex-row items-center justify-between text-xs text-[#7A8278] gap-4">
           <p>© 2026 GreenScope. Platform Pemantauan &amp; Restorasi Ekosistem Nusantara.</p>
-          <div className="flex items-center gap-1.5 text-slate-400">
+          <div className="flex items-center gap-1.5">
             <span>Didedikasikan untuk kelestarian pesisir &amp; hutan Bengkulu</span>
             <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 inline" />
           </div>
