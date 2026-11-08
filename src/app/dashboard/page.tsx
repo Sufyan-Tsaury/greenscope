@@ -11,7 +11,6 @@ import {
   Clock, 
   ArrowRight, 
   AlertTriangle, 
-  KeyRound, 
   Printer, 
   Compass, 
   FileText, 
@@ -53,9 +52,6 @@ export default function DashboardPage() {
         {/* Top Header & Role Switcher */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#E7ECE5]">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-2 text-xs font-semibold text-[#348D32] bg-[#EAF5E6] border border-[#d2ebd0] px-3.5 py-1 rounded-full uppercase tracking-wider">
-              <span>Pusat Kendali Operasi Konservasi Bengkulu</span>
-            </div>
             <h1 className="text-2xl sm:text-4xl font-bold text-[#202820] tracking-tight">
               Dashboard Terpadu GreenScope
             </h1>
@@ -64,57 +60,44 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          {/* Role Toggle Switcher (Pill Style) */}
-          <div className="flex items-center p-1 rounded-full bg-white border border-[#E7ECE5] shadow-xs shrink-0">
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Role Toggle Switcher (Pill Style) */}
+            <div className="flex items-center p-1 rounded-full bg-white border border-[#E7ECE5] shadow-xs shrink-0">
+              <button
+                type="button"
+                onClick={() => setActiveRole('volunteer')}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                  activeRole === 'volunteer'
+                    ? 'bg-[#52B040] text-white font-semibold shadow-xs'
+                    : 'text-[#7A8278] hover:text-[#202820]'
+                }`}
+              >
+                <Leaf className="w-3.5 h-3.5" />
+                <span>Relawan Lapangan</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveRole('coordinator')}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                  activeRole === 'coordinator'
+                    ? 'bg-[#52B040] text-white font-semibold shadow-xs'
+                    : 'text-[#7A8278] hover:text-[#202820]'
+                }`}
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Koordinator Wilayah</span>
+              </button>
+            </div>
+
             <button
               type="button"
-              onClick={() => setActiveRole('volunteer')}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium transition-all cursor-pointer ${
-                activeRole === 'volunteer'
-                  ? 'bg-[#52B040] text-white font-semibold shadow-xs'
-                  : 'text-[#7A8278] hover:text-[#202820]'
-              }`}
+              onClick={() => window.print()}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[#E7ECE5] bg-white hover:bg-[#F7F9F6] text-[#202820] text-xs font-semibold transition-colors shrink-0 cursor-pointer shadow-xs"
             >
-              <Leaf className="w-3.5 h-3.5" />
-              <span>Relawan Lapangan</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveRole('coordinator')}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium transition-all cursor-pointer ${
-                activeRole === 'coordinator'
-                  ? 'bg-[#52B040] text-white font-semibold shadow-xs'
-                  : 'text-[#7A8278] hover:text-[#202820]'
-              }`}
-            >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Koordinator Wilayah</span>
+              <Printer className="w-3.5 h-3.5 text-[#52B040]" />
+              <span>Cetak Ringkasan</span>
             </button>
           </div>
-        </div>
-
-        {/* 1. ALERT BANNER AKSES SISTEM LAPANGAN */}
-        <div className="p-4 rounded-2xl bg-white border border-[#E7ECE5] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-xs">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-[#EAF5E6] flex items-center justify-center text-[#348D32] shrink-0">
-              <KeyRound className="w-4 h-4 text-[#52B040]" />
-            </div>
-            <div className="text-[#7A8278]">
-              <span className="font-bold text-[#202820] mr-2">
-                Akses Demonstrasi Sistem:
-              </span>
-              <span className="font-mono text-[#202820]">relawan@greenscope.id</span> / <span className="font-mono text-[#202820]">koordinator@greenscope.id</span> (Sandi: <strong className="text-[#348D32]">GreenScope2026!</strong>)
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => window.print()}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[#E7ECE5] bg-[#F7F9F6] hover:bg-stone-200 text-[#202820] text-xs font-semibold transition-colors shrink-0 cursor-pointer"
-          >
-            <Printer className="w-3.5 h-3.5 text-[#52B040]" />
-            <span>Cetak Ringkasan Eksekutif</span>
-          </button>
         </div>
 
         {/* 2. PUSAT KOMANDO KONSERVASI ASIMETRIS */}

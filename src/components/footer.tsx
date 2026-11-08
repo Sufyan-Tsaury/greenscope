@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Globe, Heart, Trees } from 'lucide-react';
+import { Globe, Heart } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -15,8 +15,8 @@ export default function Footer() {
                 <Image 
                   src="/logo-icon.jpg" 
                   alt="GreenScope Logo Icon" 
-                  fill
-                  className="object-cover"
+                  fill 
+                  className="object-cover" 
                   sizes="36px"
                 />
               </div>
@@ -24,46 +24,51 @@ export default function Footer() {
                 Green<span className="text-[#52B040]">Scope</span>
               </span>
             </div>
-            <p className="text-sm text-[#7A8278] max-w-md leading-relaxed">
-              Platform Pemantauan dan Aksi Konservasi Terintegrasi untuk Ekosistem Pesisir dan Hutan Tropis Indonesia. Menggabungkan Computer Vision AI dan WebGIS untuk restorasi bentang alam Nusantara.
+            <p className="text-sm text-[#7A8278] max-w-md leading-relaxed font-normal">
+              Platform partisipasi warga dan pemantauan geospasial untuk perlindungan sabuk mangrove pesisir barat dan ekosistem hutan tropis Bengkulu.
             </p>
-            <div className="flex items-center gap-2 text-xs text-[#348D32] bg-[#EAF5E6] border border-[#d2ebd0] px-3.5 py-1.5 rounded-full w-fit font-medium">
-              <Trees className="w-3.5 h-3.5 text-[#52B040]" />
-              <span>Inisiatif Konservasi Pesisir Barat &amp; Hutan Tropis Bengkulu</span>
-            </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Navigasi Utama */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#202820]">Navigasi Utama</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#202820]">Navigasi Platform</h4>
             <ul className="space-y-2 text-sm text-[#7A8278]">
               <li>
-                <Link href="/" className="hover:text-[#348D32] transition-colors">Beranda &amp; Alur Konservasi</Link>
+                <Link href="/" className="hover:text-[#348D32] transition-colors">Beranda</Link>
               </li>
               <li>
-                <Link href="/lapor" className="hover:text-[#348D32] transition-colors">ScopeLens (Pindai Lapangan)</Link>
+                <Link href="/lapor" className="hover:text-[#348D32] transition-colors">ScopeLens (Pindai Citra AI)</Link>
               </li>
               <li>
                 <Link href="/peta" className="hover:text-[#348D32] transition-colors">ScopeMap (WebGIS Spasial)</Link>
               </li>
               <li>
-                <Link href="/aksi" className="hover:text-[#348D32] transition-colors">Kampanye Restorasi</Link>
+                <Link href="/aksi" className="hover:text-[#348D32] transition-colors">Kampanye &amp; Aksi Lapangan</Link>
               </li>
               <li>
-                <Link href="/dashboard" className="hover:text-[#348D32] transition-colors">Dashboard Operasi</Link>
+                <Link href="/dashboard" className="hover:text-[#348D32] transition-colors">Dashboard Verifikasi</Link>
               </li>
             </ul>
           </div>
 
-          {/* Tech Stack Info */}
+          {/* Wilayah Fokus Konservasi (Menggantikan Tech Stack AI Slop) */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#202820]">Spesifikasi Arsitektur</h4>
-            <div className="space-y-2 text-xs text-[#7A8278]">
-              <p><span className="text-[#202820] font-medium">Framework:</span> Next.js 16 (App Router) + TypeScript</p>
-              <p><span className="text-[#202820] font-medium">Model Analisis:</span> Gemini Multimodal Vision</p>
-              <p><span className="text-[#202820] font-medium">Basis Data:</span> Supabase PostgreSQL</p>
-              <p><span className="text-[#202820] font-medium">WebGIS:</span> Leaflet + OpenStreetMap</p>
-            </div>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#202820]">Sektor Pantau Bengkulu</h4>
+            <ul className="space-y-2 text-sm text-[#7A8278]">
+              <li>
+                <Link href="/peta" className="hover:text-[#348D32] transition-colors">Sabuk Mangrove Teluk Baai</Link>
+              </li>
+              <li>
+                <Link href="/peta" className="hover:text-[#348D32] transition-colors">Zona Abrasi Pantai Panjang</Link>
+              </li>
+              <li>
+                <Link href="/peta" className="hover:text-[#348D32] transition-colors">Muara Sungai Jenggalu</Link>
+              </li>
+              <li>
+                <Link href="/peta" className="hover:text-[#348D32] transition-colors">Koridor Penyangga Bukit Barisan</Link>
+              </li>
+            </ul>
+
             <div className="pt-2 flex items-center gap-2">
               <a 
                 href="https://github.com/sufyan-tsaury/greenscope" 
@@ -81,7 +86,7 @@ export default function Footer() {
                 target="_blank" 
                 rel="noreferrer"
                 className="p-2 rounded-full bg-white border border-[#E7ECE5] text-[#7A8278] hover:text-[#202820] hover:bg-[#F7F9F6] shadow-xs transition-colors"
-                title="Live Vercel Production"
+                title="Live Production"
               >
                 <Globe className="w-4 h-4" />
               </a>
@@ -92,7 +97,7 @@ export default function Footer() {
 
         {/* Bottom Credits */}
         <div className="pt-6 border-t border-[#E7ECE5] flex flex-col sm:flex-row items-center justify-between text-xs text-[#7A8278] gap-4">
-          <p>© 2026 GreenScope. Platform Pemantauan &amp; Restorasi Ekosistem Nusantara.</p>
+          <p>© 2026 GreenScope. Inisiatif Pemantauan &amp; Restorasi Pesisir Bengkulu.</p>
           <div className="flex items-center gap-1.5">
             <span>Didedikasikan untuk kelestarian pesisir &amp; hutan Bengkulu</span>
             <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 inline" />

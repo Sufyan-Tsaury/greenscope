@@ -228,10 +228,6 @@ export default function LaporPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#E7ECE5]">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 text-xs font-semibold text-[#348D32] bg-[#EAF5E6] border border-[#d2ebd0] px-3.5 py-1 rounded-full uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5 text-[#52B040]" />
-              <span>ScopeLens Computer Vision • Model Diagnosis Ekologi</span>
-            </div>
             <h1 className="text-2xl sm:text-4xl font-bold text-[#202820] tracking-tight">
               Pindai &amp; Diagnosis Kerusakan Bentang Alam
             </h1>

@@ -73,12 +73,6 @@ export default function HomePage() {
             {/* Left Content (7 cols): Clean Friendly Typography & Pill Actions */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               
-              {/* Nature-Forward Pill Badge */}
-              <div className="inline-flex items-center gap-2 text-xs font-semibold text-[#348D32] bg-[#EAF5E6] border border-[#d2ebd0] px-4 py-1.5 rounded-full tracking-wide">
-                <span className="w-2 h-2 rounded-full bg-[#52B040] animate-pulse"></span>
-                <span>Inisiatif Konservasi Pesisir &amp; Hutan Tropis Bengkulu</span>
-              </div>
-
               {/* Fresh Modern Headline */}
               <h1 className="font-sans font-bold text-3xl sm:text-5xl lg:text-6xl text-[#202820] tracking-tight leading-[1.15] text-balance">
                 Pemantauan Cerdas &amp; <span className="text-[#52B040]">Restorasi Pesisir</span> Tropis Bengkulu
@@ -201,10 +195,6 @@ export default function HomePage() {
           {/* Section Editorial Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-[#E7ECE5]">
             <div className="space-y-2 max-w-2xl">
-              <div className="inline-flex items-center gap-2 text-xs font-semibold text-[#348D32] bg-[#EAF5E6] px-3.5 py-1 rounded-full uppercase tracking-wider">
-                <span className="w-2 h-2 rounded-full bg-[#52B040]"></span>
-                <span>Environmental Cartography • WebGIS Spasial</span>
-              </div>
               <h2 className="text-2xl sm:text-4xl font-bold text-[#202820] tracking-tight">
                 Kartografi Interaktif Pesisir &amp; Hutan Bengkulu
               </h2>
@@ -397,10 +387,6 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto space-y-3 mb-10">
-            <div className="inline-flex items-center gap-2 text-xs font-semibold text-[#348D32] bg-[#EAF5E6] px-3.5 py-1 rounded-full uppercase tracking-wider">
-              <span className="w-2 h-2 rounded-full bg-[#52B040]"></span>
-              <span>Dokumentasi Pemulihan Bentang Alam</span>
-            </div>
             <h2 className="text-2xl sm:text-4xl font-bold text-[#202820] tracking-tight">
               Dari Laporan Kerusakan Menjadi Bentang Alam Pulih
             </h2>
@@ -485,10 +471,6 @@ export default function HomePage() {
               <div className="lg:col-span-7 space-y-8 text-left font-sans">
                 
                 <div className="space-y-3">
-                  <div className="inline-flex items-center gap-2 text-xs font-semibold text-[#348D32] bg-[#EAF5E6] px-3.5 py-1 rounded-full uppercase tracking-wider">
-                    <span className="w-2 h-2 rounded-full bg-[#52B040]"></span>
-                    <span>Estimasi Biokapasitas Karbon Biru</span>
-                  </div>
                   <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#202820] leading-tight">
                     Potensi Mitigasi Iklim Sabuk Mangrove Pesisir Bengkulu
                   </h2>
@@ -624,10 +606,6 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 pb-8 text-center md:text-left">
             <div className="space-y-2 max-w-2xl font-sans">
-              <div className="inline-flex items-center gap-2 text-xs font-semibold text-[#348D32] bg-[#EAF5E6] px-3.5 py-1 rounded-full uppercase tracking-wider">
-                <span className="w-2 h-2 rounded-full bg-[#52B040]"></span>
-                <span>Partisipasi Sains Warga Bengkulu</span>
-              </div>
               <h3 className="text-2xl sm:text-3xl font-bold text-[#202820] tracking-tight">
                 Mari Bergerak Bersama Melindungi Pesisir Kita
               </h3>
