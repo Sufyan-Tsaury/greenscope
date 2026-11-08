@@ -41,7 +41,7 @@ export const INITIAL_REPORTS: Report[] = [
     reporter_name: 'Komunitas Bahari Pulau Baai',
     title: 'Degradasi Sabuk Mangrove Alami Teluk Pulau Baai',
     description: 'Sabuk bibit mangrove mengalami kekeringan dan patah cabang akibat sedimentasi berlebih serta jeratan sampah styrofoam saat air pasang.',
-    image_url: 'https://images.unsplash.com/photo-1544979590-37e9b47eb705?auto=format&fit=crop&w=1200&q=80',
+    image_url: 'https://images.unsplash.com/photo-1578142880638-9fc9aba285c2?auto=format&fit=crop&w=1200&q=80',
     latitude: -3.9056,
     longitude: 102.3021,
     location_name: 'Cagar Konservasi Mangrove Pulau Baai, Bengkulu',

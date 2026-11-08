@@ -41,7 +41,7 @@ const FIELD_SPECIMEN_SAMPLES = [
     ecosystem: 'mangrove' as EcosystemType,
     location: 'Teluk Pulau Baai, Bengkulu',
     title: 'Degradasi Sabuk Mangrove Kritis',
-    imageUrl: 'https://images.unsplash.com/photo-1544979590-37e9b47eb705?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1578142880638-9fc9aba285c2?auto=format&fit=crop&w=800&q=80',
     description: 'Sabuk anakan bakau tergerus endapan lumpur pekat dan jeratan tali kapal.'
   },
   {
