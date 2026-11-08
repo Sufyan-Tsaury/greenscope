@@ -14,7 +14,6 @@ import {
   AlertTriangle, 
   Printer, 
   FileText, 
-  Filter, 
   Search, 
   Check, 
   Trees, 
@@ -116,78 +115,78 @@ export default function DashboardPage() {
     });
   }, [reports, sectorFilter, statusFilter, searchQuery]);
 
-  // Format Helper for Risk Severity
+  // Format Helper for Risk Severity (Clean dot + text indicator - NO pastel candy boxes)
   const renderRiskBadge = (severity: SeverityLevel) => {
     switch (severity) {
       case 'kritis':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-[#FDE8E8] text-[#DC3545] border border-[#F8B4B4]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#DC3545]"></span>
-            CRITICAL
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#DC3545]">
+            <span className="w-2 h-2 rounded-full bg-[#DC3545]"></span>
+            Kritis
           </span>
         );
       case 'tinggi':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-[#FEF3C7] text-[#D97706] border border-[#FDE68A]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#D97706]"></span>
-            HIGH
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#D97706]">
+            <span className="w-2 h-2 rounded-full bg-[#D97706]"></span>
+            Tinggi
           </span>
         );
       case 'sedang':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-[#FEF9C3] text-[#CA8A04] border border-[#FEF08A]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#CA8A04]"></span>
-            MEDIUM
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#CA8A04]">
+            <span className="w-2 h-2 rounded-full bg-[#CA8A04]"></span>
+            Sedang
           </span>
         );
       case 'rendah':
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-[#EAF5E9] text-[#176B35] border border-[#C3E6CB]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#329F45]"></span>
-            LOW
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#329F45]">
+            <span className="w-2 h-2 rounded-full bg-[#329F45]"></span>
+            Rendah
           </span>
         );
     }
   };
 
-  // Format Helper for Verification Status Badge (LABEL ONLY, NOT A BUTTON)
+  // Format Helper for Verification Status Badge (Clean semantic icon + text - NO pastel candy boxes)
   const renderStatusBadge = (status: ReportStatus) => {
     switch (status) {
       case 'menunggu':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium bg-[#FFFBEB] text-[#B45309] border border-[#FCD34D]/60">
-            <Clock className="w-3 h-3 text-[#D97706]" />
-            Menunggu Verifikasi
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#78847B]">
+            <Clock className="w-3.5 h-3.5 text-[#D97706] shrink-0" />
+            <span className="text-[#17251B]">Menunggu Verifikasi</span>
           </span>
         );
       case 'dalam_aksi':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE]">
-            <Eye className="w-3 h-3 text-[#2563EB]" />
-            Sedang Ditinjau
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#78847B]">
+            <Eye className="w-3.5 h-3.5 text-[#2563EB] shrink-0" />
+            <span className="text-[#17251B]">Sedang Ditinjau</span>
           </span>
         );
       case 'terverifikasi':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium bg-[#EAF5E9] text-[#176B35] border border-[#C3E6CB]">
-            <CheckCircle2 className="w-3 h-3 text-[#329F45]" />
-            Terverifikasi
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#78847B]">
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#329F45] shrink-0" />
+            <span className="text-[#17251B]">Terverifikasi</span>
           </span>
         );
       case 'ditolak':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium bg-[#FEE2E2] text-[#DC2626] border border-[#FCA5A5]">
-            <XCircle className="w-3 h-3 text-[#DC2626]" />
-            Ditolak
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#78847B]">
+            <XCircle className="w-3.5 h-3.5 text-[#DC3545] shrink-0" />
+            <span className="text-[#17251B]">Ditolak</span>
           </span>
         );
       case 'pulih':
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium bg-[#F3F4F6] text-[#4B5563] border border-[#E5E7EB]">
-            <Trees className="w-3 h-3 text-[#176B35]" />
-            Siklus Pulih
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#78847B]">
+            <Trees className="w-3.5 h-3.5 text-[#329F45] shrink-0" />
+            <span className="text-[#17251B]">Siklus Pulih</span>
           </span>
         );
     }
@@ -196,7 +195,7 @@ export default function DashboardPage() {
   return (
     <div className="py-8 sm:py-10 bg-[#F5F7F4] min-h-[calc(100vh-4rem)] text-[#17251B]">
       
-      {/* Toast Notification */}
+      {/* Toast Notification (Solid white card with semantic accent) */}
       <AnimatePresence>
         {toastMessage && (
           <motion.div
@@ -204,12 +203,12 @@ export default function DashboardPage() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className={`fixed top-20 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-lg shadow-md border text-xs font-medium ${
+            className={`fixed top-20 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-lg shadow-lg border border-[#E3EAE3] bg-white text-xs font-medium border-l-4 ${
               toastMessage.type === 'success'
-                ? 'bg-[#EAF5E9] text-[#176B35] border-[#C3E6CB]'
+                ? 'border-l-[#329F45] text-[#17251B]'
                 : toastMessage.type === 'error'
-                ? 'bg-[#FDE8E8] text-[#DC3545] border-[#F8B4B4]'
-                : 'bg-[#EFF6FF] text-[#1D4ED8] border-[#BFDBFE]'
+                ? 'border-l-[#DC3545] text-[#17251B]'
+                : 'border-l-[#2563EB] text-[#17251B]'
             }`}
           >
             {toastMessage.type === 'success' && <CheckCircle2 className="w-4 h-4 text-[#329F45]" />}
@@ -234,8 +233,8 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 self-start md:self-center">
-            {/* Role Simulator Control (Rounded-lg, Professional SaaS) */}
-            <div className="flex items-center p-1 rounded-lg bg-white border border-[#E3EAE3] shadow-2xs">
+            {/* Role Simulator Control */}
+            <div className="flex items-center p-1 rounded-lg bg-white border border-[#E3EAE3] shadow-xs">
               <button
                 type="button"
                 onClick={() => setActiveRole('volunteer')}
@@ -265,7 +264,7 @@ export default function DashboardPage() {
             <button
               type="button"
               onClick={() => window.print()}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-[#E3EAE3] bg-white hover:bg-[#F5F7F4] text-[#17251B] text-xs font-medium transition-colors cursor-pointer shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-[#E3EAE3] bg-white hover:bg-[#F5F7F4] text-[#17251B] text-xs font-medium transition-colors cursor-pointer shadow-xs"
             >
               <Printer className="w-3.5 h-3.5 text-[#329F45]" />
               <span>Cetak Ringkasan</span>
@@ -273,127 +272,139 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* 1. OPERATIONAL TELEMETRY & CRITICAL REGIONS GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        {/* 1. OPERATIONAL TELEMETRY & URGENT HOTSPOTS (CLEAN UNIFIED SAAS ARCHITECTURE) */}
+        <div className="space-y-5">
           
-          {/* Critical Region Indicators (Col 7) */}
-          <div className="lg:col-span-7 bg-white rounded-xl border border-[#E3EAE3] p-5 space-y-3.5 text-left shadow-2xs">
-            <div className="flex items-center justify-between pb-3 border-b border-[#E3EAE3]">
+          {/* A. Unified 4-Metric Telemetry Strip (NO nested pastel boxes) */}
+          <div className="bg-white rounded-xl border border-[#E3EAE3] shadow-xs overflow-hidden">
+            <div className="grid grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#E3EAE3]">
+              
+              {/* Metric 1 */}
+              <div className="p-4 sm:p-5 text-left">
+                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#78847B] uppercase tracking-wider">
+                  <Leaf className="w-3.5 h-3.5 text-[#329F45]" />
+                  <span>Serapan Karbon</span>
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold text-[#17251B] font-mono tracking-tight mt-1">
+                  5.350 <span className="text-xs font-normal text-[#78847B] font-sans">kg CO₂e/th</span>
+                </div>
+                <div className="text-[11px] text-[#78847B] mt-0.5">
+                  Biomassa mangrove aktif terverifikasi
+                </div>
+              </div>
+
+              {/* Metric 2 */}
+              <div className="p-4 sm:p-5 text-left">
+                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#78847B] uppercase tracking-wider">
+                  <Trash2 className="w-3.5 h-3.5 text-[#329F45]" />
+                  <span>Sampah Diangkat</span>
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold text-[#17251B] font-mono tracking-tight mt-1">
+                  1.420 <span className="text-xs font-normal text-[#78847B] font-sans">kg</span>
+                </div>
+                <div className="text-[11px] text-[#78847B] mt-0.5">
+                  Limbah plastik di sempadan pesisir
+                </div>
+              </div>
+
+              {/* Metric 3 */}
+              <div className="p-4 sm:p-5 text-left">
+                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#78847B] uppercase tracking-wider">
+                  <Waves className="w-3.5 h-3.5 text-[#329F45]" />
+                  <span>Garis Pantai</span>
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold text-[#17251B] font-mono tracking-tight mt-1">
+                  14,2 <span className="text-xs font-normal text-[#78847B] font-sans">km</span>
+                </div>
+                <div className="text-[11px] text-[#78847B] mt-0.5">
+                  Sabuk barat terpantau aktif
+                </div>
+              </div>
+
+              {/* Metric 4 */}
+              <div className="p-4 sm:p-5 text-left">
+                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#78847B] uppercase tracking-wider">
+                  <Users className="w-3.5 h-3.5 text-[#329F45]" />
+                  <span>Relawan Lapangan</span>
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold text-[#17251B] font-mono tracking-tight mt-1">
+                  35 <span className="text-xs font-normal text-[#78847B] font-sans">Personel</span>
+                </div>
+                <div className="text-[11px] text-[#78847B] mt-0.5">
+                  Siaga gotong royong restorasi
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* B. Urgent Conservation Hotspots (Structured Alert Panel - NO nested pastel cards) */}
+          <div className="bg-white rounded-xl border border-[#E3EAE3] shadow-xs p-5 text-left space-y-4">
+            
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#E3EAE3] gap-2">
               <div>
                 <h2 className="text-xs font-bold text-[#17251B] uppercase tracking-wider flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4 text-[#DC3545]" />
-                  <span>Titik Pantau Prioritas Konservasi</span>
+                  <span>Titik Pantau Prioritas Konservasi Bengkulu</span>
                 </h2>
                 <p className="text-[11px] text-[#78847B] mt-0.5">
-                  Zona pesisir dan hutan Bengkulu dengan skor urgensi di atas ambang batas.
+                  Zona pesisir dan hutan Bengkulu dengan indeks kerusakan di atas ambang batas intervensi.
                 </p>
               </div>
-              <span className="text-[10px] font-bold text-[#DC3545] bg-[#FDE8E8] px-2.5 py-0.5 rounded-md border border-[#F8B4B4] uppercase">
-                Respon Cepat
-              </span>
+
+              <Link
+                href="/peta"
+                className="text-xs font-medium text-[#176B35] hover:text-[#329F45] inline-flex items-center gap-1 transition-colors self-start sm:self-auto"
+              >
+                <span>Buka ScopeMap WebGIS</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {/* Item 1: Teluk Baai */}
-              <div className="p-3 rounded-lg border border-[#E3EAE3] bg-[#F5F7F4]/60 space-y-1.5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 divide-y md:divide-y-0 md:divide-x divide-[#E3EAE3]">
+              
+              {/* Item 1: Teluk Pulau Baai */}
+              <div className="space-y-1.5 pt-3 md:pt-0">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#17251B]">Teluk Baai</span>
-                  <span className="text-[10px] font-semibold text-[#DC3545] bg-[#FDE8E8] px-1.5 py-0.5 rounded-sm">
+                  <span className="text-sm font-bold text-[#17251B]">Teluk Pulau Baai</span>
+                  <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#DC3545]">
+                    <span className="w-2 h-2 rounded-full bg-[#DC3545]"></span>
                     Urgensi: 94/100
                   </span>
                 </div>
-                <p className="text-[11px] text-[#78847B] leading-relaxed line-clamp-2">
-                  Degradasi sabuk bakau 1.2 ha akibat sedimen lumpur pekat dan jeratan tali tambang.
+                <p className="text-xs text-[#78847B] leading-relaxed">
+                  Degradasi sabuk bakau 1.2 ha akibat sedimen lumpur pekat dan jeratan tali tambang perahu.
                 </p>
-                <div className="text-[10px] text-[#176B35] font-medium pt-1">
-                  Solusi: Rhizophora apiculata
+                <div className="text-xs text-[#176B35] font-medium pt-0.5">
+                  Solusi Botani: Rhizophora apiculata (Bakau Minyak)
                 </div>
               </div>
 
               {/* Item 2: Pantai Panjang */}
-              <div className="p-3 rounded-lg border border-[#E3EAE3] bg-[#F5F7F4]/60 space-y-1.5">
+              <div className="space-y-1.5 pt-3 md:pt-0 md:pl-5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#17251B]">Pantai Panjang</span>
-                  <span className="text-[10px] font-semibold text-[#D97706] bg-[#FEF3C7] px-1.5 py-0.5 rounded-sm">
+                  <span className="text-sm font-bold text-[#17251B]">Pantai Panjang Kota</span>
+                  <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#D97706]">
+                    <span className="w-2 h-2 rounded-full bg-[#D97706]"></span>
                     Urgensi: 82/100
                   </span>
                 </div>
-                <p className="text-[11px] text-[#78847B] leading-relaxed line-clamp-2">
-                  Timbunan limbah plastik di zona pasang tertinggi menghambat vegetasi tapak kuda.
+                <p className="text-xs text-[#78847B] leading-relaxed">
+                  Timbunan limbah plastik di zona pasang tertinggi menghambat suksesi alami vegetasi tapak kuda.
                 </p>
-                <div className="text-[10px] text-[#176B35] font-medium pt-1">
-                  Solusi: Ipomoea pes-caprae
+                <div className="text-xs text-[#176B35] font-medium pt-0.5">
+                  Solusi Botani: Ipomoea pes-caprae &amp; Pandanus odoratissimus
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Operational Metrics (Col 5) */}
-          <div className="lg:col-span-5 bg-white rounded-xl border border-[#E3EAE3] p-5 flex flex-col justify-between text-left space-y-4 shadow-2xs">
-            <div className="pb-2.5 border-b border-[#E3EAE3]">
-              <h2 className="text-xs font-bold text-[#17251B] uppercase tracking-wider flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-[#329F45]" />
-                <span>Metrik Operasi Terpadu</span>
-              </h2>
-              <p className="text-[11px] text-[#78847B] mt-0.5">
-                Agregat dampak pemulihan ekosistem di wilayah Bengkulu.
-              </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5">
-              <div className="p-3 rounded-lg bg-[#EAF5E9] border border-[#C3E6CB]">
-                <div className="text-[10px] font-semibold text-[#176B35] uppercase flex items-center gap-1">
-                  <Leaf className="w-3 h-3 text-[#329F45]" /> Serapan Karbon
-                </div>
-                <div className="text-xl font-bold text-[#17251B] font-mono mt-0.5">
-                  5.350 <span className="text-[11px] font-normal text-[#78847B]">kg/th</span>
-                </div>
-                <div className="text-[10px] text-[#78847B] mt-0.5">Biomassa bakau aktif</div>
-              </div>
-
-              <div className="p-3 rounded-lg bg-[#F5F7F4] border border-[#E3EAE3]">
-                <div className="text-[10px] font-semibold text-[#78847B] uppercase flex items-center gap-1">
-                  <Trash2 className="w-3 h-3 text-[#329F45]" /> Sampah Diangkat
-                </div>
-                <div className="text-xl font-bold text-[#17251B] font-mono mt-0.5">
-                  1.420 <span className="text-[11px] font-normal text-[#78847B]">kg</span>
-                </div>
-                <div className="text-[10px] text-[#78847B] mt-0.5">Limbah pesisir pantai</div>
-              </div>
-
-              <div className="p-3 rounded-lg bg-[#F5F7F4] border border-[#E3EAE3]">
-                <div className="text-[10px] font-semibold text-[#78847B] uppercase flex items-center gap-1">
-                  <Waves className="w-3 h-3 text-[#329F45]" /> Garis Pantai
-                </div>
-                <div className="text-xl font-bold text-[#17251B] font-mono mt-0.5">
-                  14,2 <span className="text-[11px] font-normal text-[#78847B]">km</span>
-                </div>
-                <div className="text-[10px] text-[#78847B] mt-0.5">Sabuk barat terpantau</div>
-              </div>
-
-              <div className="p-3 rounded-lg bg-[#EAF5E9] border border-[#C3E6CB]">
-                <div className="text-[10px] font-semibold text-[#176B35] uppercase flex items-center gap-1">
-                  <Users className="w-3 h-3 text-[#329F45]" /> Relawan Siap
-                </div>
-                <div className="text-xl font-bold text-[#17251B] font-mono mt-0.5">
-                  35 <span className="text-[11px] font-normal text-[#78847B]">Personel</span>
-                </div>
-                <div className="text-[10px] text-[#78847B] mt-0.5">Gotong royong lapangan</div>
-              </div>
-            </div>
-
-            <Link
-              href="/peta"
-              className="py-2 px-3 rounded-lg border border-[#E3EAE3] text-xs font-medium text-[#17251B] hover:bg-[#F5F7F4] text-center block transition-colors shadow-2xs"
-            >
-              Buka Pemetaan Spasial di ScopeMap WebGIS →
-            </Link>
           </div>
 
         </div>
 
-        {/* 2. CORE FOCUS: TABEL ANTREAN VERIFIKASI LAPANGAN (STRUCTURED SAAS DATA LIST) */}
-        <div className="bg-white rounded-xl border border-[#E3EAE3] shadow-2xs overflow-hidden text-left">
+        {/* 2. CORE FOCUS: TABEL ANTREAN VERIFIKASI LAPANGAN (CLEAN ENTERPRISE DATA TABLE) */}
+        <div className="bg-white rounded-xl border border-[#E3EAE3] shadow-xs overflow-hidden text-left">
           
           {/* Header & Filter Controls Bar */}
           <div className="p-5 border-b border-[#E3EAE3] space-y-4">
@@ -410,12 +421,12 @@ export default function DashboardPage() {
               </div>
 
               {/* Status Indicator Legend */}
-              <div className="flex items-center gap-3 text-xs text-[#78847B]">
-                <span className="flex items-center gap-1">
+              <div className="flex items-center gap-4 text-xs text-[#78847B]">
+                <span className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-[#D97706]"></span>
                   <span>Menunggu ({counts.menunggu})</span>
                 </span>
-                <span className="flex items-center gap-1">
+                <span className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-[#329F45]"></span>
                   <span>Terverifikasi ({counts.terverifikasi})</span>
                 </span>
@@ -423,17 +434,17 @@ export default function DashboardPage() {
             </div>
 
             {/* Filter & Search Bar */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-2 border-t border-[#E3EAE3]/70">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-2 border-t border-[#E3EAE3]">
               
-              {/* Sector Tabs (Clean 8px Rounded Segments) */}
+              {/* Sector Tabs (Clean Segmented Buttons) */}
               <div className="flex flex-wrap items-center gap-1.5">
                 <button
                   type="button"
                   onClick={() => setSectorFilter('all')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     sectorFilter === 'all'
-                      ? 'bg-[#17251B] text-white shadow-2xs'
-                      : 'bg-[#F5F7F4] text-[#78847B] hover:text-[#17251B] hover:bg-[#E3EAE3]/60'
+                      ? 'bg-[#17251B] text-white shadow-xs'
+                      : 'bg-white text-[#78847B] hover:text-[#17251B] hover:bg-[#F5F7F4] border border-[#E3EAE3]'
                   }`}
                 >
                   Semua Sektor ({counts.total})
@@ -444,8 +455,8 @@ export default function DashboardPage() {
                   onClick={() => setSectorFilter('pesisir')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     sectorFilter === 'pesisir'
-                      ? 'bg-[#17251B] text-white shadow-2xs'
-                      : 'bg-[#F5F7F4] text-[#78847B] hover:text-[#17251B] hover:bg-[#E3EAE3]/60'
+                      ? 'bg-[#17251B] text-white shadow-xs'
+                      : 'bg-white text-[#78847B] hover:text-[#17251B] hover:bg-[#F5F7F4] border border-[#E3EAE3]'
                   }`}
                 >
                   Pesisir &amp; Mangrove ({counts.pesisir})
@@ -456,20 +467,20 @@ export default function DashboardPage() {
                   onClick={() => setSectorFilter('hutan')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     sectorFilter === 'hutan'
-                      ? 'bg-[#17251B] text-white shadow-2xs'
-                      : 'bg-[#F5F7F4] text-[#78847B] hover:text-[#17251B] hover:bg-[#E3EAE3]/60'
+                      ? 'bg-[#17251B] text-white shadow-xs'
+                      : 'bg-white text-[#78847B] hover:text-[#17251B] hover:bg-[#F5F7F4] border border-[#E3EAE3]'
                   }`}
                 >
                   Hutan Tropis ({counts.hutan})
                 </button>
               </div>
 
-              {/* Status Filter & Search Input */}
+              {/* Status Filter Dropdown & Search Input */}
               <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as any)}
-                  className="px-2.5 py-1.5 rounded-lg border border-[#E3EAE3] bg-white text-xs text-[#17251B] focus:outline-hidden focus:border-[#329F45] cursor-pointer shadow-2xs"
+                  className="px-2.5 py-1.5 rounded-lg border border-[#E3EAE3] bg-white text-xs text-[#17251B] focus:outline-hidden focus:border-[#329F45] cursor-pointer shadow-xs"
                   aria-label="Filter status verifikasi"
                 >
                   <option value="all">Semua Status Verifikasi</option>
@@ -486,7 +497,7 @@ export default function DashboardPage() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Cari temuan, lokasi..."
-                    className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-[#E3EAE3] text-xs text-[#17251B] bg-white placeholder-[#78847B] focus:outline-hidden focus:border-[#329F45] shadow-2xs"
+                    className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-[#E3EAE3] text-xs text-[#17251B] bg-white placeholder-[#78847B] focus:outline-hidden focus:border-[#329F45] shadow-xs"
                   />
                   {searchQuery && (
                     <button
@@ -504,7 +515,7 @@ export default function DashboardPage() {
 
           </div>
 
-          {/* Desktop Table View (Hidden on mobile/tablet screens for responsive stacked layout) */}
+          {/* Desktop Table View */}
           <div className="hidden lg:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-[#F5F7F4] border-b border-[#E3EAE3] text-[#78847B] font-semibold uppercase tracking-wider text-[11px]">
@@ -514,7 +525,7 @@ export default function DashboardPage() {
                   <th className="py-3 px-4 w-28">Tingkat Risiko</th>
                   <th className="py-3 px-4 w-36">Skor &amp; AI Keyakinan</th>
                   <th className="py-3 px-4">Rekomendasi Botani</th>
-                  <th className="py-3 px-4 w-36">Status Verifikasi</th>
+                  <th className="py-3 px-4 w-44">Status Verifikasi</th>
                   <th className="py-3 px-4 w-36 text-right">Aksi</th>
                 </tr>
               </thead>
@@ -523,7 +534,7 @@ export default function DashboardPage() {
                   filteredReports.map((rep) => (
                     <tr 
                       key={rep.id} 
-                      className="hover:bg-[#F5F7F4]/60 transition-colors duration-150 group"
+                      className="hover:bg-[#F9FAF8] transition-colors duration-150 group"
                     >
                       {/* 1. Thumbnail */}
                       <td className="py-3.5 px-4 text-center">
@@ -561,12 +572,12 @@ export default function DashboardPage() {
                         </div>
                       </td>
 
-                      {/* 3. Tingkat Risiko (Semantic Badge) */}
+                      {/* 3. Tingkat Risiko (Clean dot + text indicator - NO pastel box) */}
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         {renderRiskBadge(rep.severity)}
                       </td>
 
-                      {/* 4. Skor Risiko vs Keyakinan AI (Separated!) */}
+                      {/* 4. Skor Risiko vs Keyakinan AI (Separated cleanly) */}
                       <td className="py-3.5 px-4 whitespace-nowrap font-mono">
                         <div className="text-xs font-bold text-[#17251B]">
                           {rep.urgency_score}<span className="text-[10px] text-[#78847B] font-normal">/100</span>
@@ -576,7 +587,7 @@ export default function DashboardPage() {
                         </div>
                       </td>
 
-                      {/* 5. Rekomendasi Botani (Supporting Info) */}
+                      {/* 5. Rekomendasi Botani */}
                       <td className="py-3.5 px-4 max-w-xs text-[11px]">
                         <div className="flex items-center gap-1 text-[#176B35] font-medium truncate" title={rep.ai_analysis?.spesies_rekomendasi}>
                           <Leaf className="w-3 h-3 text-[#329F45] shrink-0" />
@@ -587,19 +598,19 @@ export default function DashboardPage() {
                         </div>
                       </td>
 
-                      {/* 6. Status Verifikasi (LABEL ONLY, NOT ACTION BUTTON) */}
+                      {/* 6. Status Verifikasi (Clean semantic icon + text - NO pastel box) */}
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         {renderStatusBadge(rep.status)}
                       </td>
 
-                      {/* 7. Aksi Kontekstual */}
+                      {/* 7. Contextual Actions */}
                       <td className="py-3.5 px-4 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1.5">
                           {rep.status === 'menunggu' ? (
                             <button
                               type="button"
                               onClick={() => setSelectedReport(rep)}
-                              className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] transition-colors cursor-pointer shadow-2xs"
+                              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] transition-colors cursor-pointer shadow-xs"
                             >
                               Verifikasi
                             </button>
@@ -607,7 +618,7 @@ export default function DashboardPage() {
                             <button
                               type="button"
                               onClick={() => setSelectedReport(rep)}
-                              className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#176B35] hover:bg-[#17251B] transition-colors cursor-pointer shadow-2xs"
+                              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#176B35] hover:bg-[#17251B] transition-colors cursor-pointer shadow-xs"
                             >
                               Lanjutkan
                             </button>
@@ -615,7 +626,7 @@ export default function DashboardPage() {
                             <button
                               type="button"
                               onClick={() => setSelectedReport(rep)}
-                              className="px-3 py-1.5 rounded-lg text-xs font-medium text-[#78847B] bg-white border border-[#E3EAE3] hover:bg-[#F5F7F4] transition-colors cursor-pointer shadow-2xs"
+                              className="px-3 py-1.5 rounded-lg text-xs font-medium text-[#78847B] bg-white border border-[#E3EAE3] hover:bg-[#F5F7F4] transition-colors cursor-pointer shadow-xs"
                             >
                               Lihat Alasan
                             </button>
@@ -624,7 +635,7 @@ export default function DashboardPage() {
                               <button
                                 type="button"
                                 onClick={() => setSelectedReport(rep)}
-                                className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#17251B] bg-white border border-[#E3EAE3] hover:bg-[#F5F7F4] transition-colors cursor-pointer shadow-2xs"
+                                className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#17251B] bg-white border border-[#E3EAE3] hover:bg-[#F5F7F4] transition-colors cursor-pointer shadow-xs"
                               >
                                 Detail
                               </button>
@@ -657,7 +668,7 @@ export default function DashboardPage() {
           <div className="lg:hidden divide-y divide-[#E3EAE3]">
             {filteredReports.length > 0 ? (
               filteredReports.map((rep) => (
-                <div key={rep.id} className="p-4 space-y-3 hover:bg-[#F5F7F4]/40 transition-colors">
+                <div key={rep.id} className="p-4 space-y-3 hover:bg-[#F9FAF8] transition-colors">
                   <div className="flex items-start gap-3">
                     <button
                       type="button"
@@ -700,8 +711,8 @@ export default function DashboardPage() {
                     </span>
                   </div>
 
-                  {/* Status Badge & Action Row */}
-                  <div className="flex items-center justify-between gap-2 pt-2 border-t border-[#E3EAE3]/70">
+                  {/* Status & Action Row */}
+                  <div className="flex items-center justify-between gap-2 pt-2 border-t border-[#E3EAE3]">
                     <div>
                       {renderStatusBadge(rep.status)}
                     </div>
@@ -711,7 +722,7 @@ export default function DashboardPage() {
                         <button
                           type="button"
                           onClick={() => setSelectedReport(rep)}
-                          className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] shadow-2xs"
+                          className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] shadow-xs"
                         >
                           Verifikasi
                         </button>
@@ -719,7 +730,7 @@ export default function DashboardPage() {
                         <button
                           type="button"
                           onClick={() => setSelectedReport(rep)}
-                          className="px-3 py-1.5 rounded-lg text-xs font-medium text-[#17251B] bg-white border border-[#E3EAE3] hover:bg-[#F5F7F4] shadow-2xs"
+                          className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-[#17251B] bg-white border border-[#E3EAE3] hover:bg-[#F5F7F4] shadow-xs"
                         >
                           Detail
                         </button>
@@ -740,7 +751,7 @@ export default function DashboardPage() {
             <span>
               Menampilkan <strong className="text-[#17251B]">{filteredReports.length}</strong> dari {reports.length} total laporan lapangan
             </span>
-            <div className="flex items-center gap-1 text-[11px]">
+            <div className="flex items-center gap-1.5 text-[11px]">
               <span className="w-2 h-2 rounded-full bg-[#329F45]"></span>
               <span>Sinkronisasi database Supabase PostgreSQL aktif</span>
             </div>
@@ -751,7 +762,7 @@ export default function DashboardPage() {
       </div>
 
       {/* =========================================================================
-          3. VERIFICATION & DETAIL DRAWER MODAL (PROFESSIONAL SAAS DOSSIER)
+          3. VERIFICATION & DETAIL DRAWER MODAL (CLEAN SAAS DOSSIER)
           ========================================================================= */}
       <AnimatePresence>
         {selectedReport && (
@@ -799,7 +810,7 @@ export default function DashboardPage() {
                     sizes="600px"
                   />
                   <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between text-[11px]">
-                    <div className="inline-flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-md text-white font-mono text-[10px]">
+                    <div className="inline-flex items-center gap-1.5 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-md text-white font-mono text-[10px]">
                       <MapPin className="w-3 h-3 text-[#329F45]" />
                       <span>{selectedReport.latitude}, {selectedReport.longitude}</span>
                     </div>
@@ -808,7 +819,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Finding Details */}
-                <div className="space-y-1.5 pt-1">
+                <div className="space-y-1 pt-1">
                   <h4 className="text-base font-bold text-[#17251B]">
                     {selectedReport.title}
                   </h4>
@@ -817,28 +828,28 @@ export default function DashboardPage() {
                   </p>
                 </div>
 
-                {/* Metadata Row */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-lg bg-[#F5F7F4] border border-[#E3EAE3]">
+                {/* Metadata Row (Clean 4-column divider layout - NO nested gray box) */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-3 border-y border-[#E3EAE3]">
                   <div>
-                    <span className="text-[10px] text-[#78847B] block">Lokasi:</span>
-                    <strong className="text-[#17251B] text-[11px] truncate block">{selectedReport.location_name}</strong>
+                    <span className="text-[10px] text-[#78847B] block uppercase tracking-wider font-semibold">Lokasi</span>
+                    <strong className="text-[#17251B] text-xs truncate block mt-0.5">{selectedReport.location_name}</strong>
                   </div>
                   <div>
-                    <span className="text-[10px] text-[#78847B] block">Pelapor:</span>
-                    <strong className="text-[#17251B] text-[11px] truncate block">{selectedReport.reporter_name}</strong>
+                    <span className="text-[10px] text-[#78847B] block uppercase tracking-wider font-semibold">Pelapor</span>
+                    <strong className="text-[#17251B] text-xs truncate block mt-0.5">{selectedReport.reporter_name}</strong>
                   </div>
                   <div>
-                    <span className="text-[10px] text-[#78847B] block">Skor Risiko:</span>
-                    <strong className="text-[#17251B] text-[11px] font-mono">{selectedReport.urgency_score}/100</strong>
+                    <span className="text-[10px] text-[#78847B] block uppercase tracking-wider font-semibold">Skor Risiko</span>
+                    <strong className="text-[#17251B] text-xs font-mono block mt-0.5">{selectedReport.urgency_score}/100</strong>
                   </div>
                   <div>
-                    <span className="text-[10px] text-[#78847B] block">CV Confidence:</span>
-                    <strong className="text-[#176B35] text-[11px] font-mono">{selectedReport.ai_analysis?.confidence_score || 94}%</strong>
+                    <span className="text-[10px] text-[#78847B] block uppercase tracking-wider font-semibold">CV Confidence</span>
+                    <strong className="text-[#176B35] text-xs font-mono block mt-0.5">{selectedReport.ai_analysis?.confidence_score || 94}%</strong>
                   </div>
                 </div>
 
                 {/* Technical Diagnostics */}
-                <div className="p-3.5 rounded-lg border border-[#E3EAE3] space-y-2">
+                <div className="space-y-1.5 pt-1">
                   <div className="font-bold text-xs text-[#17251B] flex items-center gap-1.5">
                     <Leaf className="w-3.5 h-3.5 text-[#329F45]" />
                     <span>Rekomendasi Restorasi Botani:</span>
@@ -846,20 +857,20 @@ export default function DashboardPage() {
                   <div className="text-xs text-[#176B35] font-semibold">
                     {selectedReport.ai_analysis?.spesies_rekomendasi}
                   </div>
-                  <p className="text-[11px] text-[#78847B]">
+                  <p className="text-[11px] text-[#78847B] leading-relaxed">
                     {selectedReport.ai_analysis?.estimasi_risiko}
                   </p>
                 </div>
 
               </div>
 
-              {/* Modal Footer Action Bar (Coordinator Verification Controls) */}
+              {/* Modal Footer Action Bar */}
               <div className="p-4 border-t border-[#E3EAE3] bg-[#F5F7F4] flex flex-wrap items-center justify-between gap-2.5">
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={() => handleUpdateStatus(selectedReport.id, 'ditolak')}
-                    className="px-3 py-1.5 rounded-lg border border-rose-200 text-rose-700 hover:bg-rose-50 text-xs font-medium transition-colors cursor-pointer"
+                    className="px-3 py-1.5 rounded-lg border border-[#E3EAE3] text-[#DC3545] hover:bg-white text-xs font-medium transition-colors cursor-pointer"
                   >
                     Tolak Temuan
                   </button>
