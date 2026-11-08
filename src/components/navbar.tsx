@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -13,18 +13,13 @@ import {
   Menu, 
   X, 
   ShieldCheck,
-  Leaf,
-  Sparkles,
-  KeyRound,
-  LogOut,
-  UserCheck
+  Leaf
 } from 'lucide-react';
-import { AuthUser, getStoredSession, logoutUser } from '@/lib/auth';
 
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [session, setSession] = useState<AuthUser | null>(null);
+  const [activeRole, setActiveRole] = useState<'volunteer' | 'coordinator'>('volunteer');
 
   const navLinks = [
     { href: '/', label: 'Beranda', icon: Compass },
@@ -34,18 +29,8 @@ export default function Navbar() {
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   ];
 
-  useEffect(() => {
-    setSession(getStoredSession());
-    const handleAuth = (e: any) => {
-      setSession(e.detail || null);
-    };
-    window.addEventListener('greenscope_auth_change', handleAuth);
-    return () => window.removeEventListener('greenscope_auth_change', handleAuth);
-  }, []);
-
-  const handleLogout = async () => {
-    await logoutUser();
-    setSession(null);
+  const toggleRole = () => {
+    setActiveRole((prev) => (prev === 'volunteer' ? 'coordinator' : 'volunteer'));
   };
 
   return (
@@ -54,9 +39,9 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
             
-            {/* Logo Brand Baru GreenScope */}
+            {/* Logo Brand GreenScope */}
             <Link href="/" className="flex items-center gap-3 group focus:outline-hidden">
-              {/* Logo Icon Mark (Mobile & Avatar Accent) */}
+              {/* Logo Icon Mark */}
               <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border border-[#E7ECE5] shadow-xs group-hover:scale-105 transition-transform shrink-0 bg-white">
                 <Image 
                   src="/logo-icon.jpg" 
@@ -106,46 +91,26 @@ export default function Navbar() {
               })}
             </nav>
 
-            {/* Action Buttons & Authentication Status */}
+            {/* Action Buttons: Role Simulator & CTA Lapor */}
             <div className="hidden lg:flex items-center gap-3">
-              {session ? (
-                <div className="flex items-center gap-2">
-                  <Link
-                    href="/dashboard"
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-[#d2ebd0] text-xs text-[#202820] bg-[#EAF5E6] hover:bg-[#d8eed0] transition-colors cursor-pointer shadow-xs font-semibold"
-                    title={`Masuk sebagai ${session.name}`}
-                  >
-                    {session.isJudge ? (
-                      <>
-                        <Sparkles className="w-3.5 h-3.5 text-[#52B040]" />
-                        <span>Sesi: <strong className="text-[#348D32]">Dewan Juri</strong></span>
-                      </>
-                    ) : (
-                      <>
-                        <Leaf className="w-3.5 h-3.5 text-[#52B040]" />
-                        <span>Sesi: <strong className="text-[#348D32]">Relawan</strong></span>
-                      </>
-                    )}
-                  </Link>
-
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="p-2 rounded-full border border-[#E7ECE5] text-[#7A8278] hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                    title="Keluar dari sesi"
-                  >
-                    <LogOut className="w-4 h-4" />
-                  </button>
-                </div>
-              ) : (
-                <Link
-                  href="/#portal-masuk"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-[#E7ECE5] text-xs text-[#202820] bg-white hover:bg-[#F7F9F6] transition-colors cursor-pointer shadow-xs"
-                >
-                  <KeyRound className="w-3.5 h-3.5 text-[#52B040]" />
-                  <span>Portal Akses Juri</span>
-                </Link>
-              )}
+              <button
+                type="button"
+                onClick={toggleRole}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-[#E7ECE5] text-xs text-[#202820] bg-white hover:bg-[#F7F9F6] transition-colors cursor-pointer shadow-xs"
+                title="Beralih peran simulasi"
+              >
+                {activeRole === 'volunteer' ? (
+                  <>
+                    <Leaf className="w-3.5 h-3.5 text-[#52B040]" />
+                    <span>Peran: <strong className="text-[#348D32]">Relawan</strong></span>
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#348D32]" />
+                    <span>Peran: <strong className="text-[#202820]">Koordinator</strong></span>
+                  </>
+                )}
+              </button>
 
               <Link
                 href="/lapor"
@@ -180,31 +145,17 @@ export default function Navbar() {
 
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-[#E7ECE5] bg-white px-4 pt-3 pb-5 space-y-2">
-            {session ? (
-              <div className="flex items-center justify-between p-3 rounded-2xl bg-[#EAF5E6] border border-[#d2ebd0]">
-                <div className="flex items-center gap-2 text-xs">
-                  <ShieldCheck className="w-4 h-4 text-[#52B040]" />
-                  <span className="font-semibold text-[#202820]">{session.name}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="text-xs text-rose-600 font-semibold px-2 py-1 rounded-md bg-white/80"
-                >
-                  Keluar
-                </button>
-              </div>
-            ) : (
-              <Link
-                href="/#portal-masuk"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-2 py-2 px-4 rounded-full bg-[#F7F9F6] border border-[#E7ECE5] text-xs font-semibold text-[#202820]"
+          <div className="md:hidden border-t border-[#E7ECE5] bg-white px-4 pt-3 pb-5 space-y-1">
+            <div className="flex items-center justify-between py-2 border-b border-[#EEF1EC] mb-2">
+              <span className="text-xs text-[#7A8278]">Simulasi Peran:</span>
+              <button
+                type="button"
+                onClick={toggleRole}
+                className="inline-flex items-center gap-1 px-3 py-1 text-xs rounded-full border border-[#E7ECE5] bg-[#F7F9F6] text-[#202820]"
               >
-                <KeyRound className="w-3.5 h-3.5 text-[#52B040]" />
-                <span>Portal Masuk Juri &amp; Relawan</span>
-              </Link>
-            )}
+                {activeRole === 'volunteer' ? 'Relawan' : 'Koordinator'} (Ganti)
+              </button>
+            </div>
 
             {navLinks.map((item) => {
               const Icon = item.icon;

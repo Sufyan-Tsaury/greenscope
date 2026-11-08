@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import Scrollytelling from '@/components/scrollytelling';
-import CoverLoginCard from '@/components/cover-login-card';
 import { 
   Camera, 
   MapPin, 
@@ -19,8 +18,7 @@ import {
   Layers,
   Check,
   ShieldCheck,
-  Sparkles,
-  KeyRound
+  Sparkles
 } from 'lucide-react';
 import { Report } from '@/types';
 import { INITIAL_REPORTS } from '@/lib/mock-data';
@@ -139,9 +137,56 @@ export default function HomePage() {
 
             </div>
 
-            {/* Right Hero Column: Interactive Animated Cover Login & Access Gateway (Carbonery Style) */}
-            <div id="portal-masuk" className="lg:col-span-5 relative flex justify-center scroll-mt-28">
-              <CoverLoginCard />
+            {/* Right Hero Graphic: Authentic Coastal Mangrove in Rounded-3xl Card (Carbonery Style) */}
+            <div className="lg:col-span-5 relative flex justify-center">
+              <div className="relative w-full max-w-md rounded-3xl overflow-hidden border border-[#E7ECE5] bg-white shadow-sm hover:shadow-md transition-shadow group">
+                
+                {/* Real Coastal Mangrove Waterway of Western Sumatra */}
+                <div className="relative aspect-4/3 w-full bg-[#F7F9F6]">
+                  <Image
+                    src="https://images.unsplash.com/photo-1767917920874-946c7d5fbf31?auto=format&fit=crop&w=1200&q=80"
+                    alt="Sabuk Mangrove Pesisir Bengkulu"
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-102"
+                    sizes="(max-width: 1024px) 100vw, 500px"
+                    priority
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                  
+                  {/* Subtle Top Coordinate Pill */}
+                  <div className="absolute top-3.5 inset-x-3.5 flex items-center justify-between text-[11px]">
+                    <div className="inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[#202820] border border-[#E7ECE5] shadow-xs font-mono text-[10px]">
+                      <Compass className="w-3.5 h-3.5 text-[#52B040]" />
+                      <span>3°54&apos;12&quot;S, 102°17&apos;40&quot;E</span>
+                    </div>
+                    <div className="inline-flex items-center gap-1.5 bg-[#52B040] text-white px-3 py-1 rounded-full text-[10px] uppercase font-semibold shadow-xs">
+                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                      <span>Terverifikasi</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom Dossier Caption */}
+                <div className="p-5 bg-white text-[#202820] space-y-2 text-left">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-[#348D32] bg-[#EAF5E6] px-2.5 py-0.5 rounded-full border border-[#d2ebd0]">
+                      Sektor Prioritas Konservasi
+                    </span>
+                    <span className="text-[#7A8278] text-[11px] font-mono">BKL-002</span>
+                  </div>
+                  <div className="text-base font-bold text-[#202820]">
+                    Sabuk Mangrove Teluk Baai &amp; Pantai Panjang
+                  </div>
+                  <div className="text-xs text-[#7A8278] flex items-center justify-between pt-2 border-t border-[#EEF1EC]">
+                    <span>Spesies Utama: <strong className="text-[#348D32] font-semibold">Rhizophora apiculata</strong></span>
+                    <Link href="/peta" className="text-[#52B040] hover:text-[#348D32] font-semibold inline-flex items-center gap-1">
+                      <span>Lihat di Peta</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
+                  </div>
+                </div>
+
+              </div>
             </div>
 
           </div>
