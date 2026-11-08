@@ -11,10 +11,10 @@ export default function Footer() {
           {/* Brand & Mascot */}
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="relative w-10 h-10 rounded-full overflow-hidden border border-emerald-400">
+              <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-400 ring-2 ring-emerald-500/30 shadow-xs shrink-0">
                 <Image 
                   src="/mascot-scopey.jpg" 
-                  alt="Scopey Mascot" 
+                  alt="GreenScope Mascot Scopey" 
                   fill
                   className="object-cover"
                   sizes="40px"

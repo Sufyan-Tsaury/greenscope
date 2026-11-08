@@ -41,8 +41,15 @@ export default function Navbar() {
             
             {/* Logo Brand */}
             <Link href="/" className="flex items-center gap-3 group focus:outline-hidden">
-              <div className="w-9 h-9 border border-emerald-950 bg-emerald-900 text-white flex items-center justify-center font-bold shadow-none group-hover:bg-emerald-950 transition-colors">
-                <Leaf className="w-4 h-4 text-emerald-300" />
+              <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-emerald-700/60 ring-2 ring-emerald-500/20 shadow-xs group-hover:border-emerald-600 transition-all shrink-0">
+                <Image 
+                  src="/mascot-scopey.jpg" 
+                  alt="GreenScope Mascot Scopey" 
+                  fill 
+                  className="object-cover group-hover:scale-105 transition-transform duration-300" 
+                  sizes="40px"
+                  priority
+                />
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
