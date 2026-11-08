@@ -52,11 +52,16 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markersMapRef = useRef<Map<string, L.Marker>>(new Map());
 
-  // 1. Inisialisasi peta Leaflet satu kali
+  // 1. Inisialisasi peta Leaflet satu kali dengan pembersihan yang aman
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
     if (!mapInstanceRef.current) {
+      // Bersihkan _leaflet_id jika container pernah digunakan sebelumnya
+      if ((mapContainerRef.current as any)._leaflet_id) {
+        (mapContainerRef.current as any)._leaflet_id = null;
+      }
+
       // Peta terpusat di Pesisir Bengkulu (-3.8214, 102.2741)
       const map = L.map(mapContainerRef.current, {
         center: [-3.8214, 102.2741],
@@ -74,7 +79,10 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
     }
 
     return () => {
-      // Cleanup on unmount
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
     };
   }, []);
 

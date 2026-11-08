@@ -299,7 +299,7 @@ export default function HomePage() {
                     <div className="flex justify-between">
                       <span className="text-stone-500">Spesies Rekomendasi:</span>
                       <span className="text-emerald-900 font-medium italic font-serif">
-                        {selectedMapReport.ai_analysis.spesies_rekomendasi.split(',')[0]}
+                        {(selectedMapReport.ai_analysis?.spesies_rekomendasi || 'Rhizophora apiculata').split(',')[0]}
                       </span>
                     </div>
                     <div className="flex justify-between">

@@ -390,7 +390,7 @@ export default function DashboardPage() {
                     <h4 className="text-sm font-bold text-stone-900">{rep.title}</h4>
                     
                     <p className="text-xs text-emerald-800 font-medium">
-                      Solusi Botani: <span className="italic font-serif">{rep.ai_analysis.spesies_rekomendasi}</span>
+                      Solusi Botani: <span className="italic font-serif">{rep.ai_analysis?.spesies_rekomendasi || 'Rhizophora apiculata'}</span>
                     </p>
                   </div>
                 </div>

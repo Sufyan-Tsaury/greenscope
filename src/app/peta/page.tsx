@@ -225,14 +225,14 @@ export default function PetaPage() {
                   Rekomendasi Spesies Botani:
                 </span>
                 <div className="text-emerald-800 font-mono font-semibold">
-                  {selectedReport.ai_analysis.spesies_rekomendasi}
+                  {selectedReport.ai_analysis?.spesies_rekomendasi || 'Rhizophora apiculata (Bakau Minyak)'}
                 </div>
               </div>
 
               <div>
                 <span className="font-bold text-slate-800 block mb-1">Rekomendasi Tindakan:</span>
                 <ul className="space-y-1 text-slate-600">
-                  {selectedReport.ai_analysis.tindakan_konservasi.map((act, i) => (
+                  {(selectedReport.ai_analysis?.tindakan_konservasi || []).map((act, i) => (
                     <li key={i} className="flex items-start gap-1.5">
                       <span className="text-emerald-600 font-bold">•</span>
                       <span>{act}</span>
@@ -243,7 +243,9 @@ export default function PetaPage() {
 
               <div className="p-2.5 rounded-none bg-stone-50 border border-stone-200 text-stone-700">
                 <span className="font-mono font-bold text-stone-800 uppercase tracking-wider text-[10px] block mb-0.5">Potensi Risiko:</span>
-                <p className="font-sans text-xs">{selectedReport.ai_analysis.estimasi_risiko}</p>
+                <p className="font-sans text-xs">
+                  {selectedReport.ai_analysis?.estimasi_risiko || 'Potensi degradasi ekosistem pesisir jika tidak segera ditangani.'}
+                </p>
               </div>
             </div>
 
@@ -295,7 +297,7 @@ export default function PetaPage() {
 
             <div className="text-xs space-y-1 text-stone-700">
               <div className="font-semibold text-emerald-800 font-serif italic">
-                Spesies: {selectedReport.ai_analysis.spesies_rekomendasi}
+                Spesies: {selectedReport.ai_analysis?.spesies_rekomendasi || 'Rhizophora apiculata (Bakau)'}
               </div>
               <p className="line-clamp-2 font-sans text-[11px] text-stone-600">{selectedReport.description}</p>
             </div>
