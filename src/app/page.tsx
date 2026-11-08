@@ -39,10 +39,10 @@ export default function HomePage() {
             {/* Left Content */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               
-              {/* Field Tag */}
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-semibold bg-emerald-100/70 text-emerald-900 border border-emerald-200">
-                <Leaf className="w-3.5 h-3.5 text-emerald-800" />
-                <span>Platform Konservasi Pesisir &amp; Hutan Tropis Bengkulu</span>
+              {/* Scientific Editorial Overline */}
+              <div className="flex items-center justify-center lg:justify-start gap-2.5 text-xs font-mono font-medium text-emerald-800 tracking-wider uppercase">
+                <span className="w-5 h-px bg-emerald-700"></span>
+                <span>SISTEM INFORMASI GEOSPASIAL &amp; PRESERVASI EKOLOGI BENGKULU</span>
               </div>
 
               {/* Headline */}
@@ -103,7 +103,7 @@ export default function HomePage() {
 
             {/* Right Hero Graphic: Real Scientific Field Dossier */}
             <div className="lg:col-span-5 relative flex justify-center">
-              <div className="relative w-full max-w-md rounded-2xl overflow-hidden shadow-xl border border-slate-200 bg-slate-900 group">
+              <div className="relative w-full max-w-md rounded-lg overflow-hidden border border-slate-300 bg-slate-900 group shadow-sm">
                 
                 {/* Field Photography of Bengkulu Coastal Mangrove */}
                 <div className="relative aspect-4/3 w-full bg-slate-800">
@@ -115,17 +115,18 @@ export default function HomePage() {
                     sizes="(max-width: 1024px) 100vw, 500px"
                     priority
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
                   
-                  {/* Top Coordinate Stamp */}
-                  <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-                    <div className="px-2.5 py-1 rounded bg-black/70 backdrop-blur-md text-[11px] font-mono font-medium text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
-                      <Compass className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>3°48&apos;56.2&quot;S 102°15&apos;32.4&quot;E</span>
+                  {/* Integrated Cartographic Top Header Bar (No Floating Sticker) */}
+                  <div className="absolute top-0 inset-x-0 bg-slate-950/80 backdrop-blur-xs border-b border-white/10 px-3.5 py-1.5 flex items-center justify-between text-[11px] font-mono text-slate-300">
+                    <div className="flex items-center gap-1.5 text-emerald-400">
+                      <Compass className="w-3.5 h-3.5" />
+                      <span>3°48&apos;56.2&quot;S, 102°15&apos;32.4&quot;E</span>
                     </div>
-                    <span className="px-2 py-0.5 rounded bg-emerald-900/90 text-[10px] font-semibold text-emerald-200 border border-emerald-600/40">
-                      Terverifikasi
-                    </span>
+                    <div className="flex items-center gap-1.5 text-emerald-300 text-[10px] uppercase font-semibold">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                      <span>Terverifikasi</span>
+                    </div>
                   </div>
                 </div>
 
@@ -159,9 +160,10 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto space-y-3 mb-12">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
-              <SlidersHorizontal className="w-3.5 h-3.5 text-emerald-700" />
-              <span>Dokumentasi Pemulihan Ekosistem</span>
+            <div className="flex items-center justify-center gap-2 text-xs font-mono font-medium text-emerald-800 tracking-wider uppercase">
+              <span className="w-5 h-px bg-emerald-700"></span>
+              <span>DOKUMENTASI PEMULIHAN BENTANG ALAM</span>
+              <span className="w-5 h-px bg-emerald-700"></span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
               Dari Laporan Kerusakan Menjadi Bentang Alam Pulih
@@ -173,7 +175,7 @@ export default function HomePage() {
 
           {/* Interactive Split-Screen Slider */}
           <div className="max-w-4xl mx-auto">
-            <div className="relative aspect-16/9 sm:aspect-21/9 rounded-2xl overflow-hidden shadow-lg border border-slate-200 select-none bg-slate-900">
+            <div className="relative aspect-16/9 sm:aspect-21/9 rounded-lg overflow-hidden border border-slate-300 select-none bg-slate-900 shadow-sm">
               
               {/* After Image (Full Background) */}
               <div className="absolute inset-0">
@@ -184,8 +186,8 @@ export default function HomePage() {
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 896px"
                 />
-                <span className="absolute bottom-4 right-4 z-10 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-800/90 text-white backdrop-blur-md shadow-sm flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" /> Pulih: Sabuk Pesisir Asri
+                <span className="absolute bottom-4 right-4 z-10 px-3 py-1 rounded text-xs font-mono font-medium bg-slate-950/85 text-emerald-300 border border-emerald-500/30 backdrop-blur-xs flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Pulih: Sabuk Pesisir Asri
                 </span>
               </div>
 
@@ -201,8 +203,8 @@ export default function HomePage() {
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 896px"
                 />
-                <span className="absolute bottom-4 left-4 z-10 px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-800/90 text-white backdrop-blur-md shadow-sm flex items-center gap-1.5">
-                  <AlertTriangle className="w-3.5 h-3.5 text-rose-300" /> Awal: Timbunan Sampah &amp; Abrasi
+                <span className="absolute bottom-4 left-4 z-10 px-3 py-1 rounded text-xs font-mono font-medium bg-slate-950/85 text-rose-300 border border-rose-500/30 backdrop-blur-xs flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 text-rose-400" /> Awal: Timbunan Sampah &amp; Abrasi
                 </span>
               </div>
 
@@ -228,107 +230,172 @@ export default function HomePage() {
               />
             </div>
 
-            <div className="mt-3 text-center text-xs text-slate-500">
-              *Geser pegangan slider di atas untuk mengamati perbedaan kondisi ekosistem.
+            <div className="mt-3 text-center text-xs text-slate-500 font-mono">
+              *Geser indikator slider di atas untuk mengamati perbedaan kondisi bentang alam.
             </div>
           </div>
 
         </div>
       </section>
 
-      {/* 4. BLUE & GREEN CARBON CALCULATOR */}
-      <section className="py-16 sm:py-20 bg-[#062c23] text-white relative overflow-hidden border-b border-emerald-950">
+      {/* 4. BLUE & GREEN CARBON CALCULATOR: OPEN SCIENTIFIC SPREAD */}
+      <section className="py-20 bg-[#071d17] text-white relative overflow-hidden border-y border-emerald-950/80">
+        
+        {/* Subtle Cartographic Caliper Coordinate Grid Background */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:3rem_3rem] pointer-events-none"></div>
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
             
-            <div className="lg:col-span-6 space-y-4">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-emerald-900/80 text-emerald-300 border border-emerald-700/60">
-                <Leaf className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Kalkulator Estimasi Biomassa Karbon Biru</span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-                Potensi Penyerapan Karbon Pesisir Bengkulu
-              </h2>
-              <p className="text-slate-300 text-sm leading-relaxed">
-                Hutan mangrove pesisir memiliki kapasitas mitigasi iklim luar biasa, mampu menyimpan karbon organik hingga <strong>4–5 kali lebih padat</strong> dibandingkan hutan daratan. Simulasikan target bibit restorasi untuk memperkirakan serapan tahunan.
-              </p>
+            {/* Left Column (7 cols): Editorial Narrative & Precision Caliper Scale */}
+            <div className="lg:col-span-7 space-y-8">
               
-              {/* Slider Control */}
-              <div className="pt-4 space-y-3 bg-[#0a382d] p-5 rounded-xl border border-emerald-800/60">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium text-slate-300">Target Bibit Ditanam:</span>
-                  <span className="text-xl font-bold text-emerald-300 font-mono">{carbonTrees} Bibit</span>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2.5 text-xs font-mono font-medium text-emerald-400 tracking-wider uppercase">
+                  <span className="w-6 h-px bg-emerald-500"></span>
+                  <span>LEMBAR METRIK BIOMASSA KARBON BIRU PESISIR BENGKULU</span>
                 </div>
-                <input
-                  type="range"
-                  min="50"
-                  max="1000"
-                  step="25"
-                  value={carbonTrees}
-                  onChange={(e) => setCarbonTrees(Number(e.target.value))}
-                  className="w-full accent-emerald-400 cursor-pointer h-2 bg-emerald-950 rounded-lg"
-                />
-                <div className="flex justify-between text-[11px] text-emerald-400/80 font-mono">
-                  <span>50 Bibit</span>
-                  <span>500 Bibit</span>
-                  <span>1.000 Bibit</span>
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
+                  Potensi Mitigasi Iklim Sabuk Mangrove Pesisir Bengkulu
+                </h2>
+                <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-normal">
+                  Hutan mangrove pesisir barat Sumatera memiliki kapasitas mitigasi iklim luar biasa, mampu menyimpan karbon organik hingga <strong className="text-white font-semibold">4–5 kali lebih padat</strong> per hektar dibandingkan hutan hujan daratan. Simulasikan target bibit restorasi untuk memperkirakan serapan tahunan.
+                </p>
+              </div>
+
+              {/* Open Precision Caliper Slider (Zero Box Wrapper) */}
+              <div className="pt-6 border-t border-emerald-900/60 space-y-4">
+                <div className="flex items-baseline justify-between">
+                  <div>
+                    <span className="text-xs font-mono uppercase tracking-wider text-emerald-400/90 block">
+                      Target Intervensi Restorasi:
+                    </span>
+                    <span className="text-xs text-slate-400">
+                      Bibit mangrove berajir bambu siap tanam
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-3xl sm:text-4xl font-bold text-emerald-300 font-mono tabular-nums">
+                      {carbonTrees}
+                    </span>
+                    <span className="text-sm font-normal text-emerald-400/80 ml-1.5 font-mono">
+                      Bibit
+                    </span>
+                  </div>
+                </div>
+
+                {/* Minimalist Range Scale */}
+                <div className="space-y-2">
+                  <input
+                    type="range"
+                    min="50"
+                    max="1000"
+                    step="25"
+                    value={carbonTrees}
+                    onChange={(e) => setCarbonTrees(Number(e.target.value))}
+                    className="w-full accent-emerald-400 cursor-pointer h-2 bg-emerald-950 rounded-none border border-emerald-800/80"
+                    aria-label="Simulasi Target Jumlah Bibit"
+                  />
+                  <div className="flex justify-between text-[11px] text-emerald-400/70 font-mono">
+                    <span className="flex items-center gap-1">| 50 Bibit</span>
+                    <span className="flex items-center gap-1">| 500 Bibit</span>
+                    <span className="flex items-center gap-1">| 1.000 Bibit</span>
+                  </div>
+                </div>
+
+                <div className="text-[11px] text-slate-400 font-mono pt-1">
+                  *Perhitungan didasarkan pada koefisien allometrik rata-rata spesies <em>Rhizophora apiculata</em> dan <em>Avicennia marina</em> di pesisir Sumatera (~12,5 kg CO₂e/pohon/tahun).
                 </div>
               </div>
+
             </div>
 
-            {/* Metric Display Card */}
-            <div className="lg:col-span-6 flex justify-center">
-              <div className="w-full max-w-md p-8 rounded-2xl bg-[#09352b] border border-emerald-700/50 shadow-xl text-center space-y-6">
-                <div>
-                  <div className="text-xs uppercase tracking-wider font-semibold text-emerald-300">
-                    Estimasi Serapan Karbon Tahunan
-                  </div>
-                  <div className="text-5xl font-bold text-white font-mono mt-2 tracking-tight">
-                    {calculatedCO2.toLocaleString('id-ID')}
-                    <span className="text-lg font-normal text-emerald-300 ml-2">kg CO₂e/th</span>
-                  </div>
+            {/* Right Column (5 cols): Open Structured Data Sheet (Zero Nested Cards) */}
+            <div className="lg:col-span-5 border-t lg:border-t-0 lg:border-l border-emerald-900/60 pt-8 lg:pt-0 lg:pl-12 space-y-8">
+              
+              {/* Primary Metric Output */}
+              <div className="space-y-2">
+                <div className="text-xs font-mono uppercase tracking-widest text-emerald-400/90">
+                  ESTIMASI SERAPAN KARBON TAHUNAN
+                </div>
+                <div className="text-6xl sm:text-7xl font-bold text-white font-mono tracking-tight tabular-nums">
+                  {calculatedCO2.toLocaleString('id-ID')}
+                  <span className="text-lg sm:text-xl font-normal text-emerald-300/80 ml-2 font-mono">
+                    kg CO₂e/th
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400">
+                  Estimasi ekuivalen biomassa tersimpan dalam sedimen tanah dan tegakan pohon setelah fase pemantauan 12 bulan.
+                </p>
+              </div>
+
+              {/* Structured Data Rows with Hairline Dividers */}
+              <div className="border-y border-emerald-900/60 divide-y divide-emerald-900/60 text-xs">
+                
+                <div className="py-3.5 flex items-center justify-between">
+                  <span className="text-slate-400">Equivalensi Emisi Dinetralkan</span>
+                  <span className="font-mono font-semibold text-emerald-300 tabular-nums">
+                    ~{Math.round(calculatedCO2 / 120)} Penerbangan Domestik
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-emerald-800/80 text-left">
-                  <div className="p-3 rounded-lg bg-emerald-950/60 border border-emerald-800/60">
-                    <div className="text-[10px] text-emerald-300/80 uppercase font-medium">Equivalensi Emisi</div>
-                    <div className="text-sm font-semibold text-white mt-0.5">
-                      ~{Math.round(calculatedCO2 / 120)} Perjalanan Udara
-                    </div>
-                  </div>
-                  <div className="p-3 rounded-lg bg-emerald-950/60 border border-emerald-800/60">
-                    <div className="text-[10px] text-emerald-300/80 uppercase font-medium">Sabuk Penahan Erosi</div>
-                    <div className="text-sm font-semibold text-white mt-0.5">
-                      +{Math.round(carbonTrees * 0.8)} Meter Garis Pantai
-                    </div>
-                  </div>
+                <div className="py-3.5 flex items-center justify-between">
+                  <span className="text-slate-400">Sabuk Perlindungan Abrasi</span>
+                  <span className="font-mono font-semibold text-emerald-300 tabular-nums">
+                    +{Math.round(carbonTrees * 0.8)} Meter Garis Sempadan
+                  </span>
                 </div>
 
+                <div className="py-3.5 flex items-center justify-between">
+                  <span className="text-slate-400">Kesesuaian Tipe Substrat</span>
+                  <span className="font-mono text-slate-200">
+                    Lumpur Berpasir Estuari
+                  </span>
+                </div>
+
+                <div className="py-3.5 flex items-center justify-between">
+                  <span className="text-slate-400">Status Validasi Lapangan</span>
+                  <span className="font-mono font-medium text-emerald-400 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    Formula Sesuai Standar IPCC
+                  </span>
+                </div>
+
+              </div>
+
+              {/* Direct Field Action Link */}
+              <div className="pt-2">
                 <Link
                   href="/aksi"
-                  className="block w-full py-3 rounded-lg font-semibold text-sm text-emerald-950 bg-emerald-300 hover:bg-emerald-200 transition-colors shadow-xs"
+                  className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg font-semibold text-sm text-emerald-950 bg-emerald-300 hover:bg-emerald-200 transition-colors shadow-xs"
                 >
-                  Daftar Aksi Penanaman Lapangan
+                  <span>Daftar Aksi Penanaman Lapangan</span>
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
+                <div className="text-center mt-2.5 text-[11px] text-slate-400 font-mono">
+                  Sinergi kolaboratif masyarakat lokal dan relawan GreenScope Bengkulu
+                </div>
               </div>
+
             </div>
 
           </div>
         </div>
       </section>
 
-      {/* 5. QUICK FIELD SCANNER BANNER */}
-      <section className="py-10 bg-slate-50 border-t border-slate-200">
+      {/* 5. QUICK FIELD SCANNER BANNER: CLEAN FIELD REGISTER */}
+      <section className="py-12 bg-[#fafbfa] border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-xl bg-white border border-slate-200 p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xs">
-            <div className="space-y-1 text-center md:text-left">
-              <div className="text-xs font-semibold text-emerald-800 uppercase tracking-wider">
-                Pusat Pemindaian Cepat Lapangan
+          <div className="rounded-lg bg-white border border-slate-300 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xs">
+            <div className="space-y-1.5 text-center md:text-left">
+              <div className="text-xs font-mono font-medium text-emerald-800 uppercase tracking-wider flex items-center justify-center md:justify-start gap-2">
+                <span className="w-4 h-px bg-emerald-700"></span>
+                <span>PUSAT PEMINDAIAN CEPAT LAPANGAN</span>
               </div>
-              <h3 className="text-lg font-bold text-slate-900">
+              <h3 className="text-xl font-bold text-slate-900 tracking-tight">
                 Diagnosis Otomatis dengan Sampel Lapangan Bengkulu
               </h3>
-              <p className="text-xs text-slate-600 max-w-2xl">
+              <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
                 Tersedia set data foto lapangan riil kawasan pesisir dan hutan Bengkulu untuk simulasi diagnosis ekologi secara instan.
               </p>
             </div>
@@ -336,7 +403,7 @@ export default function HomePage() {
             <div className="flex items-center gap-3 shrink-0">
               <Link
                 href="/lapor"
-                className="px-4 py-2.5 rounded-lg text-xs font-semibold text-white bg-emerald-800 hover:bg-emerald-900 transition-colors flex items-center gap-2"
+                className="px-5 py-3 rounded-lg text-xs font-semibold text-white bg-emerald-800 hover:bg-emerald-900 transition-colors flex items-center gap-2 shadow-xs"
               >
                 <Camera className="w-4 h-4" />
                 <span>Mulai Pindai Lapangan</span>

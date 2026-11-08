@@ -227,9 +227,9 @@ export default function LaporPage() {
         {/* Header with Mascot Scopey */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-200">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs font-semibold bg-emerald-100 text-emerald-900 border border-emerald-200">
-              <Leaf className="w-3.5 h-3.5 text-emerald-800" />
-              <span>ScopeLens Computer Vision • Model Analisis Multimodal</span>
+            <div className="flex items-center gap-2 text-xs font-mono font-medium text-emerald-800 tracking-wider uppercase">
+              <span className="w-4 h-px bg-emerald-700"></span>
+              <span>SCOPELENS COMPUTER VISION • MODEL DIAGNOSIS EKOLOGI</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
               Pindai &amp; Diagnosis Kerusakan Bentang Alam
@@ -295,7 +295,7 @@ export default function LaporPage() {
           
           {/* Left Column: Image Uploader & Metadata */}
           <div className="lg:col-span-6 space-y-5">
-            <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-sm space-y-5">
+            <div className="p-6 rounded-lg bg-white border border-slate-300 shadow-xs space-y-5">
               
               <div className="flex items-center justify-between">
                 <label className="text-sm font-bold text-slate-900 flex items-center gap-2">
@@ -419,7 +419,7 @@ export default function LaporPage() {
           {/* Right Column: AI Output Diagnostic Card */}
           <div className="lg:col-span-6 space-y-5">
             {analysisResult ? (
-              <div className="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200/90 shadow-md space-y-6 animate-in fade-in-50 duration-500">
+              <div className="p-6 sm:p-7 rounded-lg bg-white border border-slate-300 shadow-sm space-y-6 animate-in fade-in-50 duration-500">
                 
                 {/* Result Status: Valid or Non-Environment Rejection */}
                 {!analysisResult.valid ? (

@@ -139,12 +139,12 @@ export default function AksiPage() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-200">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-teal-100 text-teal-800 border border-teal-300">
+            <div className="flex items-center gap-2 text-xs font-mono font-medium text-emerald-800 tracking-wider uppercase">
               <Users className="w-3.5 h-3.5 text-teal-700" />
               <span>Gerakan Gotong Royong Konservasi Pesisir &amp; Hutan Tropis</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-              Aksi Nyata &amp; Rencana Teknis AI.
+              Aksi Nyata &amp; Lembar Rencana Lapangan
             </h1>
             <p className="text-slate-600 text-sm max-w-2xl leading-relaxed">
               Ubah laporan lapangan menjadi kampanye aksi nyata. Dilengkapi <strong>AI Action Brief Generator</strong> yang otomatis menyusun logistik, pembagian regu kerja relawan, dan protokol keselamatan kerja.
@@ -157,7 +157,7 @@ export default function AksiPage() {
             className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 shadow-md transition-all active:scale-95 shrink-0 cursor-pointer"
           >
             <Plus className="w-4 h-4 text-emerald-400" />
-            <span>Buka Aksi Baru (AI Brief)</span>
+            <span>Buat Rencana Aksi Baru</span>
           </button>
         </div>
 
@@ -170,7 +170,7 @@ export default function AksiPage() {
             return (
               <div 
                 key={camp.id}
-                className="rounded-3xl bg-white border border-slate-200/90 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow"
+                className="rounded-lg bg-white border border-slate-300 shadow-2xs overflow-hidden flex flex-col justify-between hover:border-slate-400 transition-colors"
               >
                 <div>
                   {/* Photo Header */}

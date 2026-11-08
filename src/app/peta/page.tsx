@@ -120,7 +120,7 @@ export default function PetaPage() {
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-xs transition-colors"
             >
               <Camera className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Tambah Titik AI</span>
+              <span className="hidden sm:inline">Pindai Lokasi Baru</span>
             </Link>
           </div>
 
@@ -139,11 +139,11 @@ export default function PetaPage() {
 
         {/* DESKTOP SLIDE-OVER DRAWER (RIGHT PANEL) */}
         {selectedReport && (
-          <div className="hidden lg:block absolute top-4 right-4 z-20 w-96 max-h-[calc(100%-2rem)] overflow-y-auto rounded-3xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-2xl p-5 space-y-4 animate-in slide-in-from-right-4">
+          <div className="hidden lg:block absolute top-4 right-4 z-20 w-96 max-h-[calc(100%-2rem)] overflow-y-auto rounded-lg bg-white border border-slate-300 shadow-md p-5 space-y-4 animate-in slide-in-from-right-4">
             
             <div className="flex items-start justify-between gap-2 pb-3 border-b border-slate-100">
               <div className="space-y-1">
-                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider inline-block ${
+                <span className={`font-mono text-xs font-semibold uppercase inline-flex items-center gap-1 ${
                   selectedReport.severity === 'kritis' 
                     ? 'bg-rose-100 text-rose-800' 
                     : selectedReport.severity === 'tinggi'
@@ -166,7 +166,7 @@ export default function PetaPage() {
             </div>
 
             {/* Photo Viewport */}
-            <div className="relative aspect-16/10 rounded-2xl overflow-hidden bg-slate-900 shadow-inner">
+            <div className="relative aspect-16/10 rounded-lg overflow-hidden bg-slate-900 border border-slate-300">
               <Image
                 src={selectedReport.image_url}
                 alt={selectedReport.title}
@@ -227,10 +227,10 @@ export default function PetaPage() {
 
         {/* MOBILE THUMB-FRIENDLY BOTTOM-SHEET DRAWER */}
         {selectedReport && mobileDrawerOpen && (
-          <div className="lg:hidden absolute bottom-14 left-2 right-2 z-30 max-h-[65vh] overflow-y-auto rounded-3xl bg-white border border-slate-200/90 shadow-2xl p-4 space-y-3 animate-in slide-in-from-bottom-6">
+          <div className="lg:hidden absolute bottom-14 left-2 right-2 z-30 max-h-[65vh] overflow-y-auto rounded-lg bg-white border border-slate-300 shadow-xl p-4 space-y-3 animate-in slide-in-from-bottom-6">
             <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-2">
               <div>
-                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                <span className="text-xs font-mono font-semibold text-rose-700 flex items-center gap-1">
                   Urgensi: {selectedReport.urgency_score}/100
                 </span>
                 <h3 className="text-sm font-bold text-slate-900 mt-0.5 line-clamp-1">
