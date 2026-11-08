@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
@@ -20,14 +20,41 @@ import {
   Trees, 
   Waves, 
   Trash2, 
-  Users 
+  Users,
+  Activity,
+  Sparkles,
+  RefreshCw,
+  Globe
 } from 'lucide-react';
 import { INITIAL_REPORTS } from '@/lib/mock-data';
+import { JudgeActivityLog, getRecentActivities } from '@/lib/auth';
 
 export default function DashboardPage() {
   const [activeRole, setActiveRole] = useState<'volunteer' | 'coordinator'>('coordinator');
   const [reports, setReports] = useState(INITIAL_REPORTS);
   const [filterCategory, setFilterCategory] = useState<'all' | 'pesisir' | 'hutan'>('all');
+  const [auditLogs, setAuditLogs] = useState<JudgeActivityLog[]>([]);
+  const [isRefreshingLogs, setIsRefreshingLogs] = useState(false);
+
+  // Load audit activities
+  const loadLogs = async () => {
+    setIsRefreshingLogs(true);
+    try {
+      const logs = await getRecentActivities();
+      setAuditLogs(logs);
+    } catch (e) {
+      console.warn(e);
+    } finally {
+      setIsRefreshingLogs(false);
+    }
+  };
+
+  useEffect(() => {
+    loadLogs();
+    const handleNewLog = () => loadLogs();
+    window.addEventListener('greenscope_audit_logged', handleNewLog);
+    return () => window.removeEventListener('greenscope_audit_logged', handleNewLog);
+  }, []);
 
   const handleUpdateStatus = (id: string, newStatus: any) => {
     setReports((prev) =>
@@ -422,6 +449,111 @@ export default function DashboardPage() {
             ))}
           </div>
 
+        </div>
+
+        {/* 4. AUDIT TRAIL LOG AKTIVITAS DEWAN JURI & EVALUATOR (SUPABASE REALTIME) */}
+        <div className="bg-white rounded-3xl border border-[#E7ECE5] p-6 sm:p-7 space-y-5 text-left shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#EEF1EC]">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#52B040] animate-pulse"></span>
+                <h3 className="text-sm font-bold text-[#202820] uppercase tracking-wider flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-[#52B040]" />
+                  <span>Audit Trail Kunjungan &amp; Pengujian Dewan Juri</span>
+                </h3>
+              </div>
+              <p className="text-xs text-[#7A8278]">
+                Setiap kali penguji / juri masuk dan mengecek fitur web, waktu dan riwayat tercatat secara otomatis di Supabase PostgreSQL.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={loadLogs}
+                disabled={isRefreshingLogs}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#E7ECE5] text-xs font-semibold text-[#202820] hover:bg-[#F7F9F6] transition-colors cursor-pointer"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 text-[#52B040] ${isRefreshingLogs ? 'animate-spin' : ''}`} />
+                <span>Segarkan Log</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Audit Log Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left">
+              <thead>
+                <tr className="border-b border-[#EEF1EC] text-[11px] font-bold uppercase tracking-wider text-[#7A8278]">
+                  <th className="pb-3 font-semibold">Waktu Pencatatan</th>
+                  <th className="pb-3 font-semibold">Identitas Penguji / Akun</th>
+                  <th className="pb-3 font-semibold">Peran</th>
+                  <th className="pb-3 font-semibold">Jenis Aktivitas</th>
+                  <th className="pb-3 font-semibold">Status / Perangkat</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#EEF1EC]">
+                {auditLogs.length > 0 ? (
+                  auditLogs.map((log) => (
+                    <tr key={log.id} className="hover:bg-[#F7F9F6] transition-colors">
+                      <td className="py-3 font-mono text-[11px] text-[#202820] whitespace-nowrap">
+                        {new Date(log.created_at).toLocaleTimeString('id-ID', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          second: '2-digit',
+                        })} WIB
+                      </td>
+                      <td className="py-3 font-medium text-[#202820]">
+                        <div className="font-bold flex items-center gap-1.5">
+                          {log.role === 'coordinator' && <Sparkles className="w-3.5 h-3.5 text-[#52B040]" />}
+                          {log.user_name}
+                        </div>
+                        <div className="text-[11px] text-[#7A8278] font-mono">{log.user_email}</div>
+                      </td>
+                      <td className="py-3">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                          log.role === 'coordinator'
+                            ? 'bg-[#EAF5E6] text-[#348D32] border border-[#d2ebd0]'
+                            : 'bg-stone-100 text-stone-700 border border-stone-200'
+                        }`}>
+                          {log.role === 'coordinator' ? 'Dewan Juri' : 'Relawan'}
+                        </span>
+                      </td>
+                      <td className="py-3 font-semibold text-[#202820]">
+                        <span className="font-mono text-[11px] bg-[#F7F9F6] px-2 py-0.5 rounded-md border border-[#E7ECE5]">
+                          {log.action_type}
+                        </span>
+                      </td>
+                      <td className="py-3 text-[#7A8278] text-[11px]">
+                        <div className="flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#52B040] shrink-0" />
+                          <span className="truncate max-w-[200px]" title={log.ip_info}>
+                            Tercatat di Supabase Cloud
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="py-6 text-center text-[#7A8278]">
+                      Belum ada riwayat aktivitas yang tercatat.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#7A8278] border-t border-[#EEF1EC]">
+            <span className="flex items-center gap-1">
+              <Globe className="w-3.5 h-3.5 text-[#52B040]" />
+              Sinkronisasi realtime dengan tabel <code>judge_activities</code> di Supabase PostgreSQL.
+            </span>
+            <span className="font-mono text-[10px] bg-[#EAF5E6] text-[#348D32] px-2 py-0.5 rounded-full mt-1 sm:mt-0 font-semibold">
+              RLS Keamanan Aktif
+            </span>
+          </div>
         </div>
 
       </div>
