@@ -38,6 +38,19 @@ export default function HomePage() {
   const [selectedMapReport, setSelectedMapReport] = useState<Report | null>(INITIAL_REPORTS[0]);
   const [mapFilter, setMapFilter] = useState<string>('all');
 
+  // Smooth filter navigation: updates filter AND flies camera to matching location
+  const handleFilterSector = (filterId: string) => {
+    setMapFilter(filterId);
+    if (filterId === 'all') {
+      setSelectedMapReport(null);
+    } else {
+      const match = INITIAL_REPORTS.find((r) => r.ecosystem === filterId);
+      if (match) {
+        setSelectedMapReport(match);
+      }
+    }
+  };
+
   // Perhitungan Karbon Biru Sederhana: ~12.5 kg CO2e/pohon/tahun untuk mangrove/pohon keras tropis
   const calculatedCO2 = Math.round(carbonTrees * 12.5);
 
@@ -202,10 +215,10 @@ export default function HomePage() {
                 <button
                   key={f.id}
                   type="button"
-                  onClick={() => setMapFilter(f.id)}
-                  className={`px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer border ${
+                  onClick={() => handleFilterSector(f.id)}
+                  className={`px-3 py-1.5 text-xs font-medium transition-all duration-200 cursor-pointer border ${
                     mapFilter === f.id
-                      ? 'bg-emerald-900 text-white border-emerald-900'
+                      ? 'bg-emerald-900 text-white border-emerald-900 shadow-xs'
                       : 'bg-stone-50 text-stone-700 border-stone-300 hover:bg-stone-100'
                   }`}
                 >
@@ -314,8 +327,50 @@ export default function HomePage() {
                   </div>
                 </div>
               ) : (
-                <div className="py-12 text-center text-xs text-stone-500">
-                  Pilih salah satu pin pada peta untuk meninjau data.
+                <div className="space-y-3">
+                  <div>
+                    <h3 className="font-serif font-bold text-base text-stone-900 leading-snug">
+                      Seluruh Sektor Terdata Bengkulu
+                    </h3>
+                    <p className="text-[11px] text-stone-500 mt-1 leading-relaxed">
+                      Menampilkan 4 titik pengawasan ekosistem pesisir barat dan hutan. Klik salah satu sektor untuk terbang langsung ke lokasinya:
+                    </p>
+                  </div>
+
+                  <div className="space-y-1.5 pt-1">
+                    {INITIAL_REPORTS.map((rep) => (
+                      <button
+                        key={rep.id}
+                        type="button"
+                        onClick={() => setSelectedMapReport(rep)}
+                        className="w-full p-2 bg-stone-50 hover:bg-emerald-50/80 border border-stone-200 text-left transition-colors cursor-pointer flex items-center justify-between"
+                      >
+                        <div className="space-y-0.5 truncate pr-2">
+                          <div className="text-xs font-bold text-stone-900 truncate">
+                            {rep.title.split('&')[0]}
+                          </div>
+                          <div className="text-[10px] text-stone-500 font-mono">
+                            {rep.location_name.split(',')[0]}
+                          </div>
+                        </div>
+                        <span className={`text-[10px] font-semibold font-mono px-1.5 py-0.5 shrink-0 ${
+                          rep.severity === 'kritis' ? 'text-rose-700 bg-rose-50' : 'text-amber-700 bg-amber-50'
+                        }`}>
+                          {rep.urgency_score}/100
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="pt-2">
+                    <Link
+                      href="/peta"
+                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-white bg-emerald-900 hover:bg-emerald-950 transition-colors"
+                    >
+                      <span>Buka di Peta Lengkap WebGIS</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>

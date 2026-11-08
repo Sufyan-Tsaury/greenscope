@@ -59,6 +59,43 @@ export default function PetaPage() {
     return matchEco && matchSev;
   });
 
+  const handleEcosystemChange = (eco: string) => {
+    setFilterEcosystem(eco);
+    if (eco === 'all') {
+      if (filterSeverity === 'all') {
+        setSelectedReport(null);
+      } else {
+        const match = reports.find((r) => r.severity === filterSeverity);
+        setSelectedReport(match || null);
+      }
+    } else {
+      const match = reports.find((r) => {
+        const matchEco = r.ecosystem === eco;
+        const matchSev = filterSeverity === 'all' || r.severity === filterSeverity;
+        return matchEco && matchSev;
+      });
+      setSelectedReport(match || null);
+    }
+  };
+
+  const handleSeverityChange = (sev: string) => {
+    setFilterSeverity(sev);
+    if (sev === 'all') {
+      if (filterEcosystem === 'all') {
+        setSelectedReport(null);
+      } else {
+        const match = reports.find((r) => r.ecosystem === filterEcosystem);
+        setSelectedReport(match || null);
+      }
+    } else {
+      const match = reports.find((r) => {
+        const matchEco = filterEcosystem === 'all' || r.ecosystem === filterEcosystem;
+        return matchEco && r.severity === sev;
+      });
+      setSelectedReport(match || null);
+    }
+  };
+
   const handleSelectReport = (report: Report) => {
     setSelectedReport(report);
     setMobileDrawerOpen(true);
@@ -93,7 +130,7 @@ export default function PetaPage() {
             {/* Ecosystem Filter */}
             <select
               value={filterEcosystem}
-              onChange={(e) => setFilterEcosystem(e.target.value)}
+              onChange={(e) => handleEcosystemChange(e.target.value)}
               className="px-2.5 py-1.5 rounded-none border border-stone-300 bg-white text-stone-700 text-xs font-mono focus:outline-emerald-800"
             >
               <option value="all">Semua Ekosistem</option>
@@ -106,7 +143,7 @@ export default function PetaPage() {
             {/* Severity Filter */}
             <select
               value={filterSeverity}
-              onChange={(e) => setFilterSeverity(e.target.value)}
+              onChange={(e) => handleSeverityChange(e.target.value)}
               className="px-2.5 py-1.5 rounded-none border border-stone-300 bg-white text-stone-700 text-xs font-mono focus:outline-emerald-800"
             >
               <option value="all">Semua Urgensi</option>
@@ -182,7 +219,7 @@ export default function PetaPage() {
 
             {/* AI Diagnosis Details */}
             <div className="space-y-3 text-xs">
-              <div className="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 space-y-1">
+              <div className="p-3 rounded-none bg-emerald-50/80 border border-emerald-200 space-y-1">
                 <span className="font-bold text-emerald-950 flex items-center gap-1">
                   <Leaf className="w-3.5 h-3.5 text-emerald-600" />
                   Rekomendasi Spesies Botani:

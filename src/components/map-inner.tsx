@@ -4,10 +4,10 @@ import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import { Report } from '@/types';
 
-function createCustomIcon(severity: string, status: string) {
-  let color = '#10b981'; // emerald
+function createCustomIcon(severity: string, status: string, isSelected: boolean = false) {
+  let color = '#059669'; // emerald
   if (status === 'pulih') {
-    color = '#059669';
+    color = '#10b981';
   } else if (severity === 'kritis') {
     color = '#e11d48'; // rose-600
   } else if (severity === 'tinggi') {
@@ -16,10 +16,17 @@ function createCustomIcon(severity: string, status: string) {
     color = '#eab308'; // yellow-500
   }
 
+  const pulseRing = isSelected
+    ? `<div style="position: absolute; width: 48px; height: 48px; border-radius: 50%; background: ${color}33; border: 2px solid ${color}88; animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite; top: -8px; left: -9px; pointer-events: none;"></div>`
+    : '';
+
+  const scale = isSelected ? 'scale(1.22)' : 'scale(1)';
+
   const svgIcon = `
-    <div style="position: relative; display: flex; align-items: center; justify-content: center;">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="30" height="44" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">
-        <path d="M12 0C5.37 0 0 5.37 0 12c0 9 12 24 12 24s12-15 12-24c0-6.63-5.37-12-12-12z" fill="${color}" stroke="#ffffff" stroke-width="2"/>
+    <div style="position: relative; display: flex; align-items: center; justify-content: center; transform: ${scale}; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
+      ${pulseRing}
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="32" height="46" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.35));">
+        <path d="M12 0C5.37 0 0 5.37 0 12c0 9 12 24 12 24s12-15 12-24c0-6.63-5.37-12-12-12z" fill="${color}" stroke="#ffffff" stroke-width="${isSelected ? 2.5 : 2}"/>
         <circle cx="12" cy="12" r="5" fill="#ffffff"/>
       </svg>
     </div>
@@ -28,9 +35,9 @@ function createCustomIcon(severity: string, status: string) {
   return L.divIcon({
     className: 'custom-leaflet-marker',
     html: svgIcon,
-    iconSize: [30, 44],
-    iconAnchor: [15, 44],
-    popupAnchor: [0, -44],
+    iconSize: [32, 46],
+    iconAnchor: [16, 46],
+    popupAnchor: [0, -46],
   });
 }
 
@@ -43,20 +50,21 @@ interface MapInnerProps {
 export default function MapInner({ reports, selectedReport, onSelectReport }: MapInnerProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
-  const markersRef = useRef<L.Marker[]>([]);
+  const markersMapRef = useRef<Map<string, L.Marker>>(new Map());
 
+  // 1. Inisialisasi peta Leaflet satu kali
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
     if (!mapInstanceRef.current) {
-      // Inisialisasi peta terpusat di Bengkulu (-3.8214, 102.2741)
+      // Peta terpusat di Pesisir Bengkulu (-3.8214, 102.2741)
       const map = L.map(mapContainerRef.current, {
         center: [-3.8214, 102.2741],
         zoom: 12,
         scrollWheelZoom: true,
+        zoomControl: true,
       });
 
-      // OpenStreetMap Official Tiles (100% gratis, tanpa API Key, peta detail Bengkulu)
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 19,
@@ -65,49 +73,86 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
       mapInstanceRef.current = map;
     }
 
+    return () => {
+      // Cleanup on unmount
+    };
+  }, []);
+
+  // 2. Render marker saat reports atau selectedReport berubah
+  useEffect(() => {
     const map = mapInstanceRef.current;
+    if (!map) return;
 
     // Bersihkan marker lama
-    markersRef.current.forEach((m) => m.remove());
-    markersRef.current = [];
+    markersMapRef.current.forEach((marker) => marker.remove());
+    markersMapRef.current.clear();
 
-    // Tambahkan marker laporan
+    // Tambahkan marker laporan yang sesuai filter
     reports.forEach((report) => {
-      const icon = createCustomIcon(report.severity, report.status);
-      const marker = L.marker([report.latitude, report.longitude], { icon })
+      const isSelected = selectedReport?.id === report.id;
+      const icon = createCustomIcon(report.severity, report.status, isSelected);
+      const marker = L.marker([report.latitude, report.longitude], { 
+        icon, 
+        zIndexOffset: isSelected ? 1000 : 0 
+      })
         .addTo(map)
         .on('click', () => {
           onSelectReport(report);
         });
 
       marker.bindPopup(`
-        <div style="font-family: inherit; padding: 2px;">
-          <strong style="font-size: 12px; display: block; color: #0f172a; margin-bottom: 2px;">${report.title}</strong>
-          <span style="font-size: 11px; color: #64748b;">${report.location_name}</span>
-          <div style="font-size: 10px; font-weight: bold; color: #059669; margin-top: 4px;">
+        <div style="font-family: inherit; padding: 4px; max-width: 210px;">
+          <strong style="font-size: 12px; display: block; color: #0f172a; margin-bottom: 2px; line-height: 1.3;">${report.title}</strong>
+          <span style="font-size: 11px; color: #64748b; display: block; margin-bottom: 4px;">${report.location_name}</span>
+          <div style="font-size: 10px; font-weight: bold; color: ${report.severity === 'kritis' ? '#e11d48' : report.severity === 'tinggi' ? '#d97706' : '#059669'};">
             Skor Urgensi: ${report.urgency_score}/100 • ${report.status.toUpperCase()}
           </div>
         </div>
-      `);
+      `, { closeButton: false, offset: [0, -10] });
 
-      markersRef.current.push(marker);
+      markersMapRef.current.set(report.id, marker);
     });
+  }, [reports, selectedReport, onSelectReport]);
 
-    return () => {
-      // cleanup on unmount
-    };
-  }, [reports, onSelectReport]);
-
-  // Pan ke laporan yang dipilih
+  // 3. Smooth Camera FlyTo Navigation saat Filter atau Lokasi Terpilih Berubah
   useEffect(() => {
-    if (mapInstanceRef.current && selectedReport) {
-      mapInstanceRef.current.flyTo(
-        [selectedReport.latitude, selectedReport.longitude],
-        14,
-        { duration: 1.2 }
-      );
-    }
-  }, [selectedReport]);
+    const map = mapInstanceRef.current;
+    if (!map) return;
+
+    const timer = setTimeout(() => {
+      if (selectedReport) {
+        // Perpindahan kamera halus (smooth flyTo) ke koordinat laporan terpilih
+        map.flyTo(
+          [selectedReport.latitude, selectedReport.longitude],
+          14,
+          {
+            duration: 1.25,
+            easeLinearity: 0.25,
+          }
+        );
+
+        // Buka popup marker lokasi terpilih secara otomatis
+        const targetMarker = markersMapRef.current.get(selectedReport.id);
+        if (targetMarker) {
+          targetMarker.openPopup();
+        }
+      } else {
+        // Mode Ikhtisar / Semua Sektor: zoom out halus menampilkan seluruh bentang pesisir Bengkulu
+        if (markersMapRef.current.size > 0) {
+          const markersArray = Array.from(markersMapRef.current.values());
+          const group = L.featureGroup(markersArray);
+          map.flyToBounds(group.getBounds().pad(0.2), {
+            maxZoom: 13,
+            duration: 1.25,
+          });
+        } else {
+          map.flyTo([-3.8214, 102.2741], 12, { duration: 1.25 });
+        }
+      }
+    }, 60);
+
+    return () => clearTimeout(timer);
+  }, [selectedReport, reports]);
 
   return <div ref={mapContainerRef} className="w-full h-full" />;
 }
