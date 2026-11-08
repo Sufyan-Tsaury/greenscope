@@ -204,9 +204,9 @@ export default function PetaPage() {
                 </ul>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600">
-                <span className="font-bold text-slate-800 block mb-0.5">Potensi Risiko:</span>
-                <p>{selectedReport.ai_analysis.estimasi_risiko}</p>
+              <div className="p-2.5 rounded-none bg-stone-50 border border-stone-200 text-stone-700">
+                <span className="font-mono font-bold text-stone-800 uppercase tracking-wider text-[10px] block mb-0.5">Potensi Risiko:</span>
+                <p className="font-sans text-xs">{selectedReport.ai_analysis.estimasi_risiko}</p>
               </div>
             </div>
 
@@ -214,9 +214,9 @@ export default function PetaPage() {
             <div className="pt-2">
               <Link
                 href="/aksi"
-                className="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 transition-colors shadow-sm flex items-center justify-center gap-1.5"
+                className="w-full py-3 px-4 rounded-none text-xs font-mono uppercase tracking-wider font-bold text-white bg-emerald-900 hover:bg-emerald-950 transition-colors flex items-center justify-center gap-2"
               >
-                <Users className="w-4 h-4 text-emerald-400" />
+                <Users className="w-4 h-4 text-emerald-300" />
                 <span>Buka / Gabung Aksi Restorasi</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
@@ -227,26 +227,26 @@ export default function PetaPage() {
 
         {/* MOBILE THUMB-FRIENDLY BOTTOM-SHEET DRAWER */}
         {selectedReport && mobileDrawerOpen && (
-          <div className="lg:hidden absolute bottom-14 left-2 right-2 z-30 max-h-[65vh] overflow-y-auto rounded-lg bg-white border border-slate-300 shadow-xl p-4 space-y-3 animate-in slide-in-from-bottom-6">
-            <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-2">
+          <div className="lg:hidden absolute bottom-16 left-2 right-2 z-30 max-h-[65vh] overflow-y-auto rounded-none bg-white border border-stone-300 shadow-lg p-4 space-y-3 animate-in slide-in-from-bottom-6">
+            <div className="flex items-start justify-between gap-2 border-b border-stone-200 pb-2">
               <div>
-                <span className="text-xs font-mono font-semibold text-rose-700 flex items-center gap-1">
+                <span className="text-[10px] font-mono font-bold uppercase text-rose-700 flex items-center gap-1">
                   Urgensi: {selectedReport.urgency_score}/100
                 </span>
-                <h3 className="text-sm font-bold text-slate-900 mt-0.5 line-clamp-1">
+                <h3 className="text-sm font-serif font-normal text-stone-900 mt-0.5 line-clamp-1">
                   {selectedReport.title}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setMobileDrawerOpen(false)}
-                className="p-1 rounded-md text-slate-400 hover:bg-slate-100"
+                className="p-1 text-stone-400 hover:bg-stone-100"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="relative aspect-16/9 rounded-xl overflow-hidden bg-slate-900">
+            <div className="relative aspect-16/9 rounded-none overflow-hidden bg-stone-900 border border-stone-300">
               <Image
                 src={selectedReport.image_url}
                 alt={selectedReport.title}
@@ -256,16 +256,16 @@ export default function PetaPage() {
               />
             </div>
 
-            <div className="text-xs space-y-1 text-slate-600">
-              <div className="font-semibold text-emerald-800">
+            <div className="text-xs space-y-1 text-stone-700">
+              <div className="font-semibold text-emerald-800 font-serif italic">
                 Spesies: {selectedReport.ai_analysis.spesies_rekomendasi}
               </div>
-              <p className="line-clamp-2">{selectedReport.description}</p>
+              <p className="line-clamp-2 font-sans text-[11px] text-stone-600">{selectedReport.description}</p>
             </div>
 
             <Link
               href="/aksi"
-              className="w-full py-2.5 rounded-xl text-xs font-bold text-white bg-slate-900 flex items-center justify-center gap-1.5"
+              className="w-full py-2.5 rounded-none text-xs font-mono uppercase tracking-wider font-bold text-white bg-emerald-900 flex items-center justify-center gap-1.5"
             >
               <span>Aksi Restorasi</span>
               <ArrowRight className="w-3.5 h-3.5" />
