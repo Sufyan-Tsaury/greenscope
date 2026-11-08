@@ -1,7 +1,6 @@
 -- ==============================================================================
 -- GREENSCOPE DATABASE SCHEMA (SUPABASE POSTGRESQL)
--- Kompetisi: IT RUSH 2026 - Web Development
--- Subtema: 1. Lingkungan dan Konservasi
+-- Platform Konservasi Pesisir dan Hutan Tropis Bengkulu
 -- ==============================================================================
 
 -- 1. EXTENSIONS
