@@ -15,6 +15,8 @@ export type CampaignStatus = 'direncanakan' | 'berlangsung' | 'selesai';
 export interface AIAnalysisResult {
   valid: boolean;
   kategori: string;
+  ekosistem_terdeteksi?: EcosystemType;
+  nama_ekosistem?: string;
   judul_rekomendasi?: string;
   skor_urgensi: number; // 0 - 100
   tingkat_keparahan: SeverityLevel;

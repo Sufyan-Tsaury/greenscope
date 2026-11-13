@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import confetti from 'canvas-confetti';
 import { 
@@ -11,21 +10,20 @@ import {
   Scan, 
   AlertTriangle, 
   CheckCircle2, 
-  MapPin, 
   Leaf, 
-  ShieldAlert, 
   ArrowRight, 
   RefreshCw, 
-  Info,
-  Layers,
-  Trees,
-  Check,
-  Sparkles
+  Layers, 
+  Trees, 
+  Sparkles,
+  MapPin,
+  X,
+  RotateCcw
 } from 'lucide-react';
-import { AIAnalysisResult, EcosystemType, Report } from '@/types';
+import { AIAnalysisResult, EcosystemType } from '@/types';
 import { saveReport } from '@/lib/supabase';
 
-// 4 Set Data Foto Lapangan Bengkulu (High Quality Web-Optimized)
+// 4 Set Data Spesimen Lapangan Bengkulu (Untuk Keperluan Uji Demo)
 const FIELD_SPECIMEN_SAMPLES = [
   {
     id: 'sample-pantai',
@@ -38,7 +36,7 @@ const FIELD_SPECIMEN_SAMPLES = [
   },
   {
     id: 'sample-mangrove',
-    label: 'Kekeringan Mangrove Pulau Baai',
+    label: 'Kekeringan Mangrove Baai',
     ecosystem: 'mangrove' as EcosystemType,
     location: 'Teluk Pulau Baai, Bengkulu',
     title: 'Degradasi Sabuk Mangrove Kritis',
@@ -69,13 +67,12 @@ export default function LaporPage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Form States
-  const [selectedImage, setSelectedImage] = useState<string | null>(FIELD_SPECIMEN_SAMPLES[0].imageUrl);
+  // Form States (Default KOSONG / Empty State yang Bersih)
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedMime, setSelectedMime] = useState<string>('image/jpeg');
-  const [locationName, setLocationName] = useState(FIELD_SPECIMEN_SAMPLES[0].location);
-  const [ecosystem, setEcosystem] = useState<EcosystemType>(FIELD_SPECIMEN_SAMPLES[0].ecosystem);
-  const [customTitle, setCustomTitle] = useState(FIELD_SPECIMEN_SAMPLES[0].title);
-  const [description, setDescription] = useState(FIELD_SPECIMEN_SAMPLES[0].description);
+  const [locationName, setLocationName] = useState<string>('');
+  const [customTitle, setCustomTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
 
   // AI Analysis States
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -84,19 +81,28 @@ export default function LaporPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
-  // Quick Sample Selector
+  // Quick Sample Selector (Hanya jika pengguna memilih mencoba spesimen)
   const handleSelectSample = (sample: typeof FIELD_SPECIMEN_SAMPLES[0]) => {
     setSelectedImage(sample.imageUrl);
     setSelectedMime('image/jpeg');
     setLocationName(sample.location);
-    setEcosystem(sample.ecosystem);
     setCustomTitle(sample.title);
     setDescription(sample.description);
     setAnalysisResult(null);
     setSavedSuccess(false);
   };
 
-  // Handle Custom File Upload
+  // Reset / Clear Image
+  const handleClearImage = () => {
+    setSelectedImage(null);
+    setAnalysisResult(null);
+    setSavedSuccess(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Handle Custom File Upload from Camera or Device
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -111,7 +117,7 @@ export default function LaporPage() {
     }
   };
 
-  // Run ScopeLens AI Analysis
+  // Run ScopeLens AI Analysis (Gemini 3.5 Flash Otomatis Mendeteksi Ekosistem)
   const handleRunAnalysis = async () => {
     if (!selectedImage) return;
 
@@ -130,8 +136,7 @@ export default function LaporPage() {
         body: JSON.stringify({
           base64Image: selectedImage,
           mimeType: selectedMime || 'image/jpeg',
-          ecosystem,
-          locationName
+          locationName: locationName.trim() || 'Wilayah Konservasi Bengkulu'
         })
       });
 
@@ -143,7 +148,7 @@ export default function LaporPage() {
       }
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Kendala jaringan ke server AI';
-      console.warn('ScopeLens API fallback trigger:', errorMessage);
+      console.warn('ScopeLens API error:', errorMessage);
       setAnalysisResult({
         valid: false,
         kategori: 'Gagal Menghubungi Model AI',
@@ -168,15 +173,17 @@ export default function LaporPage() {
 
     setIsSaving(true);
     try {
+      const detectedEco: EcosystemType = analysisResult.ekosistem_terdeteksi || 'pesisir_pantai';
+      
       await saveReport({
-        reporter_name: 'Dewi Lestari (Relawan UNIB)',
-        title: customTitle || analysisResult.judul_rekomendasi || `Laporan Konservasi ${locationName}`,
-        description,
+        reporter_name: 'Relawan Konservasi Bengkulu',
+        title: customTitle || analysisResult.judul_rekomendasi || `${analysisResult.kategori} - ${locationName || 'Bengkulu'}`,
+        description: description || analysisResult.estimasi_risiko,
         image_url: selectedImage,
-        latitude: ecosystem === 'mangrove' ? -3.9056 : -3.8214,
-        longitude: ecosystem === 'mangrove' ? 102.3021 : 102.2741,
-        location_name: locationName,
-        ecosystem,
+        latitude: detectedEco === 'mangrove' ? -3.9056 : detectedEco === 'hutan_tropis' ? -3.7540 : -3.8214,
+        longitude: detectedEco === 'mangrove' ? 102.3021 : detectedEco === 'hutan_tropis' ? 102.4050 : 102.2741,
+        location_name: locationName.trim() || (detectedEco === 'hutan_tropis' ? 'Koridor Hutan Bengkulu' : 'Kawasan Pesisir Bengkulu'),
+        ecosystem: detectedEco,
         urgency_score: analysisResult.skor_urgensi,
         severity: analysisResult.tingkat_keparahan,
         status: 'menunggu',
@@ -211,7 +218,7 @@ export default function LaporPage() {
               Pindai &amp; Diagnosis Kerusakan Bentang Alam
             </h1>
             <p className="text-[#7A8278] text-sm max-w-2xl leading-relaxed">
-              Unggah foto kondisi pesisir, mangrove, atau hutan tropis. Sistem akan memvalidasi keaslian lanskap, menilai skor urgensi penanganan, dan menyusun rekomendasi botani pemulih secara terstruktur.
+              Unggah foto kondisi lingkungan (pantai, mangrove, hutan, atau muara). AI ScopeLens akan <strong>mendeteksi ekosistem secara otomatis</strong>, mengevaluasi kerusakan visual, dan merekomendasikan vegetasi botani pemulih secara presisi.
             </p>
           </div>
 
@@ -227,62 +234,16 @@ export default function LaporPage() {
               />
             </div>
             <div className="text-xs">
-              <span className="font-bold text-[#202820] block">Scopey Assistant Aktif</span>
-              <span className="text-[#7A8278]">Pilih spesimen Bengkulu atau unggah citra Anda sendiri.</span>
+              <span className="font-bold text-[#202820] block">ScopeLens AI Aktif</span>
+              <span className="text-[#7A8278]">Deteksi ekosistem &amp; taksonomi botani otomatis.</span>
             </div>
-          </div>
-        </div>
-
-        {/* FIELD SPECIMEN REGISTER STRIP */}
-        <div className="rounded-3xl border border-[#E7ECE5] bg-white p-5 space-y-3 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#202820] flex items-center gap-1.5">
-              <Info className="w-4 h-4 text-[#52B040]" />
-              Katalog Spesimen &amp; Citra Lapangan Bengkulu:
-            </span>
-            <span className="text-[11px] text-[#7A8278] hidden sm:inline font-medium">
-              Data Terstandarisasi Lapangan
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
-            {FIELD_SPECIMEN_SAMPLES.map((sample, idx) => {
-              const isSelected = selectedImage === sample.imageUrl;
-              return (
-                <button
-                  key={sample.id}
-                  type="button"
-                  onClick={() => handleSelectSample(sample)}
-                  className={`text-left p-3.5 rounded-2xl border transition-all cursor-pointer ${
-                    isSelected 
-                      ? 'bg-[#EAF5E6] border-[#52B040] shadow-xs' 
-                      : 'bg-[#F7F9F6] border-[#E7ECE5] hover:bg-white text-[#202820]'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className={`text-[10px] font-mono font-semibold ${isSelected ? 'text-[#348D32]' : 'text-[#7A8278]'}`}>
-                      SP-0{idx + 1}
-                    </span>
-                    {isSelected && (
-                      <span className="text-[9px] uppercase tracking-wider text-[#348D32] bg-white px-2 py-0.5 rounded-full font-bold border border-[#d2ebd0]">
-                        AKTIF ✓
-                      </span>
-                    )}
-                  </div>
-                  <div className="font-semibold text-xs line-clamp-1 text-[#202820]">{sample.label}</div>
-                  <div className="text-[10px] mt-0.5 line-clamp-1 text-[#7A8278]">
-                    {sample.location}
-                  </div>
-                </button>
-              );
-            })}
           </div>
         </div>
 
         {/* WORKSPACE GRID: INPUT & PREVIEW vs AI DIAGNOSIS */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Left Column: Image Uploader & Metadata */}
+          {/* Left Column: Image Uploader & Metadata (TANPA DROPDOWN MANUAL) */}
           <div className="lg:col-span-6 space-y-5">
             <div className="p-6 sm:p-7 rounded-3xl bg-white border border-[#E7ECE5] shadow-xs space-y-5">
               
@@ -291,26 +252,39 @@ export default function LaporPage() {
                   <Camera className="w-4 h-4 text-[#52B040]" />
                   <span>Foto Kondisi Lapangan</span>
                 </label>
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="text-xs font-semibold text-[#52B040] hover:text-[#348D32] cursor-pointer"
-                >
-                  Unggah dari Perangkat
-                </button>
+                {selectedImage && (
+                  <button
+                    type="button"
+                    onClick={handleClearImage}
+                    className="text-xs font-semibold text-rose-600 hover:text-rose-700 cursor-pointer flex items-center gap-1"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Ganti Foto</span>
+                  </button>
+                )}
               </div>
 
-              {/* Photo Viewport with Laser Beam Overlay */}
-              <div className="relative aspect-4/3 rounded-2xl overflow-hidden bg-stone-950 border border-[#E7ECE5] group shadow-xs">
+              {/* Photo Viewport: Empty State atau Pratinjau Foto */}
+              <div className="relative aspect-4/3 rounded-2xl overflow-hidden bg-white border-2 border-dashed border-[#D5DDD3] hover:border-[#52B040] transition-colors group shadow-xs">
                 {selectedImage ? (
                   <>
                     <Image
                       src={selectedImage}
-                      alt="Pratinjau Foto"
+                      alt="Pratinjau Foto Lapangan"
                       fill
                       className="object-cover"
                       sizes="(max-width: 1024px) 100vw, 600px"
                     />
+
+                    {/* Tombol Hapus Cepat di Pojok Gambar */}
+                    <button
+                      type="button"
+                      onClick={handleClearImage}
+                      className="absolute top-3 right-3 p-1.5 rounded-full bg-black/60 hover:bg-black text-white text-xs backdrop-blur-xs transition-colors cursor-pointer"
+                      title="Hapus foto"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
                     
                     {/* Laser Beam Animation during AI Scanning */}
                     {isAnalyzing && (
@@ -322,9 +296,9 @@ export default function LaporPage() {
                           </div>
                           <div className="space-y-1">
                             <div className="text-sm font-bold tracking-wide">
-                              {analysisStep === 1 && 'Memindai Piksel Visual Foto...'}
-                              {analysisStep === 2 && 'Mendeteksi Indikator Kerusakan & Abrasi...'}
-                              {analysisStep === 3 && 'Menyusun Rekomendasi Spesies Vegetasi...'}
+                              {analysisStep === 1 && 'Memindai Piksel Visual & Mengidentifikasi Ekosistem...'}
+                              {analysisStep === 2 && 'Mendeteksi Indikator Kerusakan & Tingkat Keparahan...'}
+                              {analysisStep === 3 && 'Menyusun Rekomendasi Botani Spesifik Ekosistem...'}
                             </div>
                             <div className="text-xs text-emerald-300 font-mono">
                               Model: Google Gemini 3.5 Flash Multimodal
@@ -335,13 +309,26 @@ export default function LaporPage() {
                     )}
                   </>
                 ) : (
+                  /* EMPTY STATE BERSIH (TANPA GAMBAR LAUT BAWAAN) */
                   <div 
                     onClick={() => fileInputRef.current?.click()}
-                    className="h-full flex flex-col items-center justify-center p-6 text-center text-[#7A8278] cursor-pointer hover:bg-[#F7F9F6] transition-colors"
+                    className="h-full flex flex-col items-center justify-center p-6 text-center text-[#7A8278] cursor-pointer hover:bg-[#F7F9F6] transition-colors space-y-3"
                   >
-                    <UploadCloud className="w-12 h-12 text-[#A2AAA0] mb-2" />
-                    <span className="text-sm font-semibold text-[#202820]">Klik untuk unggah foto lapangan</span>
-                    <span className="text-xs text-[#7A8278] mt-1">Mendukung JPG, PNG, WEBP (Maks 10MB)</span>
+                    <div className="w-16 h-16 rounded-full bg-[#EAF5E6] flex items-center justify-center text-[#52B040] group-hover:scale-105 transition-transform">
+                      <UploadCloud className="w-8 h-8" />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-sm font-bold text-[#202820] block">
+                        Ambil Foto dari Kamera atau Unggah File
+                      </span>
+                      <span className="text-xs text-[#7A8278] block">
+                        Mendukung format JPG, PNG, WEBP (Maksimal 10MB)
+                      </span>
+                    </div>
+                    <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] shadow-xs">
+                      <Camera className="w-3.5 h-3.5" />
+                      <span>Pilih Foto dari Perangkat</span>
+                    </span>
                   </div>
                 )}
 
@@ -354,45 +341,42 @@ export default function LaporPage() {
                 />
               </div>
 
-              {/* Form Metadata Fields */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Form Metadata: Lokasi Sederhana (Ekosistem Otomatis) */}
+              <div className="space-y-3 pt-1">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-[#202820] uppercase tracking-wider block">Tipe Ekosistem</label>
-                  <select
-                    value={ecosystem}
-                    onChange={(e) => setEcosystem(e.target.value as EcosystemType)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7ECE5] bg-white text-xs text-[#202820] focus:ring-2 focus:ring-[#52B040] focus:outline-hidden"
-                  >
-                    <option value="pesisir_pantai">🏖️ Pantai &amp; Pesisir</option>
-                    <option value="mangrove">🌿 Hutan Mangrove</option>
-                    <option value="muara_sungai">🌊 Muara Sungai</option>
-                    <option value="hutan_tropis">🌲 Hutan Tropis</option>
-                  </select>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-[#202820] uppercase tracking-wider block">Nama Lokasi</label>
+                  <label className="text-xs font-semibold text-[#202820] uppercase tracking-wider flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-[#52B040]" />
+                    <span>Nama Lokasi / Kawasan Lapangan</span>
+                  </label>
                   <input
                     type="text"
                     value={locationName}
                     onChange={(e) => setLocationName(e.target.value)}
-                    placeholder="Contoh: Pantai Panjang, Bengkulu"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7ECE5] bg-white text-xs text-[#202820] focus:ring-2 focus:ring-[#52B040] focus:outline-hidden"
+                    placeholder="Contoh: Hutan Lindung Bukit Daun, Pantai Panjang, Teluk Baai..."
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#E7ECE5] bg-white text-xs text-[#202820] placeholder-[#A2AAA0] focus:ring-2 focus:ring-[#52B040] focus:outline-hidden"
                   />
+                  <span className="text-[11px] text-[#7A8278] block">
+                    *Tipe ekosistem (hutan, pesisir, mangrove, muara) akan <strong>dianalisis otomatis oleh AI</strong> dari gambar.
+                  </span>
                 </div>
               </div>
 
-              {/* Run Scan Button (Carbonery Pill CTA) */}
+              {/* Tombol Eksekusi Pindai Diagnosis */}
               <button
                 type="button"
                 onClick={handleRunAnalysis}
                 disabled={isAnalyzing || !selectedImage}
-                className="w-full py-3.5 px-6 rounded-full font-semibold text-xs text-white bg-[#52B040] hover:bg-[#348D32] shadow-sm transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-3.5 px-6 rounded-full font-semibold text-xs text-white bg-[#52B040] hover:bg-[#348D32] shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
               >
                 {isAnalyzing ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
                     <span>ScopeLens Sedang Mendiagnosis...</span>
+                  </>
+                ) : !selectedImage ? (
+                  <>
+                    <UploadCloud className="w-4 h-4" />
+                    <span>Unggah Foto Terlebih Dahulu</span>
                   </>
                 ) : (
                   <>
@@ -418,35 +402,52 @@ export default function LaporPage() {
                       <span>Validasi Ditolak: Bukan Bentang Alam Alami</span>
                     </div>
                     <p className="text-xs text-amber-950 leading-relaxed font-sans">
-                      Sistem ScopeLens mendeteksi bahwa foto ini bukan bentang alam pesisir, mangrove, atau hutan tropis. Fitur ini dirancang khusus untuk mencegah laporan sampah palsu atau objek tidak relevan.
+                      Sistem ScopeLens mendeteksi bahwa foto ini bukan bentang alam pesisir, mangrove, atau hutan tropis (terdeteksi: <strong>{analysisResult.kategori}</strong>). Sistem hanya memproses bentang alam nyata untuk mencegah laporan yang tidak relevan.
                     </p>
                   </div>
                 ) : (
                   <>
-                    {/* Header Score & Urgency Banner */}
-                    <div className="flex items-center justify-between pb-4 border-b border-[#EEF1EC]">
-                      <div>
-                        <span className="text-[10px] font-semibold text-[#7A8278] uppercase tracking-wider block">
-                          DIAGNOSIS EKOLOGI SCOPELENS
+                    {/* Header Score & Detected Ecosystem Badge */}
+                    <div className="space-y-3 pb-4 border-b border-[#EEF1EC]">
+                      
+                      {/* Badge Ekosistem yang Dideteksi Otomatis oleh AI */}
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-[#EAF5E9] text-[#176B35] border border-[#C3E6CB]">
+                          <Leaf className="w-3.5 h-3.5 text-[#329F45]" />
+                          <span>Ekosistem: <strong>{analysisResult.nama_ekosistem || 'Bentang Alam Alami'}</strong></span>
+                          <span className="text-[10px] text-[#78847B] font-mono">({analysisResult.confidence_score || 95}% akurasi)</span>
                         </span>
-                        <h3 className="text-xl sm:text-2xl font-bold text-[#202820] mt-0.5">
-                          {analysisResult.kategori}
-                        </h3>
+
+                        <span className="text-[10px] text-[#78847B] font-medium">
+                          Terverifikasi AI Gemini 3.5
+                        </span>
                       </div>
 
-                      {/* Score Badge */}
-                      <div className={`px-3.5 py-1.5 rounded-2xl text-center border font-mono ${
-                        analysisResult.tingkat_keparahan === 'kritis'
-                          ? 'bg-rose-50 border-rose-200 text-rose-700'
-                          : analysisResult.tingkat_keparahan === 'tinggi'
-                            ? 'bg-amber-50 border-amber-200 text-amber-700'
-                            : 'bg-[#EAF5E6] border-[#d2ebd0] text-[#348D32]'
-                      }`}>
-                        <div className="text-[9px] font-bold uppercase tracking-wider font-sans">Skor Urgensi</div>
-                        <div className="text-xl sm:text-2xl font-bold tabular-nums">
-                          {analysisResult.skor_urgensi}<span className="text-xs font-normal">/100</span>
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <span className="text-[10px] font-semibold text-[#7A8278] uppercase tracking-wider block">
+                            DIAGNOSIS KERUSAKAN SCOPELENS
+                          </span>
+                          <h3 className="text-xl sm:text-2xl font-bold text-[#202820] mt-0.5">
+                            {analysisResult.kategori}
+                          </h3>
+                        </div>
+
+                        {/* Score Badge */}
+                        <div className={`px-3.5 py-1.5 rounded-2xl text-center border font-mono shrink-0 ${
+                          analysisResult.tingkat_keparahan === 'kritis'
+                            ? 'bg-rose-50 border-rose-200 text-rose-700'
+                            : analysisResult.tingkat_keparahan === 'tinggi'
+                              ? 'bg-amber-50 border-amber-200 text-amber-700'
+                              : 'bg-[#EAF5E6] border-[#d2ebd0] text-[#348D32]'
+                        }`}>
+                          <div className="text-[9px] font-bold uppercase tracking-wider font-sans">Skor Urgensi</div>
+                          <div className="text-xl sm:text-2xl font-bold tabular-nums">
+                            {analysisResult.skor_urgensi}<span className="text-xs font-normal">/100</span>
+                          </div>
                         </div>
                       </div>
+
                     </div>
 
                     {/* Detected Visual Indicators */}
@@ -465,11 +466,11 @@ export default function LaporPage() {
                       </ul>
                     </div>
 
-                    {/* Recommended Botanical Species */}
+                    {/* Recommended Botanical Species (SESUAI EKOSISTEM ASLI) */}
                     <div className="p-4 rounded-2xl bg-[#EAF5E6] border border-[#d2ebd0] space-y-1">
                       <div className="flex items-center gap-1.5 text-xs font-semibold text-[#348D32] uppercase tracking-wider">
                         <Leaf className="w-3.5 h-3.5 text-[#52B040]" />
-                        <span>Rekomendasi Spesies Vegetasi Pemulih:</span>
+                        <span>Rekomendasi Spesies Vegetasi Pemulih ({analysisResult.nama_ekosistem || 'Ekosistem'}):</span>
                       </div>
                       <div className="text-base font-bold text-[#202820]">
                         {analysisResult.spesies_rekomendasi}
@@ -480,7 +481,7 @@ export default function LaporPage() {
                     <div className="space-y-2">
                       <span className="text-xs font-bold text-[#202820] uppercase tracking-wider flex items-center gap-1.5">
                         <Trees className="w-3.5 h-3.5 text-[#52B040]" />
-                        Rekomendasi Langkah Restorasi:
+                        Rekomendasi Langkah Restorasi Lapangan:
                       </span>
                       <div className="space-y-1.5 text-xs text-[#7A8278]">
                         {analysisResult.tindakan_konservasi.map((act, i) => (
@@ -545,15 +546,66 @@ export default function LaporPage() {
                   <Image src="/mascot-scopey.jpg" alt="Scopey" fill className="object-cover" sizes="64px" />
                 </div>
                 <div className="max-w-sm space-y-1.5">
-                  <h4 className="text-base font-bold text-[#202820]">Menunggu Pemindaian Foto</h4>
+                  <h4 className="text-base font-bold text-[#202820]">Menunggu Foto Lapangan</h4>
                   <p className="text-xs text-[#7A8278] leading-relaxed">
-                    Klik tombol <strong>&ldquo;Mulai Diagnosis Lapangan&rdquo;</strong> di sebelah kiri untuk melihat pembacaan piksel, skor urgensi, dan rekomendasi taksonomi botani pemulihan.
+                    Unggah foto bentang alam di sebelah kiri, lalu klik <strong>&ldquo;Mulai Diagnosis Lapangan&rdquo;</strong> untuk mendeteksi ekosistem, skor urgensi, dan rekomendasi botani pemulihan.
                   </p>
                 </div>
               </div>
             )}
           </div>
 
+        </div>
+
+        {/* QUICK SPECIMEN TESTING TRAY (DIPINDAHKAN KE BAWAH UNTUK PENGUJIAN JURI/DEMO) */}
+        <div className="rounded-3xl border border-[#E7ECE5] bg-white p-6 space-y-3 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="space-y-0.5">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#202820] flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-[#52B040]" />
+                Uji Coba Cepat dengan Spesimen Lapangan Bengkulu:
+              </span>
+              <p className="text-[11px] text-[#7A8278]">
+                Ingin mencoba demo tanpa mengunggah foto sendiri? Pilih salah satu spesimen terstandarisasi berikut:
+              </p>
+            </div>
+            <span className="text-[10px] font-semibold text-[#176B35] bg-[#EAF5E6] px-2.5 py-1 rounded-full uppercase self-start sm:self-auto">
+              4 Spesimen Uji
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1">
+            {FIELD_SPECIMEN_SAMPLES.map((sample, idx) => {
+              const isSelected = selectedImage === sample.imageUrl;
+              return (
+                <button
+                  key={sample.id}
+                  type="button"
+                  onClick={() => handleSelectSample(sample)}
+                  className={`text-left p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                    isSelected 
+                      ? 'bg-[#EAF5E6] border-[#52B040] shadow-xs' 
+                      : 'bg-[#F7F9F6] border-[#E7ECE5] hover:bg-white text-[#202820]'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className={`text-[10px] font-mono font-semibold ${isSelected ? 'text-[#348D32]' : 'text-[#7A8278]'}`}>
+                      SP-0{idx + 1}
+                    </span>
+                    {isSelected && (
+                      <span className="text-[9px] uppercase tracking-wider text-[#348D32] bg-white px-2 py-0.5 rounded-full font-bold border border-[#d2ebd0]">
+                        AKTIF ✓
+                      </span>
+                    )}
+                  </div>
+                  <div className="font-semibold text-xs line-clamp-1 text-[#202820]">{sample.label}</div>
+                  <div className="text-[10px] mt-0.5 line-clamp-1 text-[#7A8278]">
+                    {sample.location}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
       </div>

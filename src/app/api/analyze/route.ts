@@ -19,8 +19,8 @@ export async function POST(req: NextRequest) {
     const analysis = await analyzeEnvironmentalImage(
       base64Image,
       mimeType || 'image/jpeg',
-      (ecosystem as EcosystemType) || 'pesisir_pantai',
-      locationName || 'Wilayah Pesisir Bengkulu'
+      ecosystem ? (ecosystem as EcosystemType) : undefined,
+      locationName || 'Bengkulu'
     );
 
     return NextResponse.json({ success: true, analysis });

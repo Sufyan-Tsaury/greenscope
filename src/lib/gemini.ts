@@ -36,44 +36,63 @@ async function normalizeImagePayload(rawImage: string, defaultMime: string = 'im
 
 /**
  * ScopeLens: Analisis Visi Lingkungan Multimodal menggunakan Gemini 3.5 Flash
+ * Otomatis mendeteksi tipe ekosistem (Hutan, Mangrove, Pesisir, Muara) tanpa bias input manual
  */
 export async function analyzeEnvironmentalImage(
   base64Image: string,
   mimeType: string,
-  ecosystem: EcosystemType,
-  locationName: string
+  ecosystem?: EcosystemType,
+  locationName?: string
 ): Promise<AIAnalysisResult> {
   if (!aiClient || !isGeminiConfigured) {
-    return generateFallbackAnalysis(ecosystem, locationName);
+    return generateFallbackAnalysis(ecosystem || 'pesisir_pantai', locationName || 'Bengkulu');
   }
 
   try {
     const imagePayload = await normalizeImagePayload(base64Image, mimeType);
 
     const promptText = `
-Anda adalah "ScopeLens", sistem Computer Vision dan pakar pemantauan konservasi pesisir & hutan tropis Bengkulu, Indonesia.
-Tugas Anda adalah memvalidasi dan menganalisis foto yang dikirim pengguna. Konteks ekosistem yang dipilih: "${ecosystem}" di lokasi: "${locationName}".
+Anda adalah "ScopeLens", sistem Computer Vision dan pakar pemantauan konservasi bentang alam Bengkulu, Indonesia.
+Tugas Anda adalah memvalidasi foto, mengklasifikasikan ekosistem secara otomatis dari visual foto, dan mendiagnosis kerusakan lingkungan pada foto di lokasi: "${locationName || 'Bengkulu'}".
 
-ATURAN VALIDASI KETAT (ANTI-SPAM / ANTI-FALSE POSITIVE):
-1. Periksa foto dengan teliti: Apakah foto ini BENAR-BENAR merupakan bentang alam terbuka (pantai, laut, pasir pesisir, muara sungai, vegetasi bakau/mangrove, pohon hutan tropis, tebing, tanah)?
-2. JIKA FOTO MERUPAKAN KERTAS, DOKUMEN, TULISAN TANGAN, BUKU, KWITANSI, DINDING, RUANGAN KANTOR/RUMAH, MEJA, LAYAR HP/MONITOR, MAKANAN, KENDARAAN, ATAU SELFIE MANUSIA:
-   - Anda WAJIB menandai "valid": false!
-   - Kategori: sebutkan apa objek buatan tersebut (misal: "Objek Kertas / Dokumen", "Interior Ruangan", "Benda Buatan").
-   - Skor urgensi: 0.
-   - Tingkat keparahan: "rendah".
-   - Indikator visual: sebutkan dengan jelas bahwa objek yang terdeteksi adalah kertas/benda buatan dan tidak ada bentang alam alami.
-   - Tindakan konservasi: instruksikan pengguna untuk mengunggah foto bentang alam nyata di pesisir atau hutan Bengkulu.
-3. JIKA FOTO VALID BENTANG ALAM:
-   - "valid": true.
-   - Identifikasi kerusakan riil (sampah anorganik/plastik, sedimentasi lumpur, abrasi pantai, kematian bakau, degradasi kanopi, penebangan).
-   - Berikan skor urgensi 0-100 (0 = asri tanpa kerusakan, 100 = krisis ekologis parah).
+INSTRUKSI TUGAS UTAMA:
+
+1. VALIDASI KEASLIAN BENTANG ALAM (ANTI-SPAM / ANTI-FALSE POSITIVE):
+   - Periksa foto dengan teliti: Apakah foto ini BENAR-BENAR merupakan bentang alam terbuka (pantai pasir, laut, vegetasi bakau/mangrove, muara sungai, bukit, hutan tropis, tebing, atau lahan terbuka alami)?
+   - JIKA FOTO MERUPAKAN KERTAS, BUKU, DOKUMEN, TULISAN TANGAN, KWITANSI, DINDING, RUANGAN KANTOR/RUMAH, MEJA, LAYAR HP/MONITOR, MAKANAN, KENDARAAN, ATAU SELFIE MANUSIA:
+     * "valid": false
+     * "ekosistem_terdeteksi": "pesisir_pantai"
+     * "nama_ekosistem": "Bukan Bentang Alam"
+     * "kategori": sebutkan objek buatan tersebut (misal: "Objek Kertas / Dokumen", "Interior Ruangan", "Benda Buatan")
+     * "skor_urgensi": 0
+     * "tingkat_keparahan": "rendah"
+     * "indikator_visual": ["Objek yang terdeteksi adalah kertas/benda buatan", "Tidak ditemukan bentang alam pesisir atau hutan"]
+     * "tindakan_konservasi": ["Mohon unggah foto bentang alam nyata di pesisir atau hutan Bengkulu"]
+     * "spesies_rekomendasi": "Tidak berlaku"
+     * "estimasi_risiko": "Tidak ada ancaman ekologis karena ini objek buatan."
+
+2. KLASIFIKASI EKOSISTEM OTOMATIS (JIKA VALID BENTANG ALAM):
+   - Klasifikasikan tipe ekosistem secara MURNI berdasarkan visual foto (jangan terikat teks lokasi):
+     * "hutan_tropis": jika terlihat kanopi pohon lebat, hutan darat/bukit, semak belukar pedalaman, kebakaran hutan/lahan pohon. -> "nama_ekosistem": "Hutan Tropis"
+     * "mangrove": jika terlihat pohon bakau, akar napas/tunjang, lumpur pasang-surut, rawa payau mangrove. -> "nama_ekosistem": "Hutan Mangrove"
+     * "pesisir_pantai": jika terlihat hamparan pasir pantai, ombak laut, garis pantai pasir. -> "nama_ekosistem": "Pesisir & Pantai"
+     * "muara_sungai": jika terlihat aliran sungai yang bermuara ke laut, sempadan sungai, estuari air keruh. -> "nama_ekosistem": "Muara Sungai"
+
+3. DIAGNOSIS KERUSAKAN & REKOMENDASI BOTANI (WAJIB SESUAI DENGAN EKOSISTEM ASLI FOTO):
+   - "valid": true
+   - Identifikasi kerusakan riil di foto (misal: "Kebakaran Hutan & Lahan", "Tumpukan Sampah Plastik", "Abrasi Pantai", "Kematian Sabuk Bakau", "Degradasi Kanopi", "Sedimentasi").
+   - Berikan skor urgensi 0-100 (0 = aman asri, 100 = krisis ekologis parah seperti kebakaran aktif atau abrasi tebing runtuh).
    - Tingkat keparahan: "rendah" | "sedang" | "tinggi" | "kritis".
-   - Berikan nilai "confidence_score" (60-99%) keyakinan deteksi Computer Vision Anda.
-   - Rekomendasikan nama spesies vegetasi restorasi botani yang tepat (misal: Rhizophora apiculata untuk mangrove, Ipomoea pes-caprae/Pandan Laut untuk pesisir pantai, Shorea/Meranti untuk hutan).
+   - Nilai "confidence_score": 60-99% keyakinan deteksi visi AI.
+   - PENTING: Rekomendasi nama spesies vegetasi restorasi WAJIB SESUAI DENGAN EKOSISTEM ASLI:
+     * Jika ekosistem "hutan_tropis": WAJIB rekomendasikan bibit pohon hutan seperti Shorea leprosula (Meranti Merah), Schima wallichii (Puspa), Ficus benjamina, atau Bambu Petung. JANGAN rekomendasikan tanaman laut/pantai!
+     * Jika ekosistem "pesisir_pantai": Ipomoea pes-caprae (Tapak Kuda), Pandanus odoratissimus (Pandan Laut), Casuarina equisetifolia (Cemara Udang).
+     * Jika ekosistem "mangrove": Rhizophora apiculata (Bakau Minyak), Avicennia marina (Api-api), Bruguiera gymnorrhiza.
+     * Jika ekosistem "muara_sungai": Sonneratia alba (Pidada), Nypa fruticans (Pohon Nipah).
    - Sebutkan 2-4 indikator visual yang terlihat di foto.
-   - Berikan 3 langkah tindakan gotong royong lapangan yang konkret.
+   - Berikan 3 langkah aksi restorasi terstruktur.
    - Estimasi risiko ekologis jika dibiarkan.
-   - Estimasi potensi serapan karbon tahunan jika dipulihkan (kg CO2e).
+   - Estimasi serapan karbon tahunan jika dipulihkan (kg CO2e).
 `;
 
     // Attempt generation with gemini-3.5-flash (fast, robust multimodal)
@@ -98,6 +117,15 @@ ATURAN VALIDASI KETAT (ANTI-SPAM / ANTI-FALSE POSITIVE):
                 type: Type.BOOLEAN, 
                 description: 'True jika foto adalah bentang alam nyata. False jika kertas, dokumen, ruangan, benda buatan.' 
               },
+              ekosistem_terdeteksi: {
+                type: Type.STRING,
+                enum: ['pesisir_pantai', 'mangrove', 'muara_sungai', 'hutan_tropis'],
+                description: 'Tipe ekosistem yang diidentifikasi secara otomatis dari visual foto'
+              },
+              nama_ekosistem: {
+                type: Type.STRING,
+                description: 'Nama human-readable ekosistem, misal: Hutan Tropis, Hutan Mangrove, Pesisir & Pantai, Muara Sungai'
+              },
               kategori: { type: Type.STRING },
               judul_rekomendasi: { type: Type.STRING },
               skor_urgensi: { type: Type.INTEGER },
@@ -120,6 +148,8 @@ ATURAN VALIDASI KETAT (ANTI-SPAM / ANTI-FALSE POSITIVE):
             },
             required: [
               'valid',
+              'ekosistem_terdeteksi',
+              'nama_ekosistem',
               'kategori',
               'skor_urgensi',
               'tingkat_keparahan',
@@ -143,17 +173,16 @@ ATURAN VALIDASI KETAT (ANTI-SPAM / ANTI-FALSE POSITIVE):
 
     if (response && response.text) {
       const parsed = JSON.parse(response.text) as AIAnalysisResult;
-      // Pastikan confidence_score memiliki nilai default wajar jika tidak dikembalikan
       if (!parsed.confidence_score) {
         parsed.confidence_score = parsed.valid ? 94 : 98;
       }
       return parsed;
     }
 
-    return generateFallbackAnalysis(ecosystem, locationName);
+    return generateFallbackAnalysis(ecosystem || 'pesisir_pantai', locationName || 'Bengkulu');
   } catch (err) {
     console.error('Gagal memproses analisis citra Gemini:', err);
-    return generateFallbackAnalysis(ecosystem, locationName);
+    return generateFallbackAnalysis(ecosystem || 'pesisir_pantai', locationName || 'Bengkulu');
   }
 }
 
