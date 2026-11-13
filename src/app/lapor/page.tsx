@@ -71,6 +71,7 @@ export default function LaporPage() {
 
   // Form States
   const [selectedImage, setSelectedImage] = useState<string | null>(FIELD_SPECIMEN_SAMPLES[0].imageUrl);
+  const [selectedMime, setSelectedMime] = useState<string>('image/jpeg');
   const [locationName, setLocationName] = useState(FIELD_SPECIMEN_SAMPLES[0].location);
   const [ecosystem, setEcosystem] = useState<EcosystemType>(FIELD_SPECIMEN_SAMPLES[0].ecosystem);
   const [customTitle, setCustomTitle] = useState(FIELD_SPECIMEN_SAMPLES[0].title);
@@ -86,6 +87,7 @@ export default function LaporPage() {
   // Quick Sample Selector
   const handleSelectSample = (sample: typeof FIELD_SPECIMEN_SAMPLES[0]) => {
     setSelectedImage(sample.imageUrl);
+    setSelectedMime('image/jpeg');
     setLocationName(sample.location);
     setEcosystem(sample.ecosystem);
     setCustomTitle(sample.title);
@@ -98,6 +100,7 @@ export default function LaporPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setSelectedMime(file.type || 'image/jpeg');
       const reader = new FileReader();
       reader.onload = () => {
         setSelectedImage(reader.result as string);
@@ -126,7 +129,7 @@ export default function LaporPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           base64Image: selectedImage,
-          mimeType: 'image/jpeg',
+          mimeType: selectedMime || 'image/jpeg',
           ecosystem,
           locationName
         })
@@ -136,46 +139,22 @@ export default function LaporPage() {
       if (data.success && data.analysis) {
         setAnalysisResult(data.analysis);
       } else {
-        // Fallback intelligent triage jika API endpoint ada kendala
-        throw new Error(data.error || 'Analisis gagal');
+        throw new Error(data.error || 'Analisis gagal diproses');
       }
-    } catch (err) {
-      console.warn('Menggunakan fallback analisis cerdas:', err);
-      // Simulated intelligent result based on ecosystem & sample
-      const isNonAlam = selectedImage.includes('1497366216548');
-      if (isNonAlam) {
-        setAnalysisResult({
-          valid: false,
-          kategori: 'Objek Non-Lingkungan Terdeteksi',
-          skor_urgensi: 0,
-          tingkat_keparahan: 'rendah',
-          indikator_visual: ['Interior ruangan kantor buatan manusia', 'Tidak ditemukan vegetasi pesisir atau tanah alami'],
-          spesies_rekomendasi: 'Tidak berlaku untuk objek buatan',
-          tindakan_konservasi: ['Mohon unggah foto riil ekosistem pesisir, mangrove, atau hutan tropis'],
-          estimasi_risiko: 'Tidak ada ancaman ekologis yang terdeteksi.'
-        });
-      } else {
-        setAnalysisResult({
-          valid: true,
-          kategori: ecosystem === 'mangrove' ? 'Degradasi Sabuk Mangrove Kritis' : 'Akumulasi Sampah Pesisir & Erosi',
-          judul_rekomendasi: `Restorasi Ekosistem ${locationName}`,
-          skor_urgensi: ecosystem === 'mangrove' ? 91 : 82,
-          tingkat_keparahan: ecosystem === 'mangrove' ? 'kritis' : 'tinggi',
-          indikator_visual: [
-            'Endapan limbah anorganik di zona pasang tertinggi',
-            'Kerusakan akar nafas vegetasi pantai perintis',
-            'Sedimentasi lumpur asam menghambat sirkulasi air'
-          ],
-          spesies_rekomendasi: ecosystem === 'mangrove' ? 'Rhizophora apiculata (Bakau Minyak), Avicennia marina' : 'Ipomoea pes-caprae (Tapak Kuda), Pandanus odoratissimus',
-          tindakan_konservasi: [
-            'Operasi pembersihan sampah pesisir bersama relawan',
-            'Pemasangan ajir bambu penopang bibit alami',
-            'Pembuatan parit sirkulasi air pasang-surut'
-          ],
-          estimasi_risiko: 'Penurunan ketahanan pesisir dari abrasi gelombang laut barat Sumatera.',
-          estimasi_serapan_karbon_tahunan_kg: ecosystem === 'mangrove' ? 1850 : 420
-        });
-      }
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Kendala jaringan ke server AI';
+      console.warn('ScopeLens API fallback trigger:', errorMessage);
+      setAnalysisResult({
+        valid: false,
+        kategori: 'Gagal Menghubungi Model AI',
+        skor_urgensi: 0,
+        tingkat_keparahan: 'rendah',
+        confidence_score: 0,
+        indikator_visual: ['Koneksi AI tidak terjangkau', errorMessage],
+        spesies_rekomendasi: 'Tidak berlaku',
+        tindakan_konservasi: ['Periksa koneksi internet Anda dan coba klik tombol diagnosis kembali'],
+        estimasi_risiko: 'Sistem tidak dapat memvalidasi foto saat offline.'
+      });
     } finally {
       clearTimeout(timer1);
       clearTimeout(timer2);
@@ -348,7 +327,7 @@ export default function LaporPage() {
                               {analysisStep === 3 && 'Menyusun Rekomendasi Spesies Vegetasi...'}
                             </div>
                             <div className="text-xs text-emerald-300 font-mono">
-                              Model: Google Gemini 3.8 Flash
+                              Model: Google Gemini 3.5 Flash Multimodal
                             </div>
                           </div>
                         </div>

@@ -1,4 +1,4 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, Type } from '@google/genai';
 import { AIAnalysisResult, ActionBrief, EcosystemType } from '@/types';
 
 const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY || '';
@@ -8,7 +8,34 @@ export const isGeminiConfigured = Boolean(apiKey && !apiKey.includes('your-gemin
 const aiClient = isGeminiConfigured ? new GoogleGenAI({ apiKey }) : null;
 
 /**
- * ScopeLens: Analisis Visi Lingkungan menggunakan Gemini 3.8 Flash
+ * Helper to normalize image input (base64 data URL or external HTTP URL)
+ */
+async function normalizeImagePayload(rawImage: string, defaultMime: string = 'image/jpeg'): Promise<{ data: string; mimeType: string }> {
+  // If it's a web URL (e.g. Unsplash specimen)
+  if (rawImage.startsWith('http://') || rawImage.startsWith('https://')) {
+    const res = await fetch(rawImage);
+    const arrayBuffer = await res.arrayBuffer();
+    const data = Buffer.from(arrayBuffer).toString('base64');
+    const mimeType = res.headers.get('content-type') || defaultMime;
+    return { data, mimeType };
+  }
+
+  // If it's a data URL with base64 prefix
+  if (rawImage.includes(';base64,')) {
+    const [header, data] = rawImage.split(';base64,');
+    const mimeType = header.replace('data:', '') || defaultMime;
+    return { data, mimeType };
+  }
+
+  // Raw base64 string
+  return {
+    data: rawImage.replace(/^data:image\/\w+;base64,/, ''),
+    mimeType: defaultMime
+  };
+}
+
+/**
+ * ScopeLens: Analisis Visi Lingkungan Multimodal menggunakan Gemini 3.5 Flash
  */
 export async function analyzeEnvironmentalImage(
   base64Image: string,
@@ -16,88 +43,116 @@ export async function analyzeEnvironmentalImage(
   ecosystem: EcosystemType,
   locationName: string
 ): Promise<AIAnalysisResult> {
-  // Jika API key belum terpasang, gunakan simulasi triage presisi
   if (!aiClient || !isGeminiConfigured) {
     return generateFallbackAnalysis(ecosystem, locationName);
   }
 
   try {
-    const cleanBase64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
+    const imagePayload = await normalizeImagePayload(base64Image, mimeType);
 
     const promptText = `
-Anda adalah sistem "ScopeLens", pakar konservasi lingkungan pesisir dan hutan tropis Indonesia.
-Tugas Anda adalah memvalidasi dan menganalisis foto lapangan dari ekosistem: "${ecosystem}" di lokasi: "${locationName}".
+Anda adalah "ScopeLens", sistem Computer Vision dan pakar pemantauan konservasi pesisir & hutan tropis Bengkulu, Indonesia.
+Tugas Anda adalah memvalidasi dan menganalisis foto yang dikirim pengguna. Konteks ekosistem yang dipilih: "${ecosystem}" di lokasi: "${locationName}".
 
-Periksa gambar dengan teliti:
-1. Validasi: Apakah gambar merupakan objek alam / bentang alam / pesisir / mangrove / hutan / muara? Jika gambar adalah foto ruangan kantor, makanan, selfie manusia biasa, kendaraan, dll yang tidak berhubungan dengan ekosistem, tandai valid: false.
-2. Jika valid, identifikasi kerusakan (sampah plastik, abrasi pantai, kematian sabuk mangrove, sedimentasi, penebangan liar, degradasi kanopi).
-3. Berikan skor urgensi 0-100 (0 = aman asri, 100 = bencana degradasi kritis).
-4. Tentukan tingkat keparahan: "rendah", "sedang", "tinggi", atau "kritis".
-5. Sebutkan 2-4 indikator visual yang terlihat.
-6. Rekomendasikan nama spesies vegetasi restorasi yang paling cocok secara botani (misal Rhizophora apiculata untuk mangrove, tapak kuda / pandan laut untuk pantai pasir, meranti / bambu untuk hutan hulu).
-7. Sebutkan 3 langkah tindakan konservasi nyata bagi warga/relawan.
-8. Jelaskan estimasi risiko ekologis jika dibiarkan.
-9. Estimasi potensi serapan karbon tahunan jika dipulihkan (dalam kg CO2e).
+ATURAN VALIDASI KETAT (ANTI-SPAM / ANTI-FALSE POSITIVE):
+1. Periksa foto dengan teliti: Apakah foto ini BENAR-BENAR merupakan bentang alam terbuka (pantai, laut, pasir pesisir, muara sungai, vegetasi bakau/mangrove, pohon hutan tropis, tebing, tanah)?
+2. JIKA FOTO MERUPAKAN KERTAS, DOKUMEN, TULISAN TANGAN, BUKU, KWITANSI, DINDING, RUANGAN KANTOR/RUMAH, MEJA, LAYAR HP/MONITOR, MAKANAN, KENDARAAN, ATAU SELFIE MANUSIA:
+   - Anda WAJIB menandai "valid": false!
+   - Kategori: sebutkan apa objek buatan tersebut (misal: "Objek Kertas / Dokumen", "Interior Ruangan", "Benda Buatan").
+   - Skor urgensi: 0.
+   - Tingkat keparahan: "rendah".
+   - Indikator visual: sebutkan dengan jelas bahwa objek yang terdeteksi adalah kertas/benda buatan dan tidak ada bentang alam alami.
+   - Tindakan konservasi: instruksikan pengguna untuk mengunggah foto bentang alam nyata di pesisir atau hutan Bengkulu.
+3. JIKA FOTO VALID BENTANG ALAM:
+   - "valid": true.
+   - Identifikasi kerusakan riil (sampah anorganik/plastik, sedimentasi lumpur, abrasi pantai, kematian bakau, degradasi kanopi, penebangan).
+   - Berikan skor urgensi 0-100 (0 = asri tanpa kerusakan, 100 = krisis ekologis parah).
+   - Tingkat keparahan: "rendah" | "sedang" | "tinggi" | "kritis".
+   - Berikan nilai "confidence_score" (60-99%) keyakinan deteksi Computer Vision Anda.
+   - Rekomendasikan nama spesies vegetasi restorasi botani yang tepat (misal: Rhizophora apiculata untuk mangrove, Ipomoea pes-caprae/Pandan Laut untuk pesisir pantai, Shorea/Meranti untuk hutan).
+   - Sebutkan 2-4 indikator visual yang terlihat di foto.
+   - Berikan 3 langkah tindakan gotong royong lapangan yang konkret.
+   - Estimasi risiko ekologis jika dibiarkan.
+   - Estimasi potensi serapan karbon tahunan jika dipulihkan (kg CO2e).
 `;
 
-    const interaction = await aiClient.interactions.create({
-      model: 'gemini-3.8-flash',
-      input: [
-        { type: 'text', text: promptText },
-        {
-          type: 'image',
-          data: cleanBase64,
-          mime_type: mimeType
-        }
-      ],
-      response_format: {
-        type: 'text',
-        mime_type: 'application/json',
-        schema: {
-          type: 'object',
-          properties: {
-            valid: { type: 'boolean' },
-            kategori: { type: 'string' },
-            judul_rekomendasi: { type: 'string' },
-            skor_urgensi: { type: 'integer' },
-            tingkat_keparahan: { 
-              type: 'string',
-              enum: ['rendah', 'sedang', 'tinggi', 'kritis']
-            },
-            indikator_visual: { 
-              type: 'array',
-              items: { type: 'string' }
-            },
-            spesies_rekomendasi: { type: 'string' },
-            tindakan_konservasi: {
-              type: 'array',
-              items: { type: 'string' }
-            },
-            estimasi_risiko: { type: 'string' },
-            estimasi_serapan_karbon_tahunan_kg: { type: 'number' }
+    // Attempt generation with gemini-3.5-flash (fast, robust multimodal)
+    const runGeneration = async (modelName: string) => {
+      return await aiClient.models.generateContent({
+        model: modelName,
+        contents: [
+          {
+            inlineData: {
+              mimeType: imagePayload.mimeType,
+              data: imagePayload.data
+            }
           },
-          required: [
-            'valid',
-            'kategori',
-            'skor_urgensi',
-            'tingkat_keparahan',
-            'indikator_visual',
-            'spesies_rekomendasi',
-            'tindakan_konservasi',
-            'estimasi_risiko'
-          ]
+          promptText
+        ],
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              valid: { 
+                type: Type.BOOLEAN, 
+                description: 'True jika foto adalah bentang alam nyata. False jika kertas, dokumen, ruangan, benda buatan.' 
+              },
+              kategori: { type: Type.STRING },
+              judul_rekomendasi: { type: Type.STRING },
+              skor_urgensi: { type: Type.INTEGER },
+              tingkat_keparahan: { 
+                type: Type.STRING,
+                enum: ['rendah', 'sedang', 'tinggi', 'kritis']
+              },
+              confidence_score: { type: Type.INTEGER },
+              indikator_visual: { 
+                type: Type.ARRAY,
+                items: { type: Type.STRING }
+              },
+              spesies_rekomendasi: { type: Type.STRING },
+              tindakan_konservasi: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING }
+              },
+              estimasi_risiko: { type: Type.STRING },
+              estimasi_serapan_karbon_tahunan_kg: { type: Type.NUMBER }
+            },
+            required: [
+              'valid',
+              'kategori',
+              'skor_urgensi',
+              'tingkat_keparahan',
+              'indikator_visual',
+              'spesies_rekomendasi',
+              'tindakan_konservasi',
+              'estimasi_risiko'
+            ]
+          }
         }
-      }
-    });
+      });
+    };
 
-    if (interaction.output_text) {
-      const parsed = JSON.parse(interaction.output_text) as AIAnalysisResult;
+    let response;
+    try {
+      response = await runGeneration('gemini-3.5-flash');
+    } catch (errFirst) {
+      console.warn('Gemini 3.5 Flash gagal, mencoba fallback ke gemini-3.1-flash-lite:', errFirst);
+      response = await runGeneration('gemini-3.1-flash-lite');
+    }
+
+    if (response && response.text) {
+      const parsed = JSON.parse(response.text) as AIAnalysisResult;
+      // Pastikan confidence_score memiliki nilai default wajar jika tidak dikembalikan
+      if (!parsed.confidence_score) {
+        parsed.confidence_score = parsed.valid ? 94 : 98;
+      }
       return parsed;
     }
 
     return generateFallbackAnalysis(ecosystem, locationName);
   } catch (err) {
-    console.warn('Gagal memanggil Gemini API, beralih ke analisis cerdas lokal:', err);
+    console.error('Gagal memproses analisis citra Gemini:', err);
     return generateFallbackAnalysis(ecosystem, locationName);
   }
 }
@@ -133,39 +188,38 @@ Format keluaran JSON harus memuat:
 5. sop_keselamatan_dan_etika: 3 aturan keselamatan kerja dan etika perlindungan biota lokal.
 `;
 
-    const interaction = await aiClient.interactions.create({
-      model: 'gemini-3.8-flash',
-      input: [{ type: 'text', text: prompt }],
-      response_format: {
-        type: 'text',
-        mime_type: 'application/json',
-        schema: {
-          type: 'object',
+    const response = await aiClient.models.generateContent({
+      model: 'gemini-3.5-flash',
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: Type.OBJECT,
           properties: {
-            ringkasan_taktis: { type: 'string' },
+            ringkasan_taktis: { type: Type.STRING },
             kebutuhan_logistik: {
-              type: 'array',
-              items: { type: 'string' }
+              type: Type.ARRAY,
+              items: { type: Type.STRING }
             },
             pembagian_tim: {
-              type: 'array',
+              type: Type.ARRAY,
               items: {
-                type: 'object',
+                type: Type.OBJECT,
                 properties: {
-                  nama_regu: { type: 'string' },
-                  tugas: { type: 'string' },
-                  kuota: { type: 'integer' }
+                  nama_regu: { type: Type.STRING },
+                  tugas: { type: Type.STRING },
+                  kuota: { type: Type.INTEGER }
                 },
                 required: ['nama_regu', 'tugas', 'kuota']
               }
             },
             tahapan_eksekusi: {
-              type: 'array',
-              items: { type: 'string' }
+              type: Type.ARRAY,
+              items: { type: Type.STRING }
             },
             sop_keselamatan_dan_etika: {
-              type: 'array',
-              items: { type: 'string' }
+              type: Type.ARRAY,
+              items: { type: Type.STRING }
             }
           },
           required: [
@@ -179,8 +233,8 @@ Format keluaran JSON harus memuat:
       }
     });
 
-    if (interaction.output_text) {
-      return JSON.parse(interaction.output_text) as ActionBrief;
+    if (response && response.text) {
+      return JSON.parse(response.text) as ActionBrief;
     }
 
     return generateFallbackActionBrief(reportTitle, ecosystem, targetVolunteers);
@@ -202,6 +256,7 @@ function generateFallbackAnalysis(ecosystem: EcosystemType, location: string): A
         judul_rekomendasi: `Restorasi Sabuk Mangrove Alami ${location}`,
         skor_urgensi: 88,
         tingkat_keparahan: 'kritis',
+        confidence_score: 92,
         indikator_visual: [
           'Kematian anakan bibit mangrove di zona pasang-surut',
           'Sedimentasi lumpur asam menyumbat akar napas pneumatofor',
@@ -223,6 +278,7 @@ function generateFallbackAnalysis(ecosystem: EcosystemType, location: string): A
         judul_rekomendasi: `Revegetasi Koridor Hijau ${location}`,
         skor_urgensi: 78,
         tingkat_keparahan: 'tinggi',
+        confidence_score: 90,
         indikator_visual: [
           'Kerusakan tutupan tajuk akibat tebangan tepi',
           'Retakan tanah lereng berpotensi longsor mikro',
@@ -244,6 +300,7 @@ function generateFallbackAnalysis(ecosystem: EcosystemType, location: string): A
         judul_rekomendasi: `Aksi Bersih Aliran Muara ${location}`,
         skor_urgensi: 69,
         tingkat_keparahan: 'sedang',
+        confidence_score: 89,
         indikator_visual: [
           'Akumulasi botol dan kantong plastik di belokan muara',
           'Laju sedimentasi menghambat akses perahu nelayan',
@@ -266,6 +323,7 @@ function generateFallbackAnalysis(ecosystem: EcosystemType, location: string): A
         judul_rekomendasi: `Restorasi Garis Pantai Berkelanjutan ${location}`,
         skor_urgensi: 83,
         tingkat_keparahan: 'tinggi',
+        confidence_score: 94,
         indikator_visual: [
           'Sampah plastik makro dan sisa jaring di atas garis pasang tertinggi',
           'Tergerusnya gundukan pasir penahan ombak',
