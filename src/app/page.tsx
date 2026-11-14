@@ -188,38 +188,6 @@ export default function HomePage() {
                 </Link>
               </div>
 
-              {/* Interactive Telemetry & Pillar Switcher (Sinkron dengan Slider Foto Kanan) */}
-              <div className="pt-6 grid grid-cols-3 gap-3 border-t border-[#EEF1EC] max-w-xl mx-auto lg:mx-0 text-left font-sans">
-                {HERO_SLIDES.map((slide, sIdx) => {
-                  const isCurrent = currentHeroSlide === sIdx;
-                  return (
-                    <button
-                      key={slide.badge}
-                      type="button"
-                      onClick={() => setCurrentHeroSlide(sIdx)}
-                      className={`p-3 rounded-2xl border text-left transition-all duration-300 cursor-pointer ${
-                        isCurrent
-                          ? 'bg-white border-[#52B040] shadow-xs ring-2 ring-[#52B040]/15'
-                          : 'bg-[#F7F9F6] border-[#E7ECE5] hover:bg-white hover:border-[#d2ebd0]'
-                      }`}
-                      title={`Lihat slide: ${slide.badge}`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className={`text-[10px] font-bold uppercase tracking-wider ${isCurrent ? 'text-[#348D32]' : 'text-[#7A8278]'}`}>
-                          {slide.badge}
-                        </span>
-                        {isCurrent && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#52B040] animate-pulse"></span>
-                        )}
-                      </div>
-                      <div className="text-xs font-semibold text-[#202820] mt-1 line-clamp-1">
-                        {sIdx === 0 ? 'Pesisir Bengkulu' : sIdx === 1 ? 'Taksonomi Botani' : 'Gotong Royong'}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-
             </div>
 
             {/* Right Hero Graphic: Auto-Rotating 3-Second Real Photo Showcase (Opsi B) */}
