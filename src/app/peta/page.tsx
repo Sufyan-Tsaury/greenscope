@@ -68,32 +68,37 @@ export default function PetaPage() {
     loadData();
 
     // 3. Berlangganan sinkronisasi multi-perangkat real-time via Supabase WebSocket
-    const unsubRealtime = subscribeToReportsRealtime((event) => {
-      if (event.type === 'INSERT' && event.report) {
-        const newRep = event.report;
-        setReports((prev) => {
-          if (prev.some((r) => r.id === newRep.id)) return prev;
-          return [newRep, ...prev];
-        });
-        setRealtimeToast({
-          title: newRep.title,
-          location: newRep.location_name
-        });
-        setTimeout(() => setRealtimeToast(null), 5000);
-      } else if (event.type === 'UPDATE' && (event.report || event.id)) {
-        const targetId = event.id || event.report?.id;
-        setReports((prev) =>
-          prev.map((r) => (r.id === targetId ? { ...r, ...(event.report || {}), status: event.status || event.report?.status || r.status } : r))
-        );
-        setSelectedReport((prev) =>
-          prev && prev.id === targetId ? { ...prev, ...(event.report || {}), status: event.status || event.report?.status || prev.status } : prev
-        );
-      } else if (event.type === 'DELETE' && event.id) {
-        const targetId = event.id;
-        setReports((prev) => prev.filter((r) => r.id !== targetId));
-        setSelectedReport((prev) => (prev?.id === targetId ? null : prev));
-      }
-    });
+    let unsubRealtime = () => {};
+    try {
+      unsubRealtime = subscribeToReportsRealtime((event) => {
+        if (event.type === 'INSERT' && event.report) {
+          const newRep = event.report;
+          setReports((prev) => {
+            if (prev.some((r) => r.id === newRep.id)) return prev;
+            return [newRep, ...prev];
+          });
+          setRealtimeToast({
+            title: newRep.title,
+            location: newRep.location_name
+          });
+          setTimeout(() => setRealtimeToast(null), 5000);
+        } else if (event.type === 'UPDATE' && (event.report || event.id)) {
+          const targetId = event.id || event.report?.id;
+          setReports((prev) =>
+            prev.map((r) => (r.id === targetId ? { ...r, ...(event.report || {}), status: event.status || event.report?.status || r.status } : r))
+          );
+          setSelectedReport((prev) =>
+            prev && prev.id === targetId ? { ...prev, ...(event.report || {}), status: event.status || event.report?.status || prev.status } : prev
+          );
+        } else if (event.type === 'DELETE' && event.id) {
+          const targetId = event.id;
+          setReports((prev) => prev.filter((r) => r.id !== targetId));
+          setSelectedReport((prev) => (prev?.id === targetId ? null : prev));
+        }
+      });
+    } catch (e) {
+      console.warn('Realtime subscription error suppressed:', e);
+    }
 
     // 4. Sinkronisasi otomatis saat jendela browser kembali difokuskan
     const handleFocus = () => {

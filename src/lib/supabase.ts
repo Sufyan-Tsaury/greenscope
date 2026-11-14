@@ -268,16 +268,68 @@ export function updateLocalReportStatus(id: string, status: Report['status']) {
 // ==========================================
 // REAL-TIME SYNC (SUPABASE WEBSOCKET BROADCAST)
 // ==========================================
+// SINKRONISASI REAL-TIME MULTI-PERANGKAT (SUPABASE WEBSOCKETS)
+// ==========================================
 let activeRealtimeChannel: any = null;
+let realtimeListeners: Array<(payload: { type: 'INSERT' | 'UPDATE' | 'DELETE'; report?: Report; id?: string; status?: ReportStatus }) => void> = [];
 
-function getSyncChannel() {
+function ensureSyncChannel() {
   if (typeof window === 'undefined') return null;
   if (!isSupabaseConfigured || !supabase) return null;
+  
   if (!activeRealtimeChannel) {
-    activeRealtimeChannel = supabase.channel('greenscope_realtime_sync');
-    activeRealtimeChannel.subscribe((status: string) => {
-      console.log('📡 GreenScope Multi-Device Sync:', status);
-    });
+    try {
+      const channel = supabase.channel('greenscope_realtime_sync');
+      
+      // 1. Pasang broadcast listener SEBELUM subscribe() dipanggil
+      channel.on('broadcast', { event: 'report_event' }, (msg: any) => {
+        if (msg?.payload) {
+          realtimeListeners.forEach((listener) => {
+            try { listener(msg.payload); } catch (e) { console.warn('Realtime listener error:', e); }
+          });
+        }
+      });
+
+      // 2. Pasang postgres_changes listener SEBELUM subscribe() dipanggil
+      channel.on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'reports' },
+        (payload: any) => {
+          let eventPayload: { type: 'INSERT' | 'UPDATE' | 'DELETE'; report?: Report; id?: string; status?: ReportStatus } | null = null;
+          
+          if (payload.eventType === 'INSERT' && payload.new) {
+            eventPayload = { type: 'INSERT', report: payload.new as Report };
+          } else if (payload.eventType === 'UPDATE' && payload.new) {
+            eventPayload = { 
+              type: 'UPDATE', 
+              report: payload.new as Report, 
+              id: payload.new.id, 
+              status: payload.new.status 
+            };
+          } else if (payload.eventType === 'DELETE' && payload.old) {
+            eventPayload = { type: 'DELETE', id: payload.old.id };
+          }
+
+          if (eventPayload) {
+            realtimeListeners.forEach((listener) => {
+              try { listener(eventPayload!); } catch (e) { console.warn('Realtime DB listener error:', e); }
+            });
+          }
+        }
+      );
+
+      // 3. Panggil subscribe() setelah semua callbacks terpasang
+      channel.subscribe((status: string) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('📡 GreenScope Multi-Device Sync terhubung aktif');
+        }
+      });
+
+      activeRealtimeChannel = channel;
+    } catch (err) {
+      console.warn('Gagal menginisialisasi Supabase Realtime channel:', err);
+      return null;
+    }
   }
   return activeRealtimeChannel;
 }
@@ -291,7 +343,7 @@ export function broadcastReportChange(
   id?: string,
   status?: ReportStatus
 ) {
-  const channel = getSyncChannel();
+  const channel = ensureSyncChannel();
   if (channel) {
     try {
       channel.send({
@@ -321,38 +373,15 @@ export function subscribeToReportsRealtime(
     return () => {};
   }
 
-  const channel = getSyncChannel();
-  if (!channel) return () => {};
-
-  // 1. Dengarkan Supabase Realtime Broadcast (Multi-perangkat instan)
-  channel.on('broadcast', { event: 'report_event' }, (msg: any) => {
-    if (msg?.payload) {
-      onEvent(msg.payload);
-    }
-  });
-
-  // 2. Dengarkan PostgreSQL Change Events (Jika replication publication aktif di Cloud)
-  channel.on(
-    'postgres_changes',
-    { event: '*', schema: 'public', table: 'reports' },
-    (payload: any) => {
-      if (payload.eventType === 'INSERT' && payload.new) {
-        onEvent({ type: 'INSERT', report: payload.new as Report });
-      } else if (payload.eventType === 'UPDATE' && payload.new) {
-        onEvent({ 
-          type: 'UPDATE', 
-          report: payload.new as Report, 
-          id: payload.new.id, 
-          status: payload.new.status 
-        });
-      } else if (payload.eventType === 'DELETE' && payload.old) {
-        onEvent({ type: 'DELETE', id: payload.old.id });
-      }
-    }
-  );
+  try {
+    ensureSyncChannel();
+    realtimeListeners.push(onEvent);
+  } catch (err) {
+    console.warn('Gagal mendaftarkan realtime listener:', err);
+  }
 
   return () => {
-    // Keep the channel open for the application lifetime
+    realtimeListeners = realtimeListeners.filter((l) => l !== onEvent);
   };
 }
 
