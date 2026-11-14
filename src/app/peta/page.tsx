@@ -266,11 +266,11 @@ export default function PetaPage() {
             {/* Direct Action Trigger CTA & Delete */}
             <div className="pt-2 space-y-2">
               <Link
-                href="/aksi"
+                href={`/aksi?report_id=${selectedReport.id}`}
                 className="w-full py-3 px-5 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] transition-all flex items-center justify-center gap-2 shadow-sm"
               >
                 <Users className="w-4 h-4" />
-                <span>Buka / Gabung Aksi Restorasi</span>
+                <span>Buka / Rancang Aksi Restorasi</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
 
@@ -337,7 +337,7 @@ export default function PetaPage() {
 
             <div className="flex items-center gap-2 pt-1">
               <Link
-                href="/aksi"
+                href={`/aksi?report_id=${selectedReport.id}`}
                 className="flex-1 py-2.5 rounded-full text-xs font-semibold text-white bg-[#52B040] flex items-center justify-center gap-1.5 shadow-xs"
               >
                 <span>Aksi Restorasi</span>
