@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -25,14 +25,24 @@ import {
   XCircle,
   ExternalLink,
   ChevronRight,
-  Info
+  Info,
+  RotateCcw
 } from 'lucide-react';
 import { INITIAL_REPORTS } from '@/lib/mock-data';
+import { fetchReports, isSupabaseConfigured, updateLocalReportStatus, deleteReport, resetLocalReports } from '@/lib/supabase';
 import { Report, ReportStatus, SeverityLevel } from '@/types';
 
 export default function DashboardPage() {
   const [activeRole, setActiveRole] = useState<'volunteer' | 'coordinator'>('coordinator');
   const [reports, setReports] = useState<Report[]>(INITIAL_REPORTS);
+
+  useEffect(() => {
+    async function loadData() {
+      const data = await fetchReports();
+      setReports(data);
+    }
+    loadData();
+  }, []);
   
   // Filter States
   const [sectorFilter, setSectorFilter] = useState<'all' | 'pesisir' | 'hutan'>('all');
@@ -56,6 +66,9 @@ export default function DashboardPage() {
       prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r))
     );
 
+    // Simpan perubahan status ke penyimpanan lokal
+    updateLocalReportStatus(id, newStatus);
+
     if (selectedReport && selectedReport.id === id) {
       setSelectedReport((prev) => (prev ? { ...prev, status: newStatus } : null));
     }
@@ -69,6 +82,24 @@ export default function DashboardPage() {
     } else {
       showToast('Status laporan berhasil diperbarui.', 'info');
     }
+  };
+
+  // Hapus Satu Laporan Tertentu
+  const handleDeleteReport = async (id: string) => {
+    if (!confirm('Apakah Anda yakin ingin menghapus laporan ini secara permanen dari sistem?')) return;
+    await deleteReport(id);
+    setReports((prev) => prev.filter((r) => r.id !== id));
+    setSelectedReport(null);
+    showToast('Laporan berhasil dihapus.', 'info');
+  };
+
+  // Bersihkan Seluruh Data Laporan Uji Coba & Reset ke Data Asli Bengkulu
+  const handleResetData = () => {
+    if (!confirm('Hapus seluruh laporan uji coba lokal dan kembalikan data ke titik awal Bengkulu?')) return;
+    resetLocalReports();
+    setReports(INITIAL_REPORTS);
+    setSelectedReport(null);
+    showToast('Seluruh data uji berhasil dibersihkan.', 'success');
   };
 
   // Counts for Dynamic Filter Tabs
@@ -509,6 +540,17 @@ export default function DashboardPage() {
                     </button>
                   )}
                 </div>
+
+                {/* Reset Data Uji Button */}
+                <button
+                  type="button"
+                  onClick={handleResetData}
+                  className="px-2.5 py-1.5 rounded-lg border border-[#E3EAE3] text-[#78847B] hover:text-rose-700 hover:bg-rose-50 hover:border-rose-200 text-xs font-medium transition-colors cursor-pointer inline-flex items-center gap-1 shrink-0"
+                  title="Bersihkan laporan uji lokal dan kembalikan ke data awal Bengkulu"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Reset Data Uji</span>
+                </button>
               </div>
 
             </div>
@@ -751,9 +793,13 @@ export default function DashboardPage() {
             <span>
               Menampilkan <strong className="text-[#17251B]">{filteredReports.length}</strong> dari {reports.length} total laporan lapangan
             </span>
-            <div className="flex items-center gap-1.5 text-[11px]">
-              <span className="w-2 h-2 rounded-full bg-[#329F45]"></span>
-              <span>Sinkronisasi database Supabase PostgreSQL aktif</span>
+            <div className="flex items-center gap-1.5 text-[11px] text-[#4A5449]">
+              <span className={`w-2 h-2 rounded-full ${isSupabaseConfigured ? 'bg-[#329F45]' : 'bg-emerald-500'}`}></span>
+              <span>
+                {isSupabaseConfigured
+                  ? 'Sinkronisasi database Supabase PostgreSQL aktif'
+                  : 'Penyimpanan Lokal Aktif (Tersimpan di peramban)'}
+              </span>
             </div>
           </div>
 
@@ -867,6 +913,16 @@ export default function DashboardPage() {
               {/* Modal Footer Action Bar */}
               <div className="p-4 border-t border-[#E3EAE3] bg-[#F5F7F4] flex flex-wrap items-center justify-between gap-2.5">
                 <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteReport(selectedReport.id)}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-medium transition-colors cursor-pointer"
+                    title="Hapus permanen laporan ini dari sistem"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Hapus Laporan</span>
+                  </button>
+
                   <button
                     type="button"
                     onClick={() => handleUpdateStatus(selectedReport.id, 'ditolak')}

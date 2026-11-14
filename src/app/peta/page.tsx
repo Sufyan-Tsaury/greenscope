@@ -15,10 +15,11 @@ import {
   Users, 
   Layers,
   ArrowRight,
-  Compass
+  Compass,
+  Trash2
 } from 'lucide-react';
 import { Report, EcosystemType, SeverityLevel } from '@/types';
-import { fetchReports } from '@/lib/supabase';
+import { fetchReports, deleteReport } from '@/lib/supabase';
 import { INITIAL_REPORTS } from '@/lib/mock-data';
 
 // Dynamic import with SSR disabled to prevent window is not defined error in Next.js
@@ -49,6 +50,16 @@ export default function PetaPage() {
     }
     loadData();
   }, []);
+
+  // Hapus Laporan dari Peta & Local Storage
+  const handleDeleteReport = async (id: string) => {
+    if (!confirm('Hapus titik laporan ini dari peta dan sistem?')) return;
+    await deleteReport(id);
+    const updated = reports.filter((r) => r.id !== id);
+    setReports(updated);
+    setSelectedReport(updated[0] || null);
+    setMobileDrawerOpen(false);
+  };
 
   // Filtered reports
   const filteredReports = reports.filter((r) => {
@@ -247,16 +258,25 @@ export default function PetaPage() {
               </div>
             </div>
 
-            {/* Direct Action Trigger CTA */}
-            <div className="pt-2">
+            {/* Direct Action Trigger CTA & Delete */}
+            <div className="pt-2 space-y-2">
               <Link
                 href="/aksi"
-                className="w-full py-3.5 px-5 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] transition-all flex items-center justify-center gap-2 shadow-sm"
+                className="w-full py-3 px-5 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] transition-all flex items-center justify-center gap-2 shadow-sm"
               >
                 <Users className="w-4 h-4" />
                 <span>Buka / Gabung Aksi Restorasi</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
+
+              <button
+                type="button"
+                onClick={() => handleDeleteReport(selectedReport.id)}
+                className="w-full py-2.5 px-4 rounded-full text-xs font-medium text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Hapus Titik Laporan Ini</span>
+              </button>
             </div>
 
           </div>
@@ -300,13 +320,23 @@ export default function PetaPage() {
               <p className="line-clamp-2 text-[11px] text-[#7A8278]">{selectedReport.description}</p>
             </div>
 
-            <Link
-              href="/aksi"
-              className="w-full py-3 rounded-full text-xs font-semibold text-white bg-[#52B040] flex items-center justify-center gap-1.5 shadow-xs"
-            >
-              <span>Aksi Restorasi</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+            <div className="flex items-center gap-2 pt-1">
+              <Link
+                href="/aksi"
+                className="flex-1 py-2.5 rounded-full text-xs font-semibold text-white bg-[#52B040] flex items-center justify-center gap-1.5 shadow-xs"
+              >
+                <span>Aksi Restorasi</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+              <button
+                type="button"
+                onClick={() => handleDeleteReport(selectedReport.id)}
+                className="p-2.5 rounded-full text-rose-600 bg-rose-50 border border-rose-200 hover:bg-rose-100 transition-colors cursor-pointer"
+                title="Hapus titik laporan ini"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         )}
 

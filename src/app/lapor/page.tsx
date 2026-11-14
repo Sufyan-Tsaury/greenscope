@@ -18,7 +18,9 @@ import {
   Sparkles,
   MapPin,
   X,
-  RotateCcw
+  RotateCcw,
+  Compass,
+  Crosshair
 } from 'lucide-react';
 import { AIAnalysisResult, EcosystemType } from '@/types';
 import { saveReport } from '@/lib/supabase';
@@ -38,7 +40,7 @@ const FIELD_SPECIMEN_SAMPLES = [
     id: 'sample-mangrove',
     label: 'Kekeringan Mangrove Baai',
     ecosystem: 'mangrove' as EcosystemType,
-    location: 'Teluk Pulau Baai, Bengkulu',
+    location: 'Cagar Mangrove Pulau Baai, Bengkulu',
     title: 'Degradasi Sabuk Mangrove Kritis',
     imageUrl: 'https://images.unsplash.com/photo-1578142880638-9fc9aba285c2?auto=format&fit=crop&w=800&q=80',
     description: 'Sabuk anakan bakau tergerus endapan lumpur pekat dan jeratan tali kapal.'
@@ -63,6 +65,15 @@ const FIELD_SPECIMEN_SAMPLES = [
   }
 ];
 
+export const BENGKULU_PRESET_LOCATIONS = [
+  { name: 'Pantai Panjang, Kota Bengkulu', lat: -3.8214, lng: 102.2741 },
+  { name: 'Cagar Mangrove Pulau Baai, Bengkulu', lat: -3.9056, lng: 102.3021 },
+  { name: 'Muara Sungai Jenggalu & Teluk Sepang', lat: -3.8672, lng: 102.2890 },
+  { name: 'Pantai Jakat & Tapak Paderi, Kota Bengkulu', lat: -3.7885, lng: 102.2512 },
+  { name: 'Koridor Bukit Barisan, Bengkulu Tengah', lat: -3.7540, lng: 102.4050 },
+  { name: 'Pesisir Sungai Suci, Bengkulu Tengah', lat: -3.7250, lng: 102.2180 }
+];
+
 export default function LaporPage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -74,12 +85,59 @@ export default function LaporPage() {
   const [customTitle, setCustomTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
 
+  // GPS Coordinates & Status
+  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
+  const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
+  const [locationStatus, setLocationStatus] = useState<string>('');
+
   // AI Analysis States
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState(1);
   const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  // Ambil Lokasi GPS Aktual dari Perangkat / Ponsel Pengguna
+  const handleGetActualLocation = () => {
+    if (typeof window === 'undefined' || !navigator.geolocation) {
+      setLocationStatus('Peramban Anda tidak mendukung sensor geolokasi GPS.');
+      return;
+    }
+    setIsLocating(true);
+    setLocationStatus('Mencari koordinat satelit GPS perangkat...');
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = Number(position.coords.latitude.toFixed(6));
+        const lng = Number(position.coords.longitude.toFixed(6));
+        const acc = Math.round(position.coords.accuracy);
+        setCoordinates({ lat, lng });
+        setGpsAccuracy(acc);
+        setIsLocating(false);
+        setLocationStatus(`GPS Terkunci (Akurasi: ±${acc}m)`);
+        if (!locationName) {
+          setLocationName(`Titik Lapangan [${lat}, ${lng}]`);
+        }
+      },
+      (error) => {
+        setIsLocating(false);
+        if (error.code === error.PERMISSION_DENIED) {
+          setLocationStatus('Izin akses GPS tidak diberikan. Silakan pilih lokasi dari opsi rekomendasi Bengkulu di bawah.');
+        } else {
+          setLocationStatus('Sinyal GPS lemah atau tidak terjangkau. Silakan pilih lokasi manual.');
+        }
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+    );
+  };
+
+  // Pilih Lokasi Preset Bengkulu
+  const handleSelectPresetLocation = (loc: typeof BENGKULU_PRESET_LOCATIONS[0]) => {
+    setLocationName(loc.name);
+    setCoordinates({ lat: loc.lat, lng: loc.lng });
+    setGpsAccuracy(null);
+    setLocationStatus(`Koordinat disetel ke ${loc.name}`);
+  };
 
   // Quick Sample Selector (Hanya jika pengguna memilih mencoba spesimen)
   const handleSelectSample = (sample: typeof FIELD_SPECIMEN_SAMPLES[0]) => {
@@ -90,6 +148,14 @@ export default function LaporPage() {
     setDescription(sample.description);
     setAnalysisResult(null);
     setSavedSuccess(false);
+
+    // Pasangkan koordinat preset
+    const match = BENGKULU_PRESET_LOCATIONS.find((loc) => loc.name === sample.location);
+    if (match) {
+      setCoordinates({ lat: match.lat, lng: match.lng });
+      setGpsAccuracy(null);
+      setLocationStatus(`Koordinat spesimen aktif: ${match.lat}, ${match.lng}`);
+    }
   };
 
   // Reset / Clear Image
@@ -175,13 +241,19 @@ export default function LaporPage() {
     try {
       const detectedEco: EcosystemType = analysisResult.ekosistem_terdeteksi || 'pesisir_pantai';
       
+      // Prioritaskan koordinat GPS aktual perangkat atau lokasi Bengkulu yang dipilih
+      const fallbackLat = detectedEco === 'mangrove' ? -3.9056 : detectedEco === 'hutan_tropis' ? -3.7540 : -3.8214;
+      const fallbackLng = detectedEco === 'mangrove' ? 102.3021 : detectedEco === 'hutan_tropis' ? 102.4050 : 102.2741;
+      const finalLat = coordinates ? coordinates.lat : fallbackLat;
+      const finalLng = coordinates ? coordinates.lng : fallbackLng;
+
       await saveReport({
         reporter_name: 'Relawan Konservasi Bengkulu',
         title: customTitle || analysisResult.judul_rekomendasi || `${analysisResult.kategori} - ${locationName || 'Bengkulu'}`,
         description: description || analysisResult.estimasi_risiko,
         image_url: selectedImage,
-        latitude: detectedEco === 'mangrove' ? -3.9056 : detectedEco === 'hutan_tropis' ? -3.7540 : -3.8214,
-        longitude: detectedEco === 'mangrove' ? 102.3021 : detectedEco === 'hutan_tropis' ? 102.4050 : 102.2741,
+        latitude: finalLat,
+        longitude: finalLng,
         location_name: locationName.trim() || (detectedEco === 'hutan_tropis' ? 'Koridor Hutan Bengkulu' : 'Kawasan Pesisir Bengkulu'),
         ecosystem: detectedEco,
         urgency_score: analysisResult.skor_urgensi,
@@ -341,21 +413,100 @@ export default function LaporPage() {
                 />
               </div>
 
-              {/* Form Metadata: Lokasi Sederhana (Ekosistem Otomatis) */}
-              <div className="space-y-3 pt-1">
+              {/* Form Metadata: Lokasi & Geotagging GPS */}
+              <div className="space-y-3.5 pt-1">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-[#202820] uppercase tracking-wider flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-[#52B040]" />
-                    <span>Nama Lokasi / Kawasan Lapangan</span>
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-[#202820] uppercase tracking-wider flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-[#52B040]" />
+                      <span>Nama Lokasi / Sektor Bengkulu</span>
+                    </label>
+                    
+                    {/* Tombol Deteksi GPS Aktual */}
+                    <button
+                      type="button"
+                      onClick={handleGetActualLocation}
+                      disabled={isLocating}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold text-[#348D32] bg-[#EAF5E6] hover:bg-[#d6edcf] border border-[#d2ebd0] transition-colors cursor-pointer disabled:opacity-50"
+                      title="Ambil koordinat garis lintang dan bujur otomatis dari sensor GPS perangkat"
+                    >
+                      {isLocating ? (
+                        <>
+                          <RefreshCw className="w-3 h-3 animate-spin text-[#52B040]" />
+                          <span>Mencari Satelit...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Crosshair className="w-3 h-3 text-[#52B040]" />
+                          <span>Ambil GPS Perangkat</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
                   <input
                     type="text"
                     value={locationName}
                     onChange={(e) => setLocationName(e.target.value)}
-                    placeholder="Contoh: Hutan Lindung Bukit Daun, Pantai Panjang, Teluk Baai..."
+                    placeholder="Ketik nama lokasi atau pilih dari preset Bengkulu..."
                     className="w-full px-4 py-2.5 rounded-xl border border-[#E7ECE5] bg-white text-xs text-[#202820] placeholder-[#A2AAA0] focus:ring-2 focus:ring-[#52B040] focus:outline-hidden"
                   />
-                  <span className="text-[11px] text-[#7A8278] block">
+
+                  {/* Status GPS Indikator */}
+                  {coordinates ? (
+                    <div className="p-2.5 rounded-xl bg-[#EAF5E6] border border-[#d2ebd0] text-xs flex items-center justify-between text-[#348D32]">
+                      <div className="flex items-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4 text-[#52B040] shrink-0" />
+                        <span className="font-mono text-[11px]">
+                          Lat: {coordinates.lat.toFixed(4)}, Lng: {coordinates.lng.toFixed(4)}
+                          {gpsAccuracy !== null && ` (Akurasi: ±${gpsAccuracy}m)`}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCoordinates(null);
+                          setGpsAccuracy(null);
+                          setLocationStatus('');
+                        }}
+                        className="text-[#7A8278] hover:text-rose-600 text-[11px] underline cursor-pointer"
+                      >
+                        Reset
+                      </button>
+                    </div>
+                  ) : locationStatus ? (
+                    <div className="text-[11px] text-amber-800 bg-amber-50 p-2.5 rounded-xl border border-amber-200">
+                      {locationStatus}
+                    </div>
+                  ) : null}
+
+                  {/* Preset Cepat Kawasan Konservasi Bengkulu */}
+                  <div className="space-y-1.5 pt-1">
+                    <span className="text-[11px] text-[#7A8278] block">
+                      Atau pilih lokasi prioritas konservasi pesisir Bengkulu:
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {BENGKULU_PRESET_LOCATIONS.map((loc) => {
+                        const isSelected = locationName === loc.name;
+                        return (
+                          <button
+                            key={loc.name}
+                            type="button"
+                            onClick={() => handleSelectPresetLocation(loc)}
+                            className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors cursor-pointer ${
+                              isSelected
+                                ? 'bg-[#348D32] text-white border-[#348D32]'
+                                : 'bg-white text-[#4A5449] border-[#E7ECE5] hover:bg-[#F7F9F6]'
+                            }`}
+                          >
+                            {loc.name.split(',')[0]}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <span className="text-[11px] text-[#7A8278] block pt-1">
                     *Tipe ekosistem (hutan, pesisir, mangrove, muara) akan <strong>dianalisis otomatis oleh AI</strong> dari gambar.
                   </span>
                 </div>

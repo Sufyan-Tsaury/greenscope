@@ -35,7 +35,6 @@ const MapInner = dynamic(() => import('@/components/map-inner'), {
 });
 
 export default function HomePage() {
-  const [sliderPosition, setSliderPosition] = useState(50);
   const [carbonTrees, setCarbonTrees] = useState(250);
   const [selectedMapReport, setSelectedMapReport] = useState<Report | null>(INITIAL_REPORTS[0]);
   const [mapFilter, setMapFilter] = useState<string>('all');
@@ -153,9 +152,9 @@ export default function HomePage() {
                       <Compass className="w-3.5 h-3.5 text-[#52B040]" />
                       <span>3°54&apos;12&quot;S, 102°17&apos;40&quot;E</span>
                     </div>
-                    <div className="inline-flex items-center gap-1.5 bg-[#52B040] text-white px-3 py-1 rounded-full text-[10px] uppercase font-semibold shadow-xs">
-                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-                      <span>Terverifikasi</span>
+                    <div className="inline-flex items-center gap-1.5 bg-[#202820]/80 backdrop-blur-md text-white px-3 py-1 rounded-full text-[10px] font-semibold shadow-xs border border-white/20">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#52B040]"></span>
+                      <span>Area Pantau Aktif</span>
                     </div>
                   </div>
                 </div>
@@ -382,78 +381,137 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. BEFORE VS AFTER RESTORATION SHOWCASE SLIDER */}
+      {/* 4. DOKUMENTASI RESTORASI LAPANGAN: SEBELUM VS TARGET PEMULIHAN */}
       <section className="py-16 sm:py-20 bg-white border-b border-[#E7ECE5]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
-          <div className="text-center max-w-3xl mx-auto space-y-3 mb-10">
+          <div className="text-center max-w-3xl mx-auto space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-[#EAF5E6] text-[#348D32] border border-[#d2ebd0]">
+              <Leaf className="w-3.5 h-3.5" />
+              <span>Dokumentasi Pemulihan Ekologis</span>
+            </div>
             <h2 className="text-2xl sm:text-4xl font-bold text-[#202820] tracking-tight">
-              Dari Laporan Kerusakan Menjadi Bentang Alam Pulih
+              Transparansi Pemulihan Bentang Alam Pesisir
             </h2>
-            <p className="text-[#7A8278] text-sm sm:text-base leading-relaxed">
-              Tarik garis pemisah ke kiri dan kanan untuk membandingkan kondisi riil area pesisir sebelum dan sesudah intervensi gotong royong bersama GreenScope Bengkulu.
+            <p className="text-[#4A5449] text-sm sm:text-base leading-relaxed">
+              Membandingkan kondisi riil saat titik kerusakan pertama kali dilaporkan masyarakat dengan target pemulihan vegetasi sabuk pantai melalui aksi gotong royong terpadu.
             </p>
           </div>
 
-          {/* Interactive Split-Screen Slider in Rounded-3xl Card */}
-          <div className="max-w-4xl mx-auto">
-            <div className="relative aspect-16/9 sm:aspect-21/9 rounded-3xl overflow-hidden border border-[#E7ECE5] select-none bg-stone-900 shadow-sm">
-              
-              {/* After Image (Full Background) */}
-              <div className="absolute inset-0">
-                <Image
-                  src="https://images.unsplash.com/photo-1511497584788-87676104235f?auto=format&fit=crop&w=1600&q=80"
-                  alt="Kondisi Pasca Pemulihan (After)"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 896px"
-                />
-                <span className="absolute bottom-4 right-4 z-10 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/95 backdrop-blur-md text-[#348D32] border border-[#d2ebd0] shadow-sm flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-[#52B040]" /> Pulih: Sabuk Pesisir Asri
-                </span>
-              </div>
+          {/* 2-Column Comparative Card Grid (Resilient, Accessible, Fast) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+            
+            {/* Card 1: Kondisi Awal */}
+            <div className="rounded-3xl border border-[#E7ECE5] bg-[#F7F9F6] p-5 sm:p-6 flex flex-col justify-between space-y-5 shadow-xs">
+              <div className="space-y-4">
+                <div className="relative aspect-16/10 rounded-2xl overflow-hidden border border-[#E7ECE5] bg-[#E5EAE3]">
+                  <Image
+                    src="https://images.unsplash.com/photo-1621451537084-482c73073a0f?auto=format&fit=crop&w=1000&q=80"
+                    alt="Kondisi awal titik kerusakan pesisir pantai"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 600px"
+                  />
+                  <div className="absolute top-3 left-3 z-10">
+                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/95 backdrop-blur-md text-rose-700 border border-rose-200 shadow-xs flex items-center gap-1.5">
+                      <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
+                      Kondisi Awal: Timbunan Sampah &amp; Abrasi
+                    </span>
+                  </div>
+                </div>
 
-              {/* Before Image (Clipped Left Layer) */}
-              <div 
-                className="absolute inset-0 overflow-hidden"
-                style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
-              >
-                <Image
-                  src="https://images.unsplash.com/photo-1621451537084-482c73073a0f?auto=format&fit=crop&w=1600&q=80"
-                  alt="Kondisi Sebelum Restorasi (Before)"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 896px"
-                />
-                <span className="absolute bottom-4 left-4 z-10 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/95 backdrop-blur-md text-rose-700 border border-rose-200 shadow-sm flex items-center gap-1.5">
-                  <AlertTriangle className="w-4 h-4 text-rose-500" /> Awal: Timbunan Sampah &amp; Abrasi
-                </span>
-              </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-0.5 rounded-full">
+                      Tingkat Urgensi: Kritis
+                    </span>
+                    <span className="text-[#7A8278] flex items-center gap-1 font-mono text-[11px]">
+                      <MapPin className="w-3 h-3 text-[#52B040]" />
+                      Pantai Panjang, Kota Bengkulu
+                    </span>
+                  </div>
 
-              {/* Draggable Divider Handle */}
-              <div 
-                className="absolute top-0 bottom-0 w-0.5 bg-white z-20 flex items-center justify-center pointer-events-none"
-                style={{ left: `${sliderPosition}%` }}
-              >
-                <div className="w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center text-[#348D32] border border-[#E7ECE5] text-xs font-bold">
-                  ↔
+                  <h3 className="text-lg font-bold text-[#202820]">
+                    Pencemaran Limbah Plastik &amp; Erosi Sempadan
+                  </h3>
+                  <p className="text-xs text-[#4A5449] leading-relaxed">
+                    Timbunan limbah anorganik di zona pasang tertinggi menjerat sempadan pasir, memicu erosi sempadan aktif dan mematikan vegetasi perintis tapak kuda alami.
+                  </p>
                 </div>
               </div>
 
-              {/* Hidden Range Input for Accessibility */}
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={sliderPosition}
-                onChange={(e) => setSliderPosition(Number(e.target.value))}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-30"
-                aria-label="Geser untuk membandingkan kondisi sebelum dan sesudah restorasi"
-              />
+              <div className="pt-4 border-t border-[#E7ECE5] flex items-center justify-between text-xs">
+                <span className="text-[#7A8278]">Fokus Lapangan:</span>
+                <span className="font-semibold text-[#202820]">Pembersihan Sampah &amp; Pasang Bronjong</span>
+              </div>
             </div>
 
-            <div className="mt-3 text-center text-xs text-[#7A8278]">
-              *Geser indikator di atas untuk mengamati perbedaan pemulihan vegetasi sabuk pantai.
+            {/* Card 2: Sasaran Pemulihan */}
+            <div className="rounded-3xl border border-[#d2ebd0] bg-[#FAFCF9] p-5 sm:p-6 flex flex-col justify-between space-y-5 shadow-xs">
+              <div className="space-y-4">
+                <div className="relative aspect-16/10 rounded-2xl overflow-hidden border border-[#d2ebd0] bg-[#EAF5E6]">
+                  <Image
+                    src="https://images.unsplash.com/photo-1544979590-37e9b47eb705?auto=format&fit=crop&w=1000&q=80"
+                    alt="Sasaran pemulihan ekosistem sabuk mangrove asri"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 600px"
+                  />
+                  <div className="absolute top-3 left-3 z-10">
+                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/95 backdrop-blur-md text-[#348D32] border border-[#d2ebd0] shadow-xs flex items-center gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#52B040]" />
+                      Sasaran Pemulihan: Sabuk Pesisir Asri
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-[#348D32] bg-[#EAF5E6] border border-[#d2ebd0] px-2.5 py-0.5 rounded-full">
+                      Target Restorasi Berkelanjutan
+                    </span>
+                    <span className="text-[#7A8278] flex items-center gap-1 font-mono text-[11px]">
+                      <MapPin className="w-3 h-3 text-[#52B040]" />
+                      Teluk Pulau Baai, Bengkulu
+                    </span>
+                  </div>
+
+                  <h3 className="text-lg font-bold text-[#202820]">
+                    Sabuk Hijau Mangrove Kokoh &amp; Mengikat Sedimen
+                  </h3>
+                  <p className="text-xs text-[#4A5449] leading-relaxed">
+                    Kawasan bebas sampah dan ditanami bibit <em>Rhizophora apiculata</em> berajir bambu rapat, memulihkan daya redam abrasi alami dan habitat biota pesisir.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-[#E7ECE5] flex items-center justify-between text-xs">
+                <span className="text-[#7A8278]">Hasil Kolaboratif:</span>
+                <span className="font-semibold text-[#348D32]">350+ Bibit Tumbuh • Sabuk Gelombang Aktif</span>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Quick Action Navigation Bar */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
+            <div className="flex items-center gap-2.5 text-[#4A5449]">
+              <span className="w-2 h-2 rounded-full bg-[#52B040] shrink-0"></span>
+              <span>Seluruh dokumentasi titik kerusakan dan kemajuan restorasi dapat dipantau secara terbuka oleh publik.</span>
+            </div>
+            <div className="flex items-center gap-3 shrink-0">
+              <Link
+                href="/peta"
+                className="px-4 py-2 rounded-full font-semibold text-[#202820] bg-white border border-[#E7ECE5] hover:bg-[#EEF1EC] transition-all"
+              >
+                Buka Peta Pantau
+              </Link>
+              <Link
+                href="/aksi"
+                className="px-4 py-2 rounded-full font-semibold text-white bg-[#52B040] hover:bg-[#348D32] transition-all"
+              >
+                Ikuti Aksi Restorasi
+              </Link>
             </div>
           </div>
 
@@ -519,8 +577,8 @@ export default function HomePage() {
                     </div>
                   </div>
 
-                  <div className="text-[11px] text-[#7A8278] pt-1">
-                    *Perhitungan didasarkan pada koefisien allometrik rata-rata spesies <em>Rhizophora apiculata</em> dan <em>Avicennia marina</em> di pesisir Sumatera (~12,5 kg CO₂e/pohon/tahun).
+                  <div className="text-[11px] text-[#4A5449] pt-1">
+                    *Estimasi edukatif berbasis pendekatan koefisien serapan biomassa rata-rata (~12,5 kg CO₂e/pohon/tahun untuk mangrove tropis). Nilai aktual di lapangan dipengaruhi oleh tingkat kelulushidupan bibit, tipe sedimen, dan kondisi hidrologi pasang surut.
                   </div>
                 </div>
 
@@ -540,7 +598,7 @@ export default function HomePage() {
                       kg CO₂e/tahun
                     </span>
                   </div>
-                  <p className="text-xs text-[#7A8278] leading-relaxed pt-1">
+                  <p className="text-xs text-[#4A5449] leading-relaxed pt-1">
                     Estimasi biomassa tersimpan dalam sedimen tanah dan tegakan pohon setelah fase pemantauan 12 bulan.
                   </p>
                 </div>
@@ -549,31 +607,31 @@ export default function HomePage() {
                 <div className="border-y border-[#EEF1EC] divide-y divide-[#EEF1EC] text-xs">
                   
                   <div className="py-3 flex items-center justify-between">
-                    <span className="text-[#7A8278]">Equivalensi Emisi Dinetralkan</span>
+                    <span className="text-[#4A5449]">Equivalensi Emisi Dinetralkan</span>
                     <span className="font-mono font-semibold text-[#202820] tabular-nums">
                       ~{Math.round(calculatedCO2 / 120)} Penerbangan Domestik
                     </span>
                   </div>
 
                   <div className="py-3 flex items-center justify-between">
-                    <span className="text-[#7A8278]">Sabuk Perlindungan Abrasi</span>
+                    <span className="text-[#4A5449]">Sabuk Perlindungan Abrasi</span>
                     <span className="font-mono font-semibold text-[#202820] tabular-nums">
                       +{Math.round(carbonTrees * 0.8)} Meter Garis Sempadan
                     </span>
                   </div>
 
                   <div className="py-3 flex items-center justify-between">
-                    <span className="text-[#7A8278]">Kesesuaian Tipe Substrat</span>
+                    <span className="text-[#4A5449]">Kesesuaian Tipe Substrat</span>
                     <span className="font-medium text-[#202820]">
                       Lumpur Berpasir Estuari
                     </span>
                   </div>
 
                   <div className="py-3 flex items-center justify-between">
-                    <span className="text-[#7A8278]">Status Validasi Ilmiah</span>
+                    <span className="text-[#4A5449]">Metode Estimasi</span>
                     <span className="font-medium text-[#348D32] flex items-center gap-1.5">
-                      <Check className="w-3.5 h-3.5 text-[#52B040]" />
-                      Formula Standar IPCC
+                      <ShieldCheck className="w-3.5 h-3.5 text-[#52B040]" />
+                      Simulasi Edukatif Konservatif
                     </span>
                   </div>
 

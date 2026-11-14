@@ -16,12 +16,101 @@ export const supabase = isSupabaseConfigured
   ? createClient(supabaseUrl, supabaseAnonKey) 
   : null;
 
+const LOCAL_STORAGE_REPORTS_KEY = 'greenscope_custom_reports';
+
 /**
- * Mengambil seluruh laporan kerusakan lingkungan (dengan fallback ke data Bengkulu riil)
+ * Membaca laporan lokal yang tersimpan di browser
+ */
+export function getLocalReports(): Report[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(LOCAL_STORAGE_REPORTS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (err) {
+    console.warn('Gagal membaca localStorage laporan:', err);
+    return [];
+  }
+}
+
+/**
+ * Menyimpan atau memperbarui laporan di browser
+ */
+export function saveLocalReport(report: Report) {
+  if (typeof window === 'undefined') return;
+  try {
+    const existing = getLocalReports();
+    const updated = [report, ...existing.filter((r) => r.id !== report.id)];
+    localStorage.setItem(LOCAL_STORAGE_REPORTS_KEY, JSON.stringify(updated));
+  } catch (err) {
+    console.warn('Gagal menyimpan ke localStorage:', err);
+  }
+}
+
+/**
+ * Memperbarui status laporan di browser
+ */
+export function updateLocalReportStatus(id: string, status: Report['status']) {
+  if (typeof window === 'undefined') return;
+  try {
+    const existing = getLocalReports();
+    const updated = existing.map((r) => (r.id === id ? { ...r, status } : r));
+    localStorage.setItem(LOCAL_STORAGE_REPORTS_KEY, JSON.stringify(updated));
+  } catch (err) {
+    console.warn('Gagal update status di localStorage:', err);
+  }
+}
+
+/**
+ * Menghapus laporan dari penyimpanan lokal (dan Supabase jika terhubung)
+ */
+export async function deleteReport(id: string): Promise<boolean> {
+  if (typeof window !== 'undefined') {
+    try {
+      const existing = getLocalReports();
+      const updated = existing.filter((r) => r.id !== id);
+      localStorage.setItem(LOCAL_STORAGE_REPORTS_KEY, JSON.stringify(updated));
+    } catch (err) {
+      console.warn('Gagal menghapus dari localStorage:', err);
+    }
+  }
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      await supabase.from('reports').delete().eq('id', id);
+    } catch (err) {
+      console.error('Error saat menghapus dari Supabase:', err);
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Menghapus seluruh data uji laporan kustom lokal dan kembali ke data bawaan Bengkulu
+ */
+export function resetLocalReports(): void {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.removeItem(LOCAL_STORAGE_REPORTS_KEY);
+    } catch (err) {
+      console.warn('Gagal reset localStorage:', err);
+    }
+  }
+}
+
+/**
+ * Mengambil seluruh laporan kerusakan lingkungan (dengan fallback ke data lokal peramban & data riil Bengkulu)
  */
 export async function fetchReports(): Promise<Report[]> {
+  const localCustom = getLocalReports();
+
   if (!isSupabaseConfigured || !supabase) {
-    return INITIAL_REPORTS;
+    // Gabungkan laporan lokal buatan pengguna di posisi teratas, disusul INITIAL_REPORTS
+    const merged = [
+      ...localCustom,
+      ...INITIAL_REPORTS.filter((init) => !localCustom.some((c) => c.id === init.id))
+    ];
+    return merged;
   }
 
   try {
@@ -31,7 +120,10 @@ export async function fetchReports(): Promise<Report[]> {
       .order('created_at', { ascending: false });
 
     if (error || !data || data.length === 0) {
-      return INITIAL_REPORTS;
+      return [
+        ...localCustom,
+        ...INITIAL_REPORTS.filter((init) => !localCustom.some((c) => c.id === init.id))
+      ];
     }
 
     // Normalisasi struktur data agar tahan terhadap variasi schema dan field Supabase
@@ -75,15 +167,22 @@ export async function fetchReports(): Promise<Report[]> {
       };
     });
 
-    return normalizedReports;
+    // Gabungkan laporan buatan lokal dengan data Supabase
+    return [
+      ...localCustom,
+      ...normalizedReports.filter((nr) => !localCustom.some((c) => c.id === nr.id))
+    ];
   } catch (err) {
     console.warn('Gagal memuat dari Supabase, beralih ke data lokal:', err);
-    return INITIAL_REPORTS;
+    return [
+      ...localCustom,
+      ...INITIAL_REPORTS.filter((init) => !localCustom.some((c) => c.id === init.id))
+    ];
   }
 }
 
 /**
- * Menyimpan laporan baru hasil pemindaian ScopeLens
+ * Menyimpan laporan baru hasil pemindaian ScopeLens (Local-First + Supabase)
  */
 export async function saveReport(report: Omit<Report, 'id' | 'created_at'>): Promise<Report> {
   const newReport: Report = {
@@ -91,6 +190,9 @@ export async function saveReport(report: Omit<Report, 'id' | 'created_at'>): Pro
     id: `rep-${Date.now()}`,
     created_at: new Date().toISOString()
   };
+
+  // Selalu simpan ke localStorage secara instan agar laporan tidak hilang
+  saveLocalReport(newReport);
 
   if (isSupabaseConfigured && supabase) {
     try {
@@ -114,7 +216,9 @@ export async function saveReport(report: Omit<Report, 'id' | 'created_at'>): Pro
         .single();
 
       if (!error && data) {
-        return data as Report;
+        const dbReport = data as Report;
+        saveLocalReport(dbReport);
+        return dbReport;
       }
     } catch (err) {
       console.error('Error saat menyimpan ke Supabase:', err);
