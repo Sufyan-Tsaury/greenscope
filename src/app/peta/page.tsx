@@ -156,9 +156,10 @@ export default function PetaPage() {
               className="px-3 py-1.5 rounded-full border border-[#E7ECE5] bg-white text-[#202820] text-xs font-medium focus:outline-[#52B040] shadow-xs cursor-pointer"
             >
               <option value="all">Semua Urgensi</option>
-              <option value="kritis">🔴 Kritis (90+)</option>
-              <option value="tinggi">🟠 Tinggi (75-89)</option>
-              <option value="sedang">🟡 Sedang</option>
+              <option value="kritis">🔴 Kritis (Kerusakan Parah)</option>
+              <option value="tinggi">🟠 Tinggi (Degradasi Signifikan)</option>
+              <option value="sedang">🟡 Sedang (Kerusakan Moderat)</option>
+              <option value="rendah">🟢 Rendah (Observasi Rutin)</option>
             </select>
 
             <Link

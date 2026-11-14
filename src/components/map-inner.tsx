@@ -113,7 +113,7 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
           <strong style="font-size: 12px; display: block; color: #202820; margin-bottom: 2px; line-height: 1.35; font-weight: 700;">${report.title}</strong>
           <span style="font-size: 11px; color: #7A8278; display: block; margin-bottom: 5px;">${report.location_name}</span>
           <div style="display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 600; background: ${report.severity === 'kritis' ? '#fff1f2' : report.severity === 'tinggi' ? '#fffbeb' : '#EAF5E6'}; color: ${report.severity === 'kritis' ? '#e11d48' : report.severity === 'tinggi' ? '#d97706' : '#348D32'};">
-            Urgensi ${report.urgency_score}/100 • ${report.status.toUpperCase()}
+            URGENSI: ${report.severity.toUpperCase()} • ${report.status.toUpperCase()}
           </div>
         </div>
       `, { closeButton: false, offset: [0, -10] });

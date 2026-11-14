@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -21,6 +21,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { Report } from '@/types';
+import { fetchReports } from '@/lib/supabase';
 import { INITIAL_REPORTS } from '@/lib/mock-data';
 
 // Dynamic import Leaflet map with SSR disabled
@@ -35,9 +36,21 @@ const MapInner = dynamic(() => import('@/components/map-inner'), {
 });
 
 export default function HomePage() {
+  const [reports, setReports] = useState<Report[]>(INITIAL_REPORTS);
   const [carbonTrees, setCarbonTrees] = useState(250);
   const [selectedMapReport, setSelectedMapReport] = useState<Report | null>(INITIAL_REPORTS[0]);
   const [mapFilter, setMapFilter] = useState<string>('all');
+
+  useEffect(() => {
+    async function loadReports() {
+      const data = await fetchReports();
+      setReports(data);
+      if (data.length > 0) {
+        setSelectedMapReport(data[0]);
+      }
+    }
+    loadReports();
+  }, []);
 
   // Smooth filter navigation: updates filter AND flies camera to matching location
   const handleFilterSector = (filterId: string) => {
@@ -45,7 +58,7 @@ export default function HomePage() {
     if (filterId === 'all') {
       setSelectedMapReport(null);
     } else {
-      const match = INITIAL_REPORTS.find((r) => r.ecosystem === filterId);
+      const match = reports.find((r) => r.ecosystem === filterId);
       if (match) {
         setSelectedMapReport(match);
       }
@@ -55,10 +68,14 @@ export default function HomePage() {
   // Perhitungan Karbon Biru Sederhana: ~12.5 kg CO2e/pohon/tahun untuk mangrove/pohon keras tropis
   const calculatedCO2 = Math.round(carbonTrees * 12.5);
 
-  const filteredReports = INITIAL_REPORTS.filter((r) => {
+  const filteredReports = reports.filter((r) => {
     if (mapFilter === 'all') return true;
     return r.ecosystem === mapFilter;
   });
+
+  const kritisCount = reports.filter((r) => r.severity === 'kritis').length;
+  const tinggiCount = reports.filter((r) => r.severity === 'tinggi').length;
+  const pulihCount = reports.filter((r) => r.status === 'pulih').length;
 
   return (
     <div className="flex flex-col bg-[#F7F9F6] text-[#202820]">
@@ -246,15 +263,15 @@ export default function HomePage() {
               <div className="absolute bottom-3 left-3 z-1000 bg-white/95 backdrop-blur-md border border-[#E7ECE5] rounded-full px-4 py-2 text-xs text-[#202820] shadow-sm hidden sm:flex items-center gap-4">
                 <span className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-                  Kritis: <strong>2 Titik</strong>
+                  Kritis: <strong>{kritisCount} Titik</strong>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                  Sedang: <strong>1 Titik</strong>
+                  Tinggi: <strong>{tinggiCount} Titik</strong>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#52B040]"></span>
-                  Pulih: <strong>1 Titik</strong>
+                  Pulih: <strong>{pulihCount} Titik</strong>
                 </span>
               </div>
             </div>
@@ -334,12 +351,12 @@ export default function HomePage() {
                       Seluruh Sektor Terdata Bengkulu
                     </h3>
                     <p className="text-[11px] text-[#7A8278] mt-1 leading-relaxed">
-                      Menampilkan 4 titik pengawasan ekosistem pesisir barat dan hutan. Klik salah satu sektor untuk terbang langsung ke lokasinya:
+                      Menampilkan {reports.length} titik pengawasan ekosistem pesisir barat dan hutan. Klik salah satu sektor untuk terbang langsung ke lokasinya:
                     </p>
                   </div>
 
                   <div className="space-y-1.5 pt-1">
-                    {INITIAL_REPORTS.map((rep) => (
+                    {reports.map((rep) => (
                       <button
                         key={rep.id}
                         type="button"
@@ -354,10 +371,14 @@ export default function HomePage() {
                             {rep.location_name.split(',')[0]}
                           </div>
                         </div>
-                        <span className={`text-[10px] font-semibold font-mono px-2 py-0.5 rounded-full shrink-0 ${
-                          rep.severity === 'kritis' ? 'text-rose-700 bg-rose-50' : 'text-amber-700 bg-amber-50'
+                        <span className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full shrink-0 ${
+                          rep.severity === 'kritis' 
+                            ? 'text-rose-700 bg-rose-50 border border-rose-200' 
+                            : rep.severity === 'tinggi'
+                              ? 'text-amber-700 bg-amber-50 border border-amber-200'
+                              : 'text-[#348D32] bg-[#EAF5E6] border border-[#d2ebd0]'
                         }`}>
-                          {rep.urgency_score}/100
+                          {rep.severity.toUpperCase()}
                         </span>
                       </button>
                     ))}

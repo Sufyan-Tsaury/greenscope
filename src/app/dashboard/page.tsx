@@ -28,18 +28,23 @@ import {
   Info,
   RotateCcw
 } from 'lucide-react';
-import { INITIAL_REPORTS } from '@/lib/mock-data';
-import { fetchReports, isSupabaseConfigured, updateLocalReportStatus, deleteReport, resetLocalReports } from '@/lib/supabase';
-import { Report, ReportStatus, SeverityLevel } from '@/types';
+import { INITIAL_REPORTS, INITIAL_CAMPAIGNS } from '@/lib/mock-data';
+import { fetchReports, fetchCampaigns, isSupabaseConfigured, updateLocalReportStatus, deleteReport, resetLocalReports } from '@/lib/supabase';
+import { Report, Campaign, ReportStatus, SeverityLevel } from '@/types';
 
 export default function DashboardPage() {
   const [activeRole, setActiveRole] = useState<'volunteer' | 'coordinator'>('coordinator');
   const [reports, setReports] = useState<Report[]>(INITIAL_REPORTS);
+  const [campaigns, setCampaigns] = useState<Campaign[]>(INITIAL_CAMPAIGNS);
 
   useEffect(() => {
     async function loadData() {
-      const data = await fetchReports();
-      setReports(data);
+      const [reportData, campData] = await Promise.all([
+        fetchReports(),
+        fetchCampaigns()
+      ]);
+      setReports(reportData);
+      setCampaigns(campData);
     }
     loadData();
   }, []);
@@ -114,6 +119,31 @@ export default function DashboardPage() {
     const ditolak = reports.filter((r) => r.status === 'ditolak').length;
 
     return { total: reports.length, pesisir, hutan, menunggu, dalamAksi, terverifikasi, ditolak };
+  }, [reports]);
+
+  // Dynamic Telemetry Metrics
+  const totalCarbonKg = useMemo(() => {
+    return reports.reduce((acc, r) => acc + (r.ai_analysis?.estimasi_serapan_karbon_tahunan_kg || 0), 0);
+  }, [reports]);
+
+  const kritisReportsCount = useMemo(() => {
+    return reports.filter((r) => r.severity === 'kritis').length;
+  }, [reports]);
+
+  const totalVolunteersCount = useMemo(() => {
+    return campaigns.reduce((acc, c) => acc + (c.volunteers_count || 0), 0);
+  }, [campaigns]);
+
+  const priorityReports = useMemo(() => {
+    const severityWeight: Record<SeverityLevel, number> = {
+      kritis: 4,
+      tinggi: 3,
+      sedang: 2,
+      rendah: 1
+    };
+    return [...reports]
+      .sort((a, b) => (severityWeight[b.severity] || 0) - (severityWeight[a.severity] || 0))
+      .slice(0, 2);
   }, [reports]);
 
   // Filtered and Searched Reports
@@ -306,7 +336,7 @@ export default function DashboardPage() {
         {/* 1. OPERATIONAL TELEMETRY & URGENT HOTSPOTS (CLEAN UNIFIED SAAS ARCHITECTURE) */}
         <div className="space-y-5">
           
-          {/* A. Unified 4-Metric Telemetry Strip (NO nested pastel boxes) */}
+          {/* A. Unified 4-Metric Telemetry Strip (Dinamis dari Data Riil) */}
           <div className="bg-white rounded-xl border border-[#E3EAE3] shadow-xs overflow-hidden">
             <div className="grid grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#E3EAE3]">
               
@@ -317,38 +347,38 @@ export default function DashboardPage() {
                   <span>Serapan Karbon</span>
                 </div>
                 <div className="text-2xl sm:text-3xl font-bold text-[#17251B] font-mono tracking-tight mt-1">
-                  5.350 <span className="text-xs font-normal text-[#78847B] font-sans">kg CO₂e/th</span>
+                  {totalCarbonKg.toLocaleString('id-ID')} <span className="text-xs font-normal text-[#78847B] font-sans">kg CO₂e/th</span>
                 </div>
                 <div className="text-[11px] text-[#78847B] mt-0.5">
-                  Biomassa mangrove aktif terverifikasi
+                  Akumulasi biomassa dari {reports.length} titik observasi
                 </div>
               </div>
 
               {/* Metric 2 */}
               <div className="p-4 sm:p-5 text-left">
                 <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#78847B] uppercase tracking-wider">
-                  <Trash2 className="w-3.5 h-3.5 text-[#329F45]" />
-                  <span>Sampah Diangkat</span>
+                  <AlertTriangle className="w-3.5 h-3.5 text-[#DC3545]" />
+                  <span>Sektor Kritis Aktif</span>
                 </div>
-                <div className="text-2xl sm:text-3xl font-bold text-[#17251B] font-mono tracking-tight mt-1">
-                  1.420 <span className="text-xs font-normal text-[#78847B] font-sans">kg</span>
+                <div className="text-2xl sm:text-3xl font-bold text-[#DC3545] font-mono tracking-tight mt-1">
+                  {kritisReportsCount} <span className="text-xs font-normal text-[#78847B] font-sans">lokasi</span>
                 </div>
                 <div className="text-[11px] text-[#78847B] mt-0.5">
-                  Limbah plastik di sempadan pesisir
+                  Kerusakan parah butuh aksi restorasi
                 </div>
               </div>
 
               {/* Metric 3 */}
               <div className="p-4 sm:p-5 text-left">
                 <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#78847B] uppercase tracking-wider">
-                  <Waves className="w-3.5 h-3.5 text-[#329F45]" />
-                  <span>Garis Pantai</span>
+                  <FileText className="w-3.5 h-3.5 text-[#329F45]" />
+                  <span>Laporan Temuan</span>
                 </div>
                 <div className="text-2xl sm:text-3xl font-bold text-[#17251B] font-mono tracking-tight mt-1">
-                  14,2 <span className="text-xs font-normal text-[#78847B] font-sans">km</span>
+                  {reports.length} <span className="text-xs font-normal text-[#78847B] font-sans">laporan</span>
                 </div>
                 <div className="text-[11px] text-[#78847B] mt-0.5">
-                  Sabuk barat terpantau aktif
+                  {counts.terverifikasi} terverifikasi • {counts.menunggu} menunggu
                 </div>
               </div>
 
@@ -356,20 +386,20 @@ export default function DashboardPage() {
               <div className="p-4 sm:p-5 text-left">
                 <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#78847B] uppercase tracking-wider">
                   <Users className="w-3.5 h-3.5 text-[#329F45]" />
-                  <span>Relawan Lapangan</span>
+                  <span>Relawan Siaga</span>
                 </div>
                 <div className="text-2xl sm:text-3xl font-bold text-[#17251B] font-mono tracking-tight mt-1">
-                  35 <span className="text-xs font-normal text-[#78847B] font-sans">Personel</span>
+                  {totalVolunteersCount} <span className="text-xs font-normal text-[#78847B] font-sans">Personel</span>
                 </div>
                 <div className="text-[11px] text-[#78847B] mt-0.5">
-                  Siaga gotong royong restorasi
+                  Tersebar di {campaigns.length} rencana aksi
                 </div>
               </div>
 
             </div>
           </div>
 
-          {/* B. Urgent Conservation Hotspots (Structured Alert Panel - NO nested pastel cards) */}
+          {/* B. Urgent Conservation Hotspots (Dinamis Berdasarkan Tingkat Keparahan Nyata) */}
           <div className="bg-white rounded-xl border border-[#E3EAE3] shadow-xs p-5 text-left space-y-4">
             
             <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#E3EAE3] gap-2">
@@ -379,7 +409,7 @@ export default function DashboardPage() {
                   <span>Titik Pantau Prioritas Konservasi Bengkulu</span>
                 </h2>
                 <p className="text-[11px] text-[#78847B] mt-0.5">
-                  Zona pesisir dan hutan Bengkulu dengan indeks kerusakan di atas ambang batas intervensi.
+                  Zona pesisir dan hutan Bengkulu dengan status keparahan tertinggi yang membutuhkan verifikasi atau tindakan lapangan.
                 </p>
               </div>
 
@@ -393,41 +423,40 @@ export default function DashboardPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 divide-y md:divide-y-0 md:divide-x divide-[#E3EAE3]">
-              
-              {/* Item 1: Teluk Pulau Baai */}
-              <div className="space-y-1.5 pt-3 md:pt-0">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-[#17251B]">Teluk Pulau Baai</span>
-                  <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#DC3545]">
-                    <span className="w-2 h-2 rounded-full bg-[#DC3545]"></span>
-                    Urgensi: 94/100
-                  </span>
+              {priorityReports.map((item, idx) => (
+                <div 
+                  key={item.id}
+                  className={`space-y-1.5 pt-3 md:pt-0 ${idx > 0 ? 'md:pl-5' : ''}`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm font-bold text-[#17251B] truncate">
+                      {item.title}
+                    </span>
+                    <span className="shrink-0">
+                      {renderRiskBadge(item.severity)}
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-[#78847B] flex items-center gap-1 font-mono">
+                    <MapPin className="w-3 h-3 text-[#329F45]" />
+                    <span>{item.location_name}</span>
+                  </div>
+                  <p className="text-xs text-[#78847B] leading-relaxed line-clamp-2">
+                    {item.description}
+                  </p>
+                  <div className="flex items-center justify-between pt-1">
+                    <div className="text-xs text-[#176B35] font-medium truncate pr-2">
+                      Solusi Botani: {item.ai_analysis?.spesies_rekomendasi?.split(',')[0]}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedReport(item)}
+                      className="text-xs text-[#329F45] hover:underline font-semibold shrink-0 cursor-pointer"
+                    >
+                      Buka Dossier &rarr;
+                    </button>
+                  </div>
                 </div>
-                <p className="text-xs text-[#78847B] leading-relaxed">
-                  Degradasi sabuk bakau 1.2 ha akibat sedimen lumpur pekat dan jeratan tali tambang perahu.
-                </p>
-                <div className="text-xs text-[#176B35] font-medium pt-0.5">
-                  Solusi Botani: Rhizophora apiculata (Bakau Minyak)
-                </div>
-              </div>
-
-              {/* Item 2: Pantai Panjang */}
-              <div className="space-y-1.5 pt-3 md:pt-0 md:pl-5">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-[#17251B]">Pantai Panjang Kota</span>
-                  <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#D97706]">
-                    <span className="w-2 h-2 rounded-full bg-[#D97706]"></span>
-                    Urgensi: 82/100
-                  </span>
-                </div>
-                <p className="text-xs text-[#78847B] leading-relaxed">
-                  Timbunan limbah plastik di zona pasang tertinggi menghambat suksesi alami vegetasi tapak kuda.
-                </p>
-                <div className="text-xs text-[#176B35] font-medium pt-0.5">
-                  Solusi Botani: Ipomoea pes-caprae &amp; Pandanus odoratissimus
-                </div>
-              </div>
-
+              ))}
             </div>
 
           </div>
