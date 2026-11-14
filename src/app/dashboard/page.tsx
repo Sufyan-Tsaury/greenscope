@@ -885,11 +885,11 @@ export default function DashboardPage() {
                     <strong className="text-[#17251B] text-xs truncate block mt-0.5">{selectedReport.reporter_name}</strong>
                   </div>
                   <div>
-                    <span className="text-[10px] text-[#78847B] block uppercase tracking-wider font-semibold">Skor Risiko</span>
-                    <strong className="text-[#17251B] text-xs font-mono block mt-0.5">{selectedReport.urgency_score}/100</strong>
+                    <span className="text-[10px] text-[#78847B] block uppercase tracking-wider font-semibold">Tingkat Urgensi</span>
+                    <strong className="text-[#17251B] text-xs block mt-0.5 uppercase font-bold">{selectedReport.severity}</strong>
                   </div>
                   <div>
-                    <span className="text-[10px] text-[#78847B] block uppercase tracking-wider font-semibold">CV Confidence</span>
+                    <span className="text-[10px] text-[#78847B] block uppercase tracking-wider font-semibold">Akurasi Deteksi</span>
                     <strong className="text-[#176B35] text-xs font-mono block mt-0.5">{selectedReport.ai_analysis?.confidence_score || 94}%</strong>
                   </div>
                 </div>
@@ -903,8 +903,26 @@ export default function DashboardPage() {
                   <div className="text-xs text-[#176B35] font-semibold">
                     {selectedReport.ai_analysis?.spesies_rekomendasi}
                   </div>
-                  <p className="text-[11px] text-[#78847B] leading-relaxed">
+                  <p className="text-[11px] text-[#4A5449] leading-relaxed">
                     {selectedReport.ai_analysis?.estimasi_risiko}
+                  </p>
+                </div>
+
+                {/* Rubrik Evaluasi Visual Citra */}
+                {selectedReport.ai_analysis?.kriteria_penilaian && (
+                  <div className="p-3 rounded-xl bg-[#F5F7F4] border border-[#E3EAE3] text-xs space-y-1">
+                    <span className="font-semibold text-[#17251B] text-[11px] block">Dasar Penilaian Citra AI:</span>
+                    <p className="text-[#4A5449] leading-relaxed">
+                      {selectedReport.ai_analysis.kriteria_penilaian}
+                    </p>
+                  </div>
+                )}
+
+                {/* AI Transparency Notice */}
+                <div className="p-2.5 rounded-xl bg-[#F5F7F4] border border-[#E3EAE3] text-[11px] text-[#4A5449] flex items-start gap-2">
+                  <Info className="w-3.5 h-3.5 text-[#329F45] shrink-0 mt-0.5" />
+                  <p className="leading-relaxed">
+                    Data diagnosis berasal dari pemindaian awal Gemini 3.5 Flash Multimodal. Koordinator disarankan memvalidasi bukti visual sebelum menyetujui jadwal aksi lapangan.
                   </p>
                 </div>
 

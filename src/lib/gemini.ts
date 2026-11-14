@@ -81,8 +81,12 @@ INSTRUKSI TUGAS UTAMA:
 3. DIAGNOSIS KERUSAKAN & REKOMENDASI BOTANI (WAJIB SESUAI DENGAN EKOSISTEM ASLI FOTO):
    - "valid": true
    - Identifikasi kerusakan riil di foto (misal: "Kebakaran Hutan & Lahan", "Tumpukan Sampah Plastik", "Abrasi Pantai", "Kematian Sabuk Bakau", "Degradasi Kanopi", "Sedimentasi").
-   - Berikan skor urgensi 0-100 (0 = aman asri, 100 = krisis ekologis parah seperti kebakaran aktif atau abrasi tebing runtuh).
-   - Tingkat keparahan: "rendah" | "sedang" | "tinggi" | "kritis".
+   - RUBRIK EVALUASI KEPARAHAN EKOLOGI BERDASARKAN BUKTI VISUAL:
+     * "kritis": Bencana darurat aktif langsung (api kebakaran aktif, asap pekat membakar pohon, tebing longsor masif, kematian massal tegakan bakau). Skor: 85-100.
+     * "tinggi": Kerusakan ekologis nyata yang terus meluas tanpa intervensi (timbunan sampah plastik padat di sempadan pasang, abrasi pantai aktif, pembukaan kanopi hutan). Skor: 70-84.
+     * "sedang": Degradasi parsial atau akumulasi sampah/sedimen sporadis yang menekan vegetasi. Skor: 40-69.
+     * "rendah": Gangguan minor atau kondisi bentang alam relatif stabil/alami. Skor: 10-39.
+   - "kriteria_penilaian": 1 kalimat alasan objektif pemilihan tingkat keparahan berdasarkan bukti visual di foto.
    - Nilai "confidence_score": 60-99% keyakinan deteksi visi AI.
    - PENTING: Rekomendasi nama spesies vegetasi restorasi WAJIB SESUAI DENGAN EKOSISTEM ASLI:
      * Jika ekosistem "hutan_tropis": WAJIB rekomendasikan bibit pohon hutan seperti Shorea leprosula (Meranti Merah), Schima wallichii (Puspa), Ficus benjamina, atau Bambu Petung. JANGAN rekomendasikan tanaman laut/pantai!
@@ -133,6 +137,7 @@ INSTRUKSI TUGAS UTAMA:
                 type: Type.STRING,
                 enum: ['rendah', 'sedang', 'tinggi', 'kritis']
               },
+              kriteria_penilaian: { type: Type.STRING },
               confidence_score: { type: Type.INTEGER },
               indikator_visual: { 
                 type: Type.ARRAY,

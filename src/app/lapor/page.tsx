@@ -20,7 +20,8 @@ import {
   X,
   RotateCcw,
   Compass,
-  Crosshair
+  Crosshair,
+  Info
 } from 'lucide-react';
 import { AIAnalysisResult, EcosystemType } from '@/types';
 import { saveReport } from '@/lib/supabase';
@@ -566,38 +567,55 @@ export default function LaporPage() {
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-[#EAF5E9] text-[#176B35] border border-[#C3E6CB]">
                           <Leaf className="w-3.5 h-3.5 text-[#329F45]" />
                           <span>Ekosistem: <strong>{analysisResult.nama_ekosistem || 'Bentang Alam Alami'}</strong></span>
-                          <span className="text-[10px] text-[#78847B] font-mono">({analysisResult.confidence_score || 95}% akurasi)</span>
+                          <span className="text-[10px] text-[#78847B] font-mono">({analysisResult.confidence_score || 95}% akurasi deteksi)</span>
                         </span>
 
-                        <span className="text-[10px] text-[#78847B] font-medium">
-                          Terverifikasi AI Gemini 3.5
+                        <span className="text-[10px] text-[#4A5449] font-medium bg-[#F5F7F4] px-2.5 py-1 rounded-full border border-[#E3EAE3]">
+                          Skrining Visi: Gemini 3.5 Flash
                         </span>
                       </div>
 
                       <div className="flex items-start justify-between gap-3">
-                        <div>
+                        <div className="space-y-1">
                           <span className="text-[10px] font-semibold text-[#7A8278] uppercase tracking-wider block">
-                            DIAGNOSIS KERUSAKAN SCOPELENS
+                            DIAGNOSIS KERUSAKAN EKOLOGIS
                           </span>
-                          <h3 className="text-xl sm:text-2xl font-bold text-[#202820] mt-0.5">
+                          <h3 className="text-xl sm:text-2xl font-bold text-[#202820]">
                             {analysisResult.kategori}
                           </h3>
                         </div>
 
-                        {/* Score Badge */}
-                        <div className={`px-3.5 py-1.5 rounded-2xl text-center border font-mono shrink-0 ${
+                        {/* Tingkat Keparahan / Urgensi Tegas (Bukan angka semu semata) */}
+                        <div className={`px-4 py-2 rounded-2xl border shrink-0 text-left ${
                           analysisResult.tingkat_keparahan === 'kritis'
-                            ? 'bg-rose-50 border-rose-200 text-rose-700'
+                            ? 'bg-rose-50 border-rose-200 text-rose-800'
                             : analysisResult.tingkat_keparahan === 'tinggi'
-                              ? 'bg-amber-50 border-amber-200 text-amber-700'
-                              : 'bg-[#EAF5E6] border-[#d2ebd0] text-[#348D32]'
+                              ? 'bg-amber-50 border-amber-200 text-amber-800'
+                              : analysisResult.tingkat_keparahan === 'sedang'
+                                ? 'bg-yellow-50 border-yellow-200 text-yellow-800'
+                                : 'bg-[#EAF5E6] border-[#d2ebd0] text-[#348D32]'
                         }`}>
-                          <div className="text-[9px] font-bold uppercase tracking-wider font-sans">Skor Urgensi</div>
-                          <div className="text-xl sm:text-2xl font-bold tabular-nums">
-                            {analysisResult.skor_urgensi}<span className="text-xs font-normal">/100</span>
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-[#7A8278]">Tingkat Urgensi</div>
+                          <div className="text-sm font-bold flex items-center gap-1.5 mt-0.5">
+                            <span className={`w-2.5 h-2.5 rounded-full ${
+                              analysisResult.tingkat_keparahan === 'kritis' ? 'bg-rose-600 animate-pulse' :
+                              analysisResult.tingkat_keparahan === 'tinggi' ? 'bg-amber-600' :
+                              analysisResult.tingkat_keparahan === 'sedang' ? 'bg-yellow-600' : 'bg-[#52B040]'
+                            }`}></span>
+                            <span>{analysisResult.tingkat_keparahan.toUpperCase()}</span>
                           </div>
                         </div>
                       </div>
+
+                      {/* Rubrik Kriteria Penilaian Objektif */}
+                      {analysisResult.kriteria_penilaian && (
+                        <div className="p-3 rounded-xl bg-[#F7F9F6] border border-[#E7ECE5] text-xs space-y-1">
+                          <span className="font-semibold text-[#202820] text-[11px] block">Dasar Evaluasi Visual Lapangan:</span>
+                          <p className="text-[#4A5449] leading-relaxed">
+                            {analysisResult.kriteria_penilaian}
+                          </p>
+                        </div>
+                      )}
 
                     </div>
 
@@ -607,7 +625,7 @@ export default function LaporPage() {
                         <Layers className="w-3.5 h-3.5 text-[#52B040]" />
                         Indikator Visual yang Terdeteksi:
                       </span>
-                      <ul className="space-y-1.5 text-xs text-[#7A8278]">
+                      <ul className="space-y-1.5 text-xs text-[#4A5449]">
                         {analysisResult.indikator_visual.map((item, i) => (
                           <li key={i} className="flex items-start gap-2 bg-[#F7F9F6] p-2.5 rounded-xl border border-[#E7ECE5]">
                             <span className="w-1.5 h-1.5 rounded-full bg-[#52B040] mt-1.5 shrink-0"></span>
@@ -634,7 +652,7 @@ export default function LaporPage() {
                         <Trees className="w-3.5 h-3.5 text-[#52B040]" />
                         Rekomendasi Langkah Restorasi Lapangan:
                       </span>
-                      <div className="space-y-1.5 text-xs text-[#7A8278]">
+                      <div className="space-y-1.5 text-xs text-[#4A5449]">
                         {analysisResult.tindakan_konservasi.map((act, i) => (
                           <div key={i} className="flex items-center gap-2 p-2 rounded-xl bg-[#F7F9F6] border border-[#E7ECE5]">
                             <span className="w-5 h-5 rounded-full bg-[#52B040] text-white flex items-center justify-center font-bold text-[10px] shrink-0">
@@ -649,8 +667,8 @@ export default function LaporPage() {
                     {/* Ecological Risk & Blue Carbon */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-[#EEF1EC]">
                       <div className="p-3.5 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] text-xs">
-                        <span className="font-semibold text-[#202820] text-[10px] uppercase tracking-wider block mb-1">Potensi Risiko Lanjutan:</span>
-                        <p className="text-[#7A8278] line-clamp-2">{analysisResult.estimasi_risiko}</p>
+                        <span className="font-semibold text-[#202820] text-[10px] uppercase tracking-wider block mb-1">Potensi Dampak Ekologis:</span>
+                        <p className="text-[#4A5449] line-clamp-2">{analysisResult.estimasi_risiko}</p>
                       </div>
                       <div className="p-3.5 rounded-2xl bg-[#EAF5E6] border border-[#d2ebd0] text-xs">
                         <span className="font-semibold text-[#348D32] text-[10px] uppercase tracking-wider block mb-1">Estimasi Serapan Karbon:</span>
@@ -658,6 +676,14 @@ export default function LaporPage() {
                           +{analysisResult.estimasi_serapan_karbon_tahunan_kg || 450} kg CO₂e/th
                         </p>
                       </div>
+                    </div>
+
+                    {/* Scientific & Operational Disclaimer */}
+                    <div className="p-3 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] text-[11px] text-[#4A5449] flex items-start gap-2.5">
+                      <Info className="w-4 h-4 text-[#52B040] shrink-0 mt-0.5" />
+                      <p className="leading-relaxed">
+                        <strong>Transparansi Skrining AI:</strong> Diagnosis ini dihasilkan melalui model visi Google Gemini 3.5 Flash Multimodal sebagai alat bantu deteksi awal warga di lapangan. Rekomendasi botani wajib dikonfirmasikan bersama penyuluh BKSDA Bengkulu sebelum aksi fisik.
+                      </p>
                     </div>
 
                     {/* Save to ScopeMap Button */}

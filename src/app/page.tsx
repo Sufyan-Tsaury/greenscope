@@ -294,8 +294,8 @@ export default function HomePage() {
 
                   <div className="p-3.5 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] space-y-2 text-xs">
                     <div className="flex justify-between">
-                      <span className="text-[#7A8278]">Skor Urgensi:</span>
-                      <strong className="text-[#202820] font-mono">{selectedMapReport.urgency_score} / 100</strong>
+                      <span className="text-[#7A8278]">Tingkat Urgensi:</span>
+                      <strong className="text-[#202820] font-semibold uppercase">{selectedMapReport.severity}</strong>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-[#7A8278]">Spesies Rekomendasi:</span>

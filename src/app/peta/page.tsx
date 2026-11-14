@@ -189,14 +189,18 @@ export default function PetaPage() {
             
             <div className="flex items-start justify-between gap-2 pb-3 border-b border-[#EEF1EC]">
               <div className="space-y-1">
-                <span className={`text-[11px] font-semibold px-3 py-1 rounded-full border inline-flex items-center gap-1 ${
+                <span className={`text-[11px] font-semibold px-3 py-1 rounded-full border inline-flex items-center gap-1.5 ${
                   selectedReport.severity === 'kritis' 
                     ? 'border-rose-200 bg-rose-50 text-rose-700' 
                     : selectedReport.severity === 'tinggi'
                       ? 'border-amber-200 bg-amber-50 text-amber-700'
                       : 'border-[#d2ebd0] bg-[#EAF5E6] text-[#348D32]'
                 }`}>
-                  Tingkat {selectedReport.severity.toUpperCase()} ({selectedReport.urgency_score}/100)
+                  <span className={`w-2 h-2 rounded-full ${
+                    selectedReport.severity === 'kritis' ? 'bg-rose-500' :
+                    selectedReport.severity === 'tinggi' ? 'bg-amber-500' : 'bg-[#52B040]'
+                  }`}></span>
+                  <span>Urgensi: {selectedReport.severity.toUpperCase()}</span>
                 </span>
                 <h3 className="text-base font-bold text-[#202820] leading-snug">
                   {selectedReport.title}
@@ -287,8 +291,18 @@ export default function PetaPage() {
           <div className="lg:hidden absolute bottom-16 left-3 right-3 z-30 max-h-[65vh] overflow-y-auto rounded-3xl bg-white border border-[#E7ECE5] shadow-xl p-5 space-y-3 animate-in slide-in-from-bottom-6">
             <div className="flex items-start justify-between gap-2 border-b border-[#EEF1EC] pb-2">
               <div>
-                <span className="text-[10px] font-semibold uppercase text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-full">
-                  Urgensi: {selectedReport.urgency_score}/100
+                <span className={`text-[10px] font-semibold uppercase px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 ${
+                  selectedReport.severity === 'kritis'
+                    ? 'text-rose-700 bg-rose-50 border border-rose-200'
+                    : selectedReport.severity === 'tinggi'
+                      ? 'text-amber-700 bg-amber-50 border border-amber-200'
+                      : 'text-[#348D32] bg-[#EAF5E6] border border-[#d2ebd0]'
+                }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${
+                    selectedReport.severity === 'kritis' ? 'bg-rose-500' :
+                    selectedReport.severity === 'tinggi' ? 'bg-amber-500' : 'bg-[#52B040]'
+                  }`}></span>
+                  <span>Urgensi: {selectedReport.severity.toUpperCase()}</span>
                 </span>
                 <h3 className="text-sm font-bold text-[#202820] mt-1 line-clamp-1">
                   {selectedReport.title}

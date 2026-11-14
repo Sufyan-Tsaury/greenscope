@@ -21,6 +21,7 @@ export interface AIAnalysisResult {
   skor_urgensi: number; // 0 - 100
   tingkat_keparahan: SeverityLevel;
   confidence_score?: number; // 0 - 100 % (Computer Vision detection confidence)
+  kriteria_penilaian?: string; // Alasan objektif rubrik evaluasi keparahan
   indikator_visual: string[];
   spesies_rekomendasi: string;
   tindakan_konservasi: string[];
