@@ -18,7 +18,6 @@ import {
   LogIn
 } from 'lucide-react';
 import { 
-  getCoordinatorSession, 
   subscribeToAuthChange, 
   signOutCoordinator, 
   CoordinatorSession 
@@ -56,9 +55,8 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
             
-            {/* Logo Brand GreenScope */}
-            <Link href="/" className="flex items-center gap-3 group focus:outline-hidden">
-              {/* Logo Icon Mark */}
+            {/* Logo Brand GreenScope Bengkulu */}
+            <Link href="/" className="flex items-center gap-3 group focus:outline-hidden shrink-0">
               <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border border-[#E7ECE5] shadow-xs group-hover:scale-105 transition-transform shrink-0 bg-white">
                 <Image 
                   src="/logo-icon.jpg" 
@@ -70,7 +68,6 @@ export default function Navbar() {
                 />
               </div>
 
-              {/* Brand Typography */}
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
                   <span className="text-xl sm:text-2xl font-bold tracking-tight text-[#202820]">
@@ -86,76 +83,84 @@ export default function Navbar() {
               </div>
             </Link>
 
-            {/* Desktop Navigation Links (Carbonery Pill Styling) */}
-            <nav className="hidden md:flex items-center gap-1.5 bg-[#F7F9F6] p-1.5 rounded-full border border-[#E7ECE5]">
-              {navLinks.map((item) => {
-                const Icon = item.icon;
-                const isActive = pathname === item.href;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
-                      isActive 
-                        ? 'bg-white text-[#348D32] font-semibold shadow-xs border border-[#E7ECE5]' 
-                        : 'text-[#7A8278] hover:text-[#202820] hover:bg-white/60'
-                    }`}
-                  >
-                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#52B040]' : 'text-[#7A8278]'}`} />
-                    <span>{item.label}</span>
-                  </Link>
-                );
-              })}
-            </nav>
+            {/* SATU KAPSUL NAVIGASI TERPADU (Semua Dikelompokkan dengan Garis Pembatas) */}
+            <div className="hidden lg:flex items-center bg-[#F7F9F6] p-1.5 rounded-full border border-[#E7ECE5] shadow-xs gap-1">
+              
+              {/* Bagian 1: Navigasi Halaman Utama (Beranda -> Dashboard) */}
+              <nav className="flex items-center gap-1">
+                {navLinks.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+                        isActive 
+                          ? 'bg-white text-[#348D32] font-semibold shadow-xs border border-[#E7ECE5]' 
+                          : 'text-[#7A8278] hover:text-[#202820] hover:bg-white/60'
+                      }`}
+                    >
+                      <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-[#52B040]' : 'text-[#7A8278]'}`} />
+                      <span className="whitespace-nowrap">{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
 
-            {/* Action Buttons: Coordinator Auth State & CTA Lapor */}
-            <div className="hidden lg:flex items-center gap-3">
+              {/* Garis Pembatas Tipis Elegan */}
+              <div className="h-5 w-px bg-[#DCE2D9] mx-1.5 shrink-0" aria-hidden="true" />
+
+              {/* Bagian 2: Status Peran & Otentikasi Koordinator */}
               {coordinator?.isAuthenticated ? (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                   <div 
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#EAF5E6] border border-[#d2ebd0] text-xs text-[#202820] shadow-xs"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#EAF5E6] border border-[#d2ebd0] text-xs font-semibold text-[#348D32] whitespace-nowrap"
                     title={`Masuk sebagai ${coordinator.email}`}
                   >
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#348D32]" />
-                    <span className="font-semibold text-[#348D32]">Koordinator Aktif</span>
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#348D32] shrink-0" />
+                    <span className="whitespace-nowrap">Koordinator</span>
                   </div>
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full border border-[#E7ECE5] text-xs text-[#7A8278] hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50 transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs text-[#7A8278] hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer whitespace-nowrap"
                     title="Keluar dari sesi koordinator"
                   >
-                    <LogOut className="w-3.5 h-3.5" />
+                    <LogOut className="w-3.5 h-3.5 shrink-0" />
                     <span>Keluar</span>
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center gap-2">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#E7ECE5] text-xs text-[#7A8278] bg-white">
-                    <Leaf className="w-3.5 h-3.5 text-[#52B040]" />
+                <div className="flex items-center gap-1">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-[#E7ECE5] text-xs text-[#7A8278] bg-white whitespace-nowrap">
+                    <Leaf className="w-3.5 h-3.5 text-[#52B040] shrink-0" />
                     <span>Peran: <strong className="text-[#202820] font-medium">Relawan</strong></span>
                   </div>
                   <Link
                     href={`/login?redirect=${pathname}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#d2ebd0] bg-[#F7F9F6] text-xs font-semibold text-[#348D32] hover:bg-[#EAF5E6] transition-colors shadow-xs"
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-semibold text-[#348D32] hover:bg-white transition-colors whitespace-nowrap"
+                    title="Masuk ke portal koordinator"
                   >
-                    <LogIn className="w-3.5 h-3.5" />
+                    <LogIn className="w-3.5 h-3.5 shrink-0" />
                     <span>Portal Koordinator</span>
                   </Link>
                 </div>
               )}
 
+              {/* Bagian 3: Tombol Aksi Utama Laporkan Temuan */}
               <Link
                 href="/lapor"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] shadow-sm transition-all transform active:scale-95"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] shadow-xs transition-all transform active:scale-95 whitespace-nowrap shrink-0 ml-0.5"
               >
-                <Camera className="w-4 h-4" />
+                <Camera className="w-3.5 h-3.5 shrink-0" />
                 <span>Laporkan Temuan</span>
               </Link>
+
             </div>
 
-            {/* Mobile Hamburger Button */}
-            <div className="flex md:hidden items-center gap-2">
+            {/* Mobile Hamburger & Fast CTA Button */}
+            <div className="flex lg:hidden items-center gap-2">
               <Link
                 href="/lapor"
                 className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-xs font-semibold text-white bg-[#52B040]"
@@ -178,7 +183,7 @@ export default function Navbar() {
 
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-[#E7ECE5] bg-white px-4 pt-3 pb-5 space-y-2">
+          <div className="lg:hidden border-t border-[#E7ECE5] bg-white px-4 pt-3 pb-5 space-y-2">
             <div className="flex items-center justify-between py-2 border-b border-[#EEF1EC] mb-1">
               <span className="text-xs text-[#7A8278]">Status Akun:</span>
               {coordinator?.isAuthenticated ? (
@@ -228,7 +233,7 @@ export default function Navbar() {
       </header>
 
       {/* Docked Clean Bottom Navigation Bar for Mobile */}
-      <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E7ECE5] px-2 py-2">
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E7ECE5] px-2 py-2">
         <div className="flex items-center justify-around">
           {navLinks.map((item) => {
             const Icon = item.icon;

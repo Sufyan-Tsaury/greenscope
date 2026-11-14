@@ -24,6 +24,65 @@ import { Report } from '@/types';
 import { fetchReports } from '@/lib/supabase';
 import { INITIAL_REPORTS } from '@/lib/mock-data';
 
+interface HeroSlide {
+  image: string;
+  badge: string;
+  title: string;
+  subtitle: string;
+  species: string;
+  location: string;
+  coordinates: string;
+  attribution?: React.ReactNode;
+}
+
+const HERO_SLIDES: HeroSlide[] = [
+  {
+    image: '/images/hero/GBR-1.jpg',
+    badge: 'Wilayah Pantau',
+    title: 'Sabuk Mangrove & Pesisir Barat Bengkulu',
+    subtitle: 'Ekosistem pesisir tangguh penahan abrasi ombak Samudra Hindia.',
+    species: 'Rhizophora apiculata (Bakau Minyak)',
+    location: 'Pantai Panjang & Teluk Pulau Baai, Bengkulu',
+    coordinates: "3°54'12\"S, 102°17'40\"E",
+  },
+  {
+    image: '/images/hero/GBR-2.jpg',
+    badge: 'Diagnosis Citra AI',
+    title: 'Identifikasi Taksonomi Botani Presisi',
+    subtitle: 'Deteksi flora endemik & vegetasi perintis pemulih habitat pesisir.',
+    species: 'Rafflesia arnoldii & Avicennia marina',
+    location: 'Cagar Alam & Koridor Tropis Bengkulu',
+    coordinates: "3°45'20\"S, 102°22'15\"E",
+    attribution: (
+      <span className="text-[10px] text-[#7A8278] leading-tight block">
+        Foto: SofianRafflesia, 21 Mei 2022. Sumber: Wikimedia Commons. Lisensi: CC BY-SA 4.0.
+      </span>
+    )
+  },
+  {
+    image: '/images/hero/GBR-3.jpeg',
+    badge: 'Siklus Aksi',
+    title: 'Gotong Royong Restorasi Warga & Relawan',
+    subtitle: 'Rehabilitasi mangrove terukur: aksi kolektif selamatkan pesisir Bengkulu.',
+    species: 'Rhizophora mucronata & Casuarina equisetifolia',
+    location: 'Zona Rehabilitasi Mangrove Pesisir Bengkulu',
+    coordinates: "3°51'33\"S, 102°19'08\"E",
+    attribution: (
+      <div className="image-attribution text-[10px] text-[#7A8278] leading-tight">
+        Foto: Dok. KKI Warsi / LN. Antonia Sinaga —{' '}
+        <a
+          href="https://rri.co.id/bengkulu/regional/1781497/rehabilitasi-mangrove-bengkulu-aksi-kolektif-selamatkan-pesisir"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#348D32] underline hover:text-[#202820] font-medium"
+        >
+          RRI.co.id
+        </a>
+      </div>
+    )
+  }
+];
+
 // Dynamic import Leaflet map with SSR disabled
 const MapInner = dynamic(() => import('@/components/map-inner'), {
   ssr: false,
@@ -40,6 +99,17 @@ export default function HomePage() {
   const [carbonTrees, setCarbonTrees] = useState(250);
   const [selectedMapReport, setSelectedMapReport] = useState<Report | null>(INITIAL_REPORTS[0]);
   const [mapFilter, setMapFilter] = useState<string>('all');
+  const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
+  const [isSlidePaused, setIsSlidePaused] = useState(false);
+
+  // Auto-slide bergantian otomatis tiap 3 detik
+  useEffect(() => {
+    if (isSlidePaused) return;
+    const interval = setInterval(() => {
+      setCurrentHeroSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [isSlidePaused]);
 
   useEffect(() => {
     async function loadReports() {
@@ -118,82 +188,135 @@ export default function HomePage() {
                 </Link>
               </div>
 
-              {/* Telemetry Highlights in Rounded Cards */}
-              <div className="pt-6 grid grid-cols-3 gap-4 border-t border-[#EEF1EC] max-w-xl mx-auto lg:mx-0 text-left font-sans">
-                <div className="p-3 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5]">
-                  <div className="text-[11px] text-[#7A8278] font-medium">Wilayah Pantau</div>
-                  <div className="text-xs sm:text-sm font-semibold text-[#202820] mt-1 flex items-center gap-1.5">
-                    <Waves className="w-3.5 h-3.5 text-[#52B040] shrink-0" />
-                    <span>Pesisir Barat Bengkulu</span>
-                  </div>
-                </div>
-
-                <div className="p-3 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5]">
-                  <div className="text-[11px] text-[#7A8278] font-medium">Diagnosis Citra</div>
-                  <div className="text-xs sm:text-sm font-semibold text-[#202820] mt-1 flex items-center gap-1.5">
-                    <Leaf className="w-3.5 h-3.5 text-[#52B040] shrink-0" />
-                    <span>Taksonomi Botani</span>
-                  </div>
-                </div>
-
-                <div className="p-3 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5]">
-                  <div className="text-[11px] text-[#7A8278] font-medium">Siklus Aksi</div>
-                  <div className="text-xs sm:text-sm font-semibold text-[#202820] mt-1 flex items-center gap-1.5">
-                    <Trees className="w-3.5 h-3.5 text-[#52B040] shrink-0" />
-                    <span>Gotong Royong</span>
-                  </div>
-                </div>
+              {/* Interactive Telemetry & Pillar Switcher (Sinkron dengan Slider Foto Kanan) */}
+              <div className="pt-6 grid grid-cols-3 gap-3 border-t border-[#EEF1EC] max-w-xl mx-auto lg:mx-0 text-left font-sans">
+                {HERO_SLIDES.map((slide, sIdx) => {
+                  const isCurrent = currentHeroSlide === sIdx;
+                  return (
+                    <button
+                      key={slide.badge}
+                      type="button"
+                      onClick={() => setCurrentHeroSlide(sIdx)}
+                      className={`p-3 rounded-2xl border text-left transition-all duration-300 cursor-pointer ${
+                        isCurrent
+                          ? 'bg-white border-[#52B040] shadow-xs ring-2 ring-[#52B040]/15'
+                          : 'bg-[#F7F9F6] border-[#E7ECE5] hover:bg-white hover:border-[#d2ebd0]'
+                      }`}
+                      title={`Lihat slide: ${slide.badge}`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className={`text-[10px] font-bold uppercase tracking-wider ${isCurrent ? 'text-[#348D32]' : 'text-[#7A8278]'}`}>
+                          {slide.badge}
+                        </span>
+                        {isCurrent && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#52B040] animate-pulse"></span>
+                        )}
+                      </div>
+                      <div className="text-xs font-semibold text-[#202820] mt-1 line-clamp-1">
+                        {sIdx === 0 ? 'Pesisir Bengkulu' : sIdx === 1 ? 'Taksonomi Botani' : 'Gotong Royong'}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
 
             </div>
 
-            {/* Right Hero Graphic: Authentic Coastal Mangrove in Rounded-3xl Card (Carbonery Style) */}
-            <div className="lg:col-span-5 relative flex justify-center">
+            {/* Right Hero Graphic: Auto-Rotating 3-Second Real Photo Showcase (Opsi B) */}
+            <div 
+              className="lg:col-span-5 relative flex justify-center"
+              onMouseEnter={() => setIsSlidePaused(true)}
+              onMouseLeave={() => setIsSlidePaused(false)}
+            >
               <div className="relative w-full max-w-md rounded-3xl overflow-hidden border border-[#E7ECE5] bg-white shadow-sm hover:shadow-md transition-shadow group">
                 
-                {/* Real Coastal Mangrove Waterway of Western Sumatra */}
-                <div className="relative aspect-4/3 w-full bg-[#F7F9F6]">
-                  <Image
-                    src="https://images.unsplash.com/photo-1767917920874-946c7d5fbf31?auto=format&fit=crop&w=1200&q=80"
-                    alt="Sabuk Mangrove Pesisir Bengkulu"
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-102"
-                    sizes="(max-width: 1024px) 100vw, 500px"
-                    priority
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                {/* 3-Second Animated Auto-Slider Image Canvas */}
+                <div className="relative aspect-4/3 w-full bg-[#F7F9F6] overflow-hidden">
+                  {HERO_SLIDES.map((slide, idx) => (
+                    <div
+                      key={slide.image}
+                      className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                        currentHeroSlide === idx ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+                      }`}
+                    >
+                      <Image
+                        src={slide.image}
+                        alt={slide.title}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-102"
+                        sizes="(max-width: 1024px) 100vw, 500px"
+                        priority={idx === 0}
+                      />
+                    </div>
+                  ))}
+                  
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 z-15 pointer-events-none"></div>
                   
                   {/* Subtle Top Coordinate Pill */}
-                  <div className="absolute top-3.5 inset-x-3.5 flex items-center justify-between text-[11px]">
+                  <div className="absolute top-3.5 inset-x-3.5 flex items-center justify-between text-[11px] z-20">
                     <div className="inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[#202820] border border-[#E7ECE5] shadow-xs font-mono text-[10px]">
                       <Compass className="w-3.5 h-3.5 text-[#52B040]" />
-                      <span>3°54&apos;12&quot;S, 102°17&apos;40&quot;E</span>
+                      <span>{HERO_SLIDES[currentHeroSlide].coordinates}</span>
                     </div>
                     <div className="inline-flex items-center gap-1.5 bg-[#202820]/80 backdrop-blur-md text-white px-3 py-1 rounded-full text-[10px] font-semibold shadow-xs border border-white/20">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#52B040]"></span>
-                      <span>Area Pantau Aktif</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#52B040] animate-ping"></span>
+                      <span>Foto Lapangan Asli</span>
                     </div>
+                  </div>
+
+                  {/* 3-Dots Auto-Slide Navigation Indicator */}
+                  <div className="absolute bottom-3 inset-x-0 flex items-center justify-center gap-1.5 z-20">
+                    {HERO_SLIDES.map((_, dotIdx) => (
+                      <button
+                        key={dotIdx}
+                        type="button"
+                        onClick={() => setCurrentHeroSlide(dotIdx)}
+                        className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                          currentHeroSlide === dotIdx 
+                            ? 'w-6 bg-[#52B040]' 
+                            : 'w-1.5 bg-white/70 hover:bg-white'
+                        }`}
+                        title={`Slide ${dotIdx + 1}`}
+                      />
+                    ))}
                   </div>
                 </div>
 
-                {/* Bottom Dossier Caption */}
+                {/* Bottom Dossier Caption & Attribution */}
                 <div className="p-5 bg-white text-[#202820] space-y-2 text-left">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-[#348D32] bg-[#EAF5E6] px-2.5 py-0.5 rounded-full border border-[#d2ebd0]">
-                      Sektor Prioritas Konservasi
+                      {HERO_SLIDES[currentHeroSlide].badge}
                     </span>
-                    <span className="text-[#7A8278] text-[11px] font-mono">BKL-002</span>
+                    <span className="text-[#7A8278] text-[11px] font-mono">
+                      BKL-00{currentHeroSlide + 1}
+                    </span>
                   </div>
-                  <div className="text-base font-bold text-[#202820]">
-                    Sabuk Mangrove Teluk Baai &amp; Pantai Panjang
+
+                  <div className="text-base font-bold text-[#202820] leading-snug">
+                    {HERO_SLIDES[currentHeroSlide].title}
                   </div>
+
+                  <p className="text-xs text-[#7A8278] leading-relaxed">
+                    {HERO_SLIDES[currentHeroSlide].subtitle}
+                  </p>
+
                   <div className="text-xs text-[#7A8278] flex items-center justify-between pt-2 border-t border-[#EEF1EC]">
-                    <span>Spesies Utama: <strong className="text-[#348D32] font-semibold">Rhizophora apiculata</strong></span>
-                    <Link href="/peta" className="text-[#52B040] hover:text-[#348D32] font-semibold inline-flex items-center gap-1">
+                    <span className="truncate max-w-[200px]">
+                      Spesies: <strong className="text-[#348D32] font-semibold">{HERO_SLIDES[currentHeroSlide].species.split('&')[0]}</strong>
+                    </span>
+                    <Link href="/peta" className="text-[#52B040] hover:text-[#348D32] font-semibold inline-flex items-center gap-1 shrink-0">
                       <span>Lihat di Peta</span>
                       <ArrowRight className="w-3 h-3" />
                     </Link>
                   </div>
+
+                  {/* Attribution Block (Sesuai Hak Cipta & Lisensi) */}
+                  {HERO_SLIDES[currentHeroSlide].attribution && (
+                    <div className="pt-2 border-t border-[#EEF1EC]/80">
+                      {HERO_SLIDES[currentHeroSlide].attribution}
+                    </div>
+                  )}
                 </div>
 
               </div>
