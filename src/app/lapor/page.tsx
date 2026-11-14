@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import confetti from 'canvas-confetti';
 import { 
@@ -21,7 +22,12 @@ import {
   RotateCcw,
   Compass,
   Crosshair,
-  Info
+  Info,
+  Sun,
+  Maximize2,
+  HelpCircle,
+  Check,
+  Users
 } from 'lucide-react';
 import { AIAnalysisResult, EcosystemType } from '@/types';
 import { saveReport } from '@/lib/supabase';
@@ -98,6 +104,8 @@ export default function LaporPage() {
   const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [savedReportId, setSavedReportId] = useState<string | null>(null);
+  const [showGuide, setShowGuide] = useState(false);
 
   // Ambil Lokasi GPS Aktual dari Perangkat / Ponsel Pengguna
   const handleGetActualLocation = () => {
@@ -248,7 +256,7 @@ export default function LaporPage() {
       const finalLat = coordinates ? coordinates.lat : fallbackLat;
       const finalLng = coordinates ? coordinates.lng : fallbackLng;
 
-      await saveReport({
+      const saved = await saveReport({
         reporter_name: 'Relawan Konservasi Bengkulu',
         title: customTitle || analysisResult.judul_rekomendasi || `${analysisResult.kategori} - ${locationName || 'Bengkulu'}`,
         description: description || analysisResult.estimasi_risiko,
@@ -263,16 +271,13 @@ export default function LaporPage() {
         ai_analysis: analysisResult
       });
 
+      setSavedReportId(saved.id);
       setSavedSuccess(true);
       confetti({
-        particleCount: 80,
-        spread: 60,
+        particleCount: 100,
+        spread: 70,
         origin: { y: 0.6 }
       });
-
-      setTimeout(() => {
-        router.push('/peta');
-      }, 1500);
     } catch (err) {
       console.error('Gagal menyimpan:', err);
     } finally {
@@ -311,6 +316,77 @@ export default function LaporPage() {
               <span className="text-[#7A8278]">Deteksi ekosistem &amp; taksonomi botani otomatis.</span>
             </div>
           </div>
+        </div>
+
+        {/* PANDUAN OBSERVASI FOTOGRAFI LAPANGAN */}
+        <div className="rounded-3xl bg-white border border-[#E7ECE5] p-5 sm:p-6 shadow-xs space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-[#EAF5E6] text-[#348D32] border border-[#d2ebd0] flex items-center justify-center shrink-0">
+                <HelpCircle className="w-4 h-4 text-[#52B040]" />
+              </div>
+              <div>
+                <h3 className="text-xs sm:text-sm font-bold text-[#202820]">
+                  Panduan Standar Pemotretan Bukti Konservasi ScopeLens
+                </h3>
+                <p className="text-[11px] text-[#7A8278]">
+                  4 kaidah visual lapangan agar Computer Vision Gemini mendiagnosis ekosistem dan botani pemulih secara presisi.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowGuide(!showGuide)}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-[#348D32] bg-[#EAF5E6] hover:bg-[#d6edcf] border border-[#d2ebd0] transition-colors cursor-pointer self-start sm:self-auto shrink-0"
+            >
+              <span>{showGuide ? 'Sembunyikan Panduan SOP' : 'Buka Panduan Pemotretan'}</span>
+              <span className="text-[10px]">{showGuide ? '▲' : '▼'}</span>
+            </button>
+          </div>
+
+          {showGuide && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-3 border-t border-[#EEF1EC] text-xs animate-in fade-in-50 duration-300">
+              <div className="p-3.5 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] space-y-1">
+                <div className="flex items-center gap-1.5 font-bold text-[#202820]">
+                  <Maximize2 className="w-3.5 h-3.5 text-[#52B040]" />
+                  <span>1. Jarak 3–8 Meter</span>
+                </div>
+                <p className="text-[11px] text-[#4A5449] leading-relaxed">
+                  Potret dengan sudut yang memperlihatkan skala kerusakan dan batas sempadan vegetasi, hindari foto terlalu makro/dekat.
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] space-y-1">
+                <div className="flex items-center gap-1.5 font-bold text-[#202820]">
+                  <Sun className="w-3.5 h-3.5 text-[#52B040]" />
+                  <span>2. Cahaya Alami</span>
+                </div>
+                <p className="text-[11px] text-[#4A5449] leading-relaxed">
+                  Gunakan pencahayaan alami di siang hari. Hindari silau matahari langsung (*backlight*) atau foto malam tanpa penerangan.
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] space-y-1">
+                <div className="flex items-center gap-1.5 font-bold text-[#202820]">
+                  <Trees className="w-3.5 h-3.5 text-[#52B040]" />
+                  <span>3. Elemen Kunci Lanskap</span>
+                </div>
+                <p className="text-[11px] text-[#4A5449] leading-relaxed">
+                  Pastikan elemen kunci terlihat: akar napas bakau, garis pasang sampah, tebing abrasi pantai, atau tajuk kanopi.
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] space-y-1">
+                <div className="flex items-center gap-1.5 font-bold text-[#202820]">
+                  <Scan className="w-3.5 h-3.5 text-[#52B040]" />
+                  <span>4. Validitas Lanskap Alami</span>
+                </div>
+                <p className="text-[11px] text-[#4A5449] leading-relaxed">
+                  Sistem otomatis menolak foto selfie, kertas, atau ruangan kantor untuk menjaga integritas basis data konservasi.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* WORKSPACE GRID: INPUT & PREVIEW vs AI DIAGNOSIS */}
@@ -686,31 +762,55 @@ export default function LaporPage() {
                       </p>
                     </div>
 
-                    {/* Save to ScopeMap Button */}
+                    {/* Save to ScopeMap & Actions Button */}
                     <div className="pt-2">
-                      <button
-                        type="button"
-                        onClick={handleSaveToMap}
-                        disabled={isSaving || savedSuccess}
-                        className="w-full py-3.5 px-6 rounded-full font-semibold text-xs text-white bg-[#52B040] hover:bg-[#348D32] transition-colors shadow-sm disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
-                      >
-                        {savedSuccess ? (
-                          <>
-                            <CheckCircle2 className="w-4 h-4 text-white" />
-                            <span>Tersimpan! Mengalihkan ke ScopeMap...</span>
-                          </>
-                        ) : isSaving ? (
-                          <>
-                            <RefreshCw className="w-4 h-4 animate-spin" />
-                            <span>Menyimpan ke Database...</span>
-                          </>
-                        ) : (
-                          <>
-                            <span>Simpan Laporan &amp; Buka di ScopeMap</span>
-                            <ArrowRight className="w-4 h-4" />
-                          </>
-                        )}
-                      </button>
+                      {savedSuccess ? (
+                        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-3">
+                          <div className="flex items-center justify-center gap-2 text-emerald-800 font-bold text-sm">
+                            <CheckCircle2 className="w-5 h-5 text-[#348D32]" />
+                            <span>Laporan Berhasil Disimpan ke Sistem Konservasi!</span>
+                          </div>
+                          <p className="text-xs text-[#4A5449]">
+                            Data temuan ini telah dipetakan ke WebGIS Bengkulu dan siap ditindaklanjuti menjadi rencana aksi gotong royong lapangan.
+                          </p>
+                          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-1">
+                            <Link
+                              href="/peta"
+                              className="w-full sm:w-auto px-5 py-2.5 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] transition-colors shadow-xs flex items-center justify-center gap-1.5"
+                            >
+                              <MapPin className="w-3.5 h-3.5" />
+                              <span>Lihat di ScopeMap WebGIS</span>
+                            </Link>
+                            <Link
+                              href={savedReportId ? `/aksi?report_id=${savedReportId}` : '/aksi'}
+                              className="w-full sm:w-auto px-5 py-2.5 rounded-full text-xs font-semibold text-[#17251B] bg-white border border-[#E7ECE5] hover:bg-[#F7F9F6] transition-colors flex items-center justify-center gap-1.5 shadow-xs"
+                            >
+                              <Users className="w-3.5 h-3.5 text-[#52B040]" />
+                              <span>Jadikan Rencana Aksi Lapangan</span>
+                              <ArrowRight className="w-3.5 h-3.5" />
+                            </Link>
+                          </div>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={handleSaveToMap}
+                          disabled={isSaving}
+                          className="w-full py-3.5 px-6 rounded-full font-semibold text-xs text-white bg-[#52B040] hover:bg-[#348D32] transition-colors shadow-sm disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+                        >
+                          {isSaving ? (
+                            <>
+                              <RefreshCw className="w-4 h-4 animate-spin" />
+                              <span>Menyimpan ke Database...</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>Simpan Laporan &amp; Buka Siklus Konservasi</span>
+                              <ArrowRight className="w-4 h-4" />
+                            </>
+                          )}
+                        </button>
+                      )}
                     </div>
                   </>
                 )}
@@ -734,50 +834,69 @@ export default function LaporPage() {
 
         </div>
 
-        {/* QUICK SPECIMEN TESTING TRAY (DIPINDAHKAN KE BAWAH UNTUK PENGUJIAN JURI/DEMO) */}
-        <div className="rounded-3xl border border-[#E7ECE5] bg-white p-6 space-y-3 shadow-xs">
+        {/* QUICK SPECIMEN TESTING TRAY (DENGAN PRATINJAU VISUAL THUMBNAIL) */}
+        <div className="rounded-3xl border border-[#E7ECE5] bg-white p-6 space-y-4 shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="space-y-0.5">
               <span className="text-xs font-bold uppercase tracking-wider text-[#202820] flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4 text-[#52B040]" />
-                Uji Coba Cepat dengan Spesimen Lapangan Bengkulu:
+                <span>Uji Coba Cepat dengan Spesimen Lapangan Bengkulu:</span>
               </span>
               <p className="text-[11px] text-[#7A8278]">
-                Ingin mencoba demo tanpa mengunggah foto sendiri? Pilih salah satu spesimen terstandarisasi berikut:
+                Tidak memiliki foto saat ini? Klik salah satu spesimen riil di bawah untuk mengisi foto, koordinat, dan menguji diagnosis AI:
               </p>
             </div>
-            <span className="text-[10px] font-semibold text-[#176B35] bg-[#EAF5E6] px-2.5 py-1 rounded-full uppercase self-start sm:self-auto">
+            <span className="text-[10px] font-semibold text-[#176B35] bg-[#EAF5E6] px-2.5 py-1 rounded-full uppercase self-start sm:self-auto border border-[#d2ebd0]">
               4 Spesimen Uji
             </span>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
             {FIELD_SPECIMEN_SAMPLES.map((sample, idx) => {
               const isSelected = selectedImage === sample.imageUrl;
+              const isSpamTest = sample.id === 'sample-non-alam';
               return (
                 <button
                   key={sample.id}
                   type="button"
                   onClick={() => handleSelectSample(sample)}
-                  className={`text-left p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                  className={`text-left p-3 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-2.5 ${
                     isSelected 
-                      ? 'bg-[#EAF5E6] border-[#52B040] shadow-xs' 
+                      ? 'bg-[#EAF5E6]/60 border-[#52B040] shadow-sm' 
                       : 'bg-[#F7F9F6] border-[#E7ECE5] hover:bg-white text-[#202820]'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className={`text-[10px] font-mono font-semibold ${isSelected ? 'text-[#348D32]' : 'text-[#7A8278]'}`}>
-                      SP-0{idx + 1}
-                    </span>
-                    {isSelected && (
-                      <span className="text-[9px] uppercase tracking-wider text-[#348D32] bg-white px-2 py-0.5 rounded-full font-bold border border-[#d2ebd0]">
-                        AKTIF ✓
+                  <div className="relative aspect-16/10 rounded-xl overflow-hidden bg-stone-900 border border-[#E7ECE5]">
+                    <Image
+                      src={sample.imageUrl}
+                      alt={sample.label}
+                      fill
+                      className="object-cover"
+                      sizes="220px"
+                    />
+                    <div className="absolute top-2 left-2 z-10">
+                      <span className={`px-2 py-0.5 rounded-md text-[9px] font-mono font-bold uppercase ${
+                        isSpamTest 
+                          ? 'bg-rose-900/90 text-rose-200 border border-rose-700' 
+                          : 'bg-black/70 text-white'
+                      }`}>
+                        {isSpamTest ? 'UJI FILTER ANTI-SPAM' : `SP-0${idx + 1}`}
                       </span>
+                    </div>
+                    {isSelected && (
+                      <div className="absolute inset-0 bg-[#52B040]/30 border-2 border-[#52B040] rounded-xl flex items-center justify-center">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#348D32] text-white shadow-xs">
+                          TERPILIH ✓
+                        </span>
+                      </div>
                     )}
                   </div>
-                  <div className="font-semibold text-xs line-clamp-1 text-[#202820]">{sample.label}</div>
-                  <div className="text-[10px] mt-0.5 line-clamp-1 text-[#7A8278]">
-                    {sample.location}
+
+                  <div>
+                    <div className="font-bold text-xs text-[#202820] line-clamp-1">{sample.label}</div>
+                    <div className="text-[10px] text-[#7A8278] mt-0.5 line-clamp-1">
+                      {sample.location}
+                    </div>
                   </div>
                 </button>
               );
