@@ -13,7 +13,6 @@ import {
   Menu, 
   X, 
   ShieldCheck,
-  Leaf,
   LogOut,
   LogIn
 } from 'lucide-react';
@@ -69,14 +68,9 @@ export default function Navbar() {
               </div>
 
               <div className="flex flex-col">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xl sm:text-2xl font-bold tracking-tight text-[#202820]">
-                    Green<span className="text-[#52B040]">Scope</span>
-                  </span>
-                  <span className="text-[10px] font-semibold tracking-wider text-[#72BF59] bg-[#EAF5E6] px-2 py-0.5 rounded-full uppercase hidden sm:inline">
-                    BENGKULU
-                  </span>
-                </div>
+                <span className="text-xl sm:text-2xl font-bold tracking-tight text-[#202820]">
+                  Green<span className="text-[#52B040]">Scope</span>
+                </span>
                 <span className="text-[11px] text-[#7A8278] hidden sm:block font-normal">
                   Konservasi Pesisir &amp; Hutan Tropis
                 </span>
@@ -132,20 +126,14 @@ export default function Navbar() {
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center gap-1">
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-[#E7ECE5] text-xs text-[#7A8278] bg-white whitespace-nowrap">
-                    <Leaf className="w-3.5 h-3.5 text-[#52B040] shrink-0" />
-                    <span>Peran: <strong className="text-[#202820] font-medium">Relawan</strong></span>
-                  </div>
-                  <Link
-                    href={`/login?redirect=${pathname}`}
-                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-semibold text-[#348D32] hover:bg-white transition-colors whitespace-nowrap"
-                    title="Masuk ke portal koordinator"
-                  >
-                    <LogIn className="w-3.5 h-3.5 shrink-0" />
-                    <span>Portal Koordinator</span>
-                  </Link>
-                </div>
+                <Link
+                  href={`/login?redirect=${pathname}`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-[#7A8278] hover:text-[#202820] hover:bg-white/70 transition-all whitespace-nowrap"
+                  title="Masuk ke portal koordinator"
+                >
+                  <LogIn className="w-3.5 h-3.5 shrink-0 text-[#52B040]" />
+                  <span>Portal Koordinator</span>
+                </Link>
               )}
 
               {/* Bagian 3: Tombol Aksi Utama Laporkan Temuan */}
