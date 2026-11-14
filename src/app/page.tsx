@@ -4,7 +4,7 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
-import Scrollytelling from '@/components/scrollytelling';
+import WorkflowGuide from '@/components/workflow-guide';
 import { 
   Camera, 
   MapPin, 
@@ -188,7 +188,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. CENTRAL ENVIRONMENTAL CARTOGRAPHY: LIVING MAP CANVAS (PETA SEBAGAI ELEMEN UTAMA) */}
+      {/* 2. PETUNJUK ALUR SISTEM & PANDUAN PENGGUNAAN (CLOSED-LOOP WORKFLOW) */}
+      <WorkflowGuide />
+
+      {/* 3. CENTRAL ENVIRONMENTAL CARTOGRAPHY: LIVING MAP CANVAS (PETA SEBAGAI ELEMEN UTAMA) */}
       <section className="py-16 sm:py-20 bg-[#F7F9F6] border-b border-[#E7ECE5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -378,9 +381,6 @@ export default function HomePage() {
 
         </div>
       </section>
-
-      {/* 3. SCROLLYTELLING: CONTINUOUS CONSERVATION NARRATIVE */}
-      <Scrollytelling />
 
       {/* 4. BEFORE VS AFTER RESTORATION SHOWCASE SLIDER */}
       <section className="py-16 sm:py-20 bg-white border-b border-[#E7ECE5]">
