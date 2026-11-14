@@ -26,18 +26,39 @@ import {
   ExternalLink,
   ChevronRight,
   Info,
-  RotateCcw
+  RotateCcw,
+  Lock,
+  LogIn,
+  LogOut,
+  Radio
 } from 'lucide-react';
 import { INITIAL_REPORTS, INITIAL_CAMPAIGNS } from '@/lib/mock-data';
-import { fetchReports, fetchCampaigns, isSupabaseConfigured, updateLocalReportStatus, deleteReport, resetLocalReports } from '@/lib/supabase';
+import { 
+  fetchReports, 
+  fetchCampaigns, 
+  isSupabaseConfigured, 
+  updateReportStatus, 
+  deleteReport, 
+  resetLocalReports,
+  subscribeToReportsRealtime,
+  subscribeToAuthChange,
+  signOutCoordinator,
+  CoordinatorSession
+} from '@/lib/supabase';
 import { Report, Campaign, ReportStatus, SeverityLevel } from '@/types';
 
 export default function DashboardPage() {
-  const [activeRole, setActiveRole] = useState<'volunteer' | 'coordinator'>('coordinator');
+  const [coordinator, setCoordinator] = useState<CoordinatorSession | null>(null);
   const [reports, setReports] = useState<Report[]>(INITIAL_REPORTS);
   const [campaigns, setCampaigns] = useState<Campaign[]>(INITIAL_CAMPAIGNS);
 
   useEffect(() => {
+    // 1. Berlangganan status otentikasi koordinator (RBAC)
+    const unsubAuth = subscribeToAuthChange((session) => {
+      setCoordinator(session);
+    });
+
+    // 2. Muat data awal dari Supabase & penyimpanan lokal
     async function loadData() {
       const [reportData, campData] = await Promise.all([
         fetchReports(),
@@ -47,6 +68,42 @@ export default function DashboardPage() {
       setCampaigns(campData);
     }
     loadData();
+
+    // 3. Berlangganan sinkronisasi multi-perangkat real-time via Supabase WebSocket
+    const unsubRealtime = subscribeToReportsRealtime((event) => {
+      if (event.type === 'INSERT' && event.report) {
+        const newRep = event.report;
+        setReports((prev) => {
+          if (prev.some((r) => r.id === newRep.id)) return prev;
+          return [newRep, ...prev];
+        });
+        showToast(`Laporan baru masuk secara realtime: "${newRep.title}"`, 'info');
+      } else if (event.type === 'UPDATE' && (event.report || event.id)) {
+        const targetId = event.id || event.report?.id;
+        setReports((prev) =>
+          prev.map((r) => (r.id === targetId ? { ...r, ...(event.report || {}), status: event.status || event.report?.status || r.status } : r))
+        );
+        setSelectedReport((prev) =>
+          prev && prev.id === targetId ? { ...prev, ...(event.report || {}), status: event.status || event.report?.status || prev.status } : prev
+        );
+      } else if (event.type === 'DELETE' && event.id) {
+        const targetId = event.id;
+        setReports((prev) => prev.filter((r) => r.id !== targetId));
+        setSelectedReport((prev) => (prev?.id === targetId ? null : prev));
+      }
+    });
+
+    // 4. Sinkronisasi otomatis saat jendela browser kembali difokuskan
+    const handleFocus = () => {
+      loadData();
+    };
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      unsubAuth();
+      unsubRealtime();
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
   
   // Filter States
@@ -65,21 +122,26 @@ export default function DashboardPage() {
     }, 3500);
   };
 
-  // Update Status Logic
-  const handleUpdateStatus = (id: string, newStatus: ReportStatus) => {
+  // Update Status Logic (Sinkronisasi Multi-Perangkat + Supabase Cloud + RBAC)
+  const handleUpdateStatus = async (id: string, newStatus: ReportStatus) => {
+    if (!coordinator?.isAuthenticated) {
+      showToast('Akses Terbatas: Hanya koordinator resmi yang berhak memvalidasi laporan.', 'error');
+      return;
+    }
+
     setReports((prev) =>
       prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r))
     );
 
-    // Simpan perubahan status ke penyimpanan lokal
-    updateLocalReportStatus(id, newStatus);
+    // Simpan ke local storage, broadcast realtime WebSocket, dan update PostgreSQL Supabase
+    await updateReportStatus(id, newStatus);
 
     if (selectedReport && selectedReport.id === id) {
       setSelectedReport((prev) => (prev ? { ...prev, status: newStatus } : null));
     }
 
     if (newStatus === 'terverifikasi') {
-      showToast('Laporan berhasil diverifikasi dan disetujui untuk rencana aksi.', 'success');
+      showToast('Laporan berhasil diverifikasi dan disinkronkan ke seluruh perangkat.', 'success');
     } else if (newStatus === 'dalam_aksi') {
       showToast('Laporan ditandai sedang ditinjau oleh koordinator.', 'info');
     } else if (newStatus === 'ditolak') {
@@ -89,13 +151,18 @@ export default function DashboardPage() {
     }
   };
 
-  // Hapus Satu Laporan Tertentu
+  // Hapus Satu Laporan Tertentu (Sinkronisasi Multi-Perangkat + Blacklist Persisten)
   const handleDeleteReport = async (id: string) => {
-    if (!confirm('Apakah Anda yakin ingin menghapus laporan ini secara permanen dari sistem?')) return;
+    if (!coordinator?.isAuthenticated) {
+      showToast('Akses Terbatas: Hanya koordinator resmi yang berhak menghapus titik laporan.', 'error');
+      return;
+    }
+
+    if (!confirm('Apakah Anda yakin ingin menghapus laporan ini secara permanen dari sistem dan seluruh perangkat?')) return;
     await deleteReport(id);
     setReports((prev) => prev.filter((r) => r.id !== id));
     setSelectedReport(null);
-    showToast('Laporan berhasil dihapus.', 'info');
+    showToast('Laporan berhasil dihapus dan disinkronkan ke semua perangkat.', 'info');
   };
 
   // Bersihkan Seluruh Data Laporan Uji Coba & Reset ke Data Asli Bengkulu
@@ -284,43 +351,57 @@ export default function DashboardPage() {
         
         {/* Top Header & Operational Mode Controls */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[#E3EAE3]">
-          <div className="space-y-1">
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#17251B] tracking-tight">
-              Pusat Kendali Verifikasi Lapangan
-            </h1>
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#17251B] tracking-tight">
+                Pusat Kendali Verifikasi Lapangan
+              </h1>
+              {/* Multi-Device Realtime Live Badge */}
+              <div 
+                className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EAF5E6] border border-[#d2ebd0] text-[10px] font-semibold text-[#348D32]"
+                title="Sinkronisasi WebSocket Supabase aktif di seluruh perangkat"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-[#52B040] animate-pulse"></span>
+                <span>Realtime Aktif</span>
+              </div>
+            </div>
             <p className="text-[#78847B] text-xs sm:text-sm font-normal max-w-2xl">
               Platform evaluasi citra Computer Vision, validasi temuan lapangan warga, dan orkestrasi rencana pemulihan ekosistem Bengkulu.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 self-start md:self-center">
-            {/* Role Simulator Control */}
-            <div className="flex items-center p-1 rounded-lg bg-white border border-[#E3EAE3] shadow-xs">
-              <button
-                type="button"
-                onClick={() => setActiveRole('volunteer')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs transition-colors cursor-pointer ${
-                  activeRole === 'volunteer'
-                    ? 'bg-[#329F45] text-white font-semibold'
-                    : 'text-[#78847B] hover:text-[#17251B] hover:bg-[#F5F7F4] font-medium'
-                }`}
-              >
-                <Leaf className="w-3.5 h-3.5" />
-                <span>Relawan</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveRole('coordinator')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs transition-colors cursor-pointer ${
-                  activeRole === 'coordinator'
-                    ? 'bg-[#329F45] text-white font-semibold'
-                    : 'text-[#78847B] hover:text-[#17251B] hover:bg-[#F5F7F4] font-medium'
-                }`}
-              >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Koordinator</span>
-              </button>
-            </div>
+            {/* Real Coordinator Auth State */}
+            {coordinator?.isAuthenticated ? (
+              <div className="flex items-center gap-2 p-1 rounded-lg bg-white border border-[#E3EAE3] shadow-xs">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#EAF5E6] text-xs font-semibold text-[#348D32]">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span className="truncate max-w-[160px]">{coordinator.name || coordinator.email}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => signOutCoordinator()}
+                  className="p-1.5 text-[#78847B] hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors cursor-pointer"
+                  title="Keluar dari sesi koordinator"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E3EAE3] bg-white text-xs text-[#78847B] shadow-xs">
+                  <Leaf className="w-3.5 h-3.5 text-[#52B040]" />
+                  <span>Mode Tamu / Publik</span>
+                </div>
+                <Link
+                  href="/login?redirect=/dashboard"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] transition-colors shadow-xs"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>Portal Koordinator</span>
+                </Link>
+              </div>
+            )}
 
             <button
               type="button"
@@ -328,10 +409,36 @@ export default function DashboardPage() {
               className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-[#E3EAE3] bg-white hover:bg-[#F5F7F4] text-[#17251B] text-xs font-medium transition-colors cursor-pointer shadow-xs"
             >
               <Printer className="w-3.5 h-3.5 text-[#329F45]" />
-              <span>Cetak Ringkasan</span>
+              <span className="hidden sm:inline">Cetak Ringkasan</span>
             </button>
           </div>
         </div>
+
+        {/* Guest Mode Informational Alert Banner */}
+        {!coordinator?.isAuthenticated && (
+          <div className="p-4 rounded-2xl bg-white border border-[#E3EAE3] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
+                <Lock className="w-4 h-4" />
+              </div>
+              <div className="space-y-0.5">
+                <div className="text-xs font-semibold text-[#17251B]">
+                  Peran Pengamat Publik Aktif
+                </div>
+                <p className="text-[11px] text-[#78847B] leading-relaxed">
+                  Anda dapat meninjau telemetri ekosistem dan dossier laporan. Untuk memvalidasi status, menolak, atau menghapus titik koordinat di database cloud, silakan masuk dengan akun koordinator.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/login?redirect=/dashboard"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] transition-colors shrink-0 shadow-xs cursor-pointer"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Masuk Portal Koordinator</span>
+            </Link>
+          </div>
+        )}
 
         {/* 1. OPERATIONAL TELEMETRY & URGENT HOTSPOTS (CLEAN UNIFIED SAAS ARCHITECTURE) */}
         <div className="space-y-5">
@@ -957,54 +1064,81 @@ export default function DashboardPage() {
 
               </div>
 
-              {/* Modal Footer Action Bar */}
+              {/* Modal Footer Action Bar (RBAC Coordinator Protection) */}
               <div className="p-4 border-t border-[#E3EAE3] bg-[#F5F7F4] flex flex-wrap items-center justify-between gap-2.5">
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteReport(selectedReport.id)}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-medium transition-colors cursor-pointer"
-                    title="Hapus permanen laporan ini dari sistem"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                    <span>Hapus Laporan</span>
-                  </button>
+                {coordinator?.isAuthenticated ? (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteReport(selectedReport.id)}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-medium transition-colors cursor-pointer"
+                        title="Hapus permanen laporan ini dari sistem"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Hapus Laporan</span>
+                      </button>
 
-                  <button
-                    type="button"
-                    onClick={() => handleUpdateStatus(selectedReport.id, 'ditolak')}
-                    className="px-3 py-1.5 rounded-lg border border-[#E3EAE3] text-[#DC3545] hover:bg-white text-xs font-medium transition-colors cursor-pointer"
-                  >
-                    Tolak Temuan
-                  </button>
+                      <button
+                        type="button"
+                        onClick={() => handleUpdateStatus(selectedReport.id, 'ditolak')}
+                        className="px-3 py-1.5 rounded-lg border border-[#E3EAE3] text-[#DC3545] hover:bg-white text-xs font-medium transition-colors cursor-pointer"
+                      >
+                        Tolak Temuan
+                      </button>
 
-                  <button
-                    type="button"
-                    onClick={() => handleUpdateStatus(selectedReport.id, 'dalam_aksi')}
-                    className="px-3 py-1.5 rounded-lg border border-[#E3EAE3] bg-white text-[#17251B] hover:bg-[#F5F7F4] text-xs font-medium transition-colors cursor-pointer"
-                  >
-                    Tandai Sedang Ditinjau
-                  </button>
-                </div>
+                      <button
+                        type="button"
+                        onClick={() => handleUpdateStatus(selectedReport.id, 'dalam_aksi')}
+                        className="px-3 py-1.5 rounded-lg border border-[#E3EAE3] bg-white text-[#17251B] hover:bg-[#F5F7F4] text-xs font-medium transition-colors cursor-pointer"
+                      >
+                        Tandai Sedang Ditinjau
+                      </button>
+                    </div>
 
-                <div className="flex items-center gap-2">
-                  <Link
-                    href={`/aksi?report_id=${selectedReport.id}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E3EAE3] bg-white text-[#17251B] hover:bg-[#F5F7F4] text-xs font-medium transition-colors"
-                  >
-                    <span>Jadikan Rencana Aksi</span>
-                    <ExternalLink className="w-3 h-3 text-[#78847B]" />
-                  </Link>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href={`/aksi?report_id=${selectedReport.id}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E3EAE3] bg-white text-[#17251B] hover:bg-[#F5F7F4] text-xs font-medium transition-colors"
+                      >
+                        <span>Jadikan Rencana Aksi</span>
+                        <ExternalLink className="w-3 h-3 text-[#78847B]" />
+                      </Link>
 
-                  <button
-                    type="button"
-                    onClick={() => handleUpdateStatus(selectedReport.id, 'terverifikasi')}
-                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] shadow-xs transition-colors cursor-pointer"
-                  >
-                    <Check className="w-3.5 h-3.5" />
-                    <span>Setujui &amp; Verifikasi</span>
-                  </button>
-                </div>
+                      <button
+                        type="button"
+                        onClick={() => handleUpdateStatus(selectedReport.id, 'terverifikasi')}
+                        className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] shadow-xs transition-colors cursor-pointer"
+                      >
+                        <Check className="w-3.5 h-3.5" />
+                        <span>Setujui &amp; Verifikasi</span>
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 text-xs text-[#78847B]">
+                      <Lock className="w-4 h-4 text-amber-600 shrink-0" />
+                      <span>Tindakan verifikasi, persetujuan aksi, dan hapus laporan diproteksi untuk Koordinator.</span>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Link
+                        href={`/aksi?report_id=${selectedReport.id}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E3EAE3] bg-white text-[#17251B] text-xs font-medium transition-colors"
+                      >
+                        <span>Lihat Rencana Aksi</span>
+                        <ExternalLink className="w-3 h-3 text-[#78847B]" />
+                      </Link>
+                      <Link
+                        href="/login?redirect=/dashboard"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] transition-colors shadow-xs"
+                      >
+                        <ShieldCheck className="w-3.5 h-3.5" />
+                        <span>Masuk Koordinator</span>
+                      </Link>
+                    </div>
+                  </div>
+                )}
               </div>
 
             </motion.div>

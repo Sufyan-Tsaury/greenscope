@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -13,13 +13,29 @@ import {
   Menu, 
   X, 
   ShieldCheck,
-  Leaf
+  Leaf,
+  LogOut,
+  LogIn
 } from 'lucide-react';
+import { 
+  getCoordinatorSession, 
+  subscribeToAuthChange, 
+  signOutCoordinator, 
+  CoordinatorSession 
+} from '@/lib/supabase';
 
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeRole, setActiveRole] = useState<'volunteer' | 'coordinator'>('volunteer');
+  const [coordinator, setCoordinator] = useState<CoordinatorSession | null>(null);
+
+  useEffect(() => {
+    // Berlangganan status otentikasi koordinator secara reaktif
+    const unsubscribe = subscribeToAuthChange((session) => {
+      setCoordinator(session);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const navLinks = [
     { href: '/', label: 'Beranda', icon: Compass },
@@ -29,8 +45,9 @@ export default function Navbar() {
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   ];
 
-  const toggleRole = () => {
-    setActiveRole((prev) => (prev === 'volunteer' ? 'coordinator' : 'volunteer'));
+  const handleLogout = async () => {
+    await signOutCoordinator();
+    setMobileMenuOpen(false);
   };
 
   return (
@@ -91,26 +108,42 @@ export default function Navbar() {
               })}
             </nav>
 
-            {/* Action Buttons: Role Simulator & CTA Lapor */}
+            {/* Action Buttons: Coordinator Auth State & CTA Lapor */}
             <div className="hidden lg:flex items-center gap-3">
-              <button
-                type="button"
-                onClick={toggleRole}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-[#E7ECE5] text-xs text-[#202820] bg-white hover:bg-[#F7F9F6] transition-colors cursor-pointer shadow-xs"
-                title="Beralih peran simulasi"
-              >
-                {activeRole === 'volunteer' ? (
-                  <>
-                    <Leaf className="w-3.5 h-3.5 text-[#52B040]" />
-                    <span>Peran: <strong className="text-[#348D32]">Relawan</strong></span>
-                  </>
-                ) : (
-                  <>
+              {coordinator?.isAuthenticated ? (
+                <div className="flex items-center gap-2">
+                  <div 
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#EAF5E6] border border-[#d2ebd0] text-xs text-[#202820] shadow-xs"
+                    title={`Masuk sebagai ${coordinator.email}`}
+                  >
                     <ShieldCheck className="w-3.5 h-3.5 text-[#348D32]" />
-                    <span>Peran: <strong className="text-[#202820]">Koordinator</strong></span>
-                  </>
-                )}
-              </button>
+                    <span className="font-semibold text-[#348D32]">Koordinator Aktif</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full border border-[#E7ECE5] text-xs text-[#7A8278] hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50 transition-colors cursor-pointer"
+                    title="Keluar dari sesi koordinator"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Keluar</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#E7ECE5] text-xs text-[#7A8278] bg-white">
+                    <Leaf className="w-3.5 h-3.5 text-[#52B040]" />
+                    <span>Peran: <strong className="text-[#202820] font-medium">Relawan</strong></span>
+                  </div>
+                  <Link
+                    href={`/login?redirect=${pathname}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#d2ebd0] bg-[#F7F9F6] text-xs font-semibold text-[#348D32] hover:bg-[#EAF5E6] transition-colors shadow-xs"
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                    <span>Portal Koordinator</span>
+                  </Link>
+                </div>
+              )}
 
               <Link
                 href="/lapor"
@@ -145,16 +178,32 @@ export default function Navbar() {
 
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-[#E7ECE5] bg-white px-4 pt-3 pb-5 space-y-1">
-            <div className="flex items-center justify-between py-2 border-b border-[#EEF1EC] mb-2">
-              <span className="text-xs text-[#7A8278]">Simulasi Peran:</span>
-              <button
-                type="button"
-                onClick={toggleRole}
-                className="inline-flex items-center gap-1 px-3 py-1 text-xs rounded-full border border-[#E7ECE5] bg-[#F7F9F6] text-[#202820]"
-              >
-                {activeRole === 'volunteer' ? 'Relawan' : 'Koordinator'} (Ganti)
-              </button>
+          <div className="md:hidden border-t border-[#E7ECE5] bg-white px-4 pt-3 pb-5 space-y-2">
+            <div className="flex items-center justify-between py-2 border-b border-[#EEF1EC] mb-1">
+              <span className="text-xs text-[#7A8278]">Status Akun:</span>
+              {coordinator?.isAuthenticated ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-[#348D32] bg-[#EAF5E6] px-2.5 py-0.5 rounded-full">
+                    Koordinator
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="text-xs text-rose-600 underline font-medium"
+                  >
+                    Keluar
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  href={`/login?redirect=${pathname}`}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-[#348D32] bg-[#EAF5E6] px-2.5 py-1 rounded-full"
+                >
+                  <LogIn className="w-3 h-3" />
+                  <span>Masuk Koordinator</span>
+                </Link>
+              )}
             </div>
 
             {navLinks.map((item) => {
