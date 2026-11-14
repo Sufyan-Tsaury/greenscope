@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import WorkflowGuide from '@/components/workflow-guide';
@@ -12,17 +11,9 @@ import {
   Compass, 
   AlertTriangle, 
   CheckCircle2, 
-  Trees, 
-  Waves, 
   ArrowRight,
-  Layers,
-  Check,
-  ShieldCheck,
-  Sparkles
+  ShieldCheck
 } from 'lucide-react';
-import { Report } from '@/types';
-import { fetchReports } from '@/lib/supabase';
-import { INITIAL_REPORTS } from '@/lib/mock-data';
 
 interface HeroSlide {
   image: string;
@@ -83,22 +74,8 @@ const HERO_SLIDES: HeroSlide[] = [
   }
 ];
 
-// Dynamic import Leaflet map with SSR disabled
-const MapInner = dynamic(() => import('@/components/map-inner'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-[420px] sm:h-[480px] flex flex-col items-center justify-center bg-[#F7F9F6] text-[#7A8278] space-y-3 font-sans">
-      <div className="w-8 h-8 border-2 border-[#52B040] border-t-transparent rounded-full animate-spin"></div>
-      <span className="text-xs font-medium">Memuat Peta Geospasial Bengkulu...</span>
-    </div>
-  ),
-});
-
 export default function HomePage() {
-  const [reports, setReports] = useState<Report[]>(INITIAL_REPORTS);
   const [carbonTrees, setCarbonTrees] = useState(250);
-  const [selectedMapReport, setSelectedMapReport] = useState<Report | null>(INITIAL_REPORTS[0]);
-  const [mapFilter, setMapFilter] = useState<string>('all');
   const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
   const [isSlidePaused, setIsSlidePaused] = useState(false);
 
@@ -111,41 +88,8 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, [isSlidePaused]);
 
-  useEffect(() => {
-    async function loadReports() {
-      const data = await fetchReports();
-      setReports(data);
-      if (data.length > 0) {
-        setSelectedMapReport(data[0]);
-      }
-    }
-    loadReports();
-  }, []);
-
-  // Smooth filter navigation: updates filter AND flies camera to matching location
-  const handleFilterSector = (filterId: string) => {
-    setMapFilter(filterId);
-    if (filterId === 'all') {
-      setSelectedMapReport(null);
-    } else {
-      const match = reports.find((r) => r.ecosystem === filterId);
-      if (match) {
-        setSelectedMapReport(match);
-      }
-    }
-  };
-
   // Perhitungan Karbon Biru Sederhana: ~12.5 kg CO2e/pohon/tahun untuk mangrove/pohon keras tropis
   const calculatedCO2 = Math.round(carbonTrees * 12.5);
-
-  const filteredReports = reports.filter((r) => {
-    if (mapFilter === 'all') return true;
-    return r.ecosystem === mapFilter;
-  });
-
-  const kritisCount = reports.filter((r) => r.severity === 'kritis').length;
-  const tinggiCount = reports.filter((r) => r.severity === 'tinggi').length;
-  const pulihCount = reports.filter((r) => r.status === 'pulih').length;
 
   return (
     <div className="flex flex-col bg-[#F7F9F6] text-[#202820]">
@@ -298,202 +242,7 @@ export default function HomePage() {
       {/* 2. PETUNJUK ALUR SISTEM & PANDUAN PENGGUNAAN (CLOSED-LOOP WORKFLOW) */}
       <WorkflowGuide />
 
-      {/* 3. CENTRAL ENVIRONMENTAL CARTOGRAPHY: LIVING MAP CANVAS (PETA SEBAGAI ELEMEN UTAMA) */}
-      <section className="py-16 sm:py-20 bg-[#F7F9F6] border-b border-[#E7ECE5]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          {/* Section Editorial Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-[#E7ECE5]">
-            <div className="space-y-2 max-w-2xl">
-              <h2 className="text-2xl sm:text-4xl font-bold text-[#202820] tracking-tight">
-                Kartografi Interaktif Pesisir &amp; Hutan Bengkulu
-              </h2>
-              <p className="text-[#7A8278] text-sm sm:text-base leading-relaxed">
-                Pantau sebaran ekosistem kritis secara langsung. Klik pin pada peta untuk menginspeksi titik abrasi Pantai Panjang, degradasi kanopi Teluk Pulau Baai, hingga koridor Bukit Barisan.
-              </p>
-            </div>
-
-            {/* Map Filter Controls (Carbonery Pill Filter Bar) */}
-            <div className="flex flex-wrap items-center gap-2 shrink-0 bg-white p-1.5 rounded-full border border-[#E7ECE5] shadow-xs">
-              {[
-                { id: 'all', label: 'Semua Sektor' },
-                { id: 'mangrove', label: 'Sabuk Mangrove' },
-                { id: 'pesisir_pantai', label: 'Pesisir Pantai' },
-                { id: 'muara_sungai', label: 'Muara Sungai' },
-              ].map((f) => (
-                <button
-                  key={f.id}
-                  type="button"
-                  onClick={() => handleFilterSector(f.id)}
-                  className={`px-4 py-1.5 text-xs font-medium rounded-full transition-all duration-200 cursor-pointer ${
-                    mapFilter === f.id
-                      ? 'bg-[#52B040] text-white font-semibold shadow-xs'
-                      : 'text-[#7A8278] hover:text-[#202820] hover:bg-[#F7F9F6]'
-                  }`}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Map Frame & Integrated Inspection Strip */}
-          <div className="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
-            {/* Interactive Leaflet WebGIS Canvas (8 cols) in Rounded-3xl Card */}
-            <div className="lg:col-span-8 rounded-3xl border border-[#E7ECE5] overflow-hidden relative shadow-xs bg-white">
-              <div className="w-full h-[400px] sm:h-[480px]">
-                <MapInner 
-                  reports={filteredReports}
-                  selectedReport={selectedMapReport}
-                  onSelectReport={(r) => setSelectedMapReport(r)}
-                />
-              </div>
-
-              {/* Floating Quick Stats on Map */}
-              <div className="absolute bottom-3 left-3 z-1000 bg-white/95 backdrop-blur-md border border-[#E7ECE5] rounded-full px-4 py-2 text-xs text-[#202820] shadow-sm hidden sm:flex items-center gap-4">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-                  Kritis: <strong>{kritisCount} Titik</strong>
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                  Tinggi: <strong>{tinggiCount} Titik</strong>
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#52B040]"></span>
-                  Pulih: <strong>{pulihCount} Titik</strong>
-                </span>
-              </div>
-            </div>
-
-            {/* Integrated Spatial Inspector Panel (4 cols) in Soft Rounded Card */}
-            <div className="lg:col-span-4 rounded-3xl border border-[#E7ECE5] bg-white p-6 space-y-4 text-left shadow-xs">
-              <div className="flex items-center justify-between pb-3 border-b border-[#EEF1EC]">
-                <span className="text-xs font-semibold text-[#348D32] uppercase tracking-wider">
-                  Inspeksi Sektor Terpilih
-                </span>
-                <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${
-                  selectedMapReport?.severity === 'kritis'
-                    ? 'text-rose-700 bg-rose-50 border-rose-200'
-                    : selectedMapReport?.severity === 'tinggi'
-                      ? 'text-amber-700 bg-amber-50 border-amber-200'
-                      : 'text-[#348D32] bg-[#EAF5E6] border-[#d2ebd0]'
-                }`}>
-                  {selectedMapReport?.severity.toUpperCase()}
-                </span>
-              </div>
-
-              {selectedMapReport ? (
-                <div className="space-y-3">
-                  <div>
-                    <h3 className="font-bold text-lg text-[#202820] leading-snug">
-                      {selectedMapReport.title}
-                    </h3>
-                    <div className="flex items-center gap-1.5 text-xs text-[#7A8278] mt-1">
-                      <MapPin className="w-3.5 h-3.5 text-[#52B040] shrink-0" />
-                      <span>{selectedMapReport.location_name}</span>
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-[#7A8278] leading-relaxed line-clamp-3">
-                    {selectedMapReport.description}
-                  </p>
-
-                  <div className="p-3.5 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] space-y-2 text-xs">
-                    <div className="flex justify-between">
-                      <span className="text-[#7A8278]">Tingkat Urgensi:</span>
-                      <strong className="text-[#202820] font-semibold uppercase">{selectedMapReport.severity}</strong>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#7A8278]">Spesies Rekomendasi:</span>
-                      <span className="text-[#348D32] font-semibold">
-                        {(selectedMapReport.ai_analysis?.spesies_rekomendasi || 'Rhizophora apiculata').split(',')[0]}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#7A8278]">Koordinat:</span>
-                      <span className="text-[#202820] font-mono text-[11px]">
-                        {selectedMapReport.latitude.toFixed(4)}°, {selectedMapReport.longitude.toFixed(4)}°
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="pt-2 flex flex-col gap-2">
-                    <Link
-                      href="/peta"
-                      className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] transition-colors shadow-xs"
-                    >
-                      <span>Buka di Peta Lengkap WebGIS</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                    <Link
-                      href="/aksi"
-                      className="w-full inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-medium text-[#202820] hover:bg-[#F7F9F6] border border-[#E7ECE5] transition-colors"
-                    >
-                      <span>Lihat Rencana Aksi Pemulihan</span>
-                    </Link>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  <div>
-                    <h3 className="font-bold text-base text-[#202820] leading-snug">
-                      Seluruh Sektor Terdata Bengkulu
-                    </h3>
-                    <p className="text-[11px] text-[#7A8278] mt-1 leading-relaxed">
-                      Menampilkan {reports.length} titik pengawasan ekosistem pesisir barat dan hutan. Klik salah satu sektor untuk terbang langsung ke lokasinya:
-                    </p>
-                  </div>
-
-                  <div className="space-y-1.5 pt-1">
-                    {reports.map((rep) => (
-                      <button
-                        key={rep.id}
-                        type="button"
-                        onClick={() => setSelectedMapReport(rep)}
-                        className="w-full p-2.5 rounded-xl bg-[#F7F9F6] hover:bg-[#EAF5E6] border border-[#E7ECE5] text-left transition-colors cursor-pointer flex items-center justify-between"
-                      >
-                        <div className="space-y-0.5 truncate pr-2">
-                          <div className="text-xs font-bold text-[#202820] truncate">
-                            {rep.title.split('&')[0]}
-                          </div>
-                          <div className="text-[10px] text-[#7A8278] font-mono">
-                            {rep.location_name.split(',')[0]}
-                          </div>
-                        </div>
-                        <span className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full shrink-0 ${
-                          rep.severity === 'kritis' 
-                            ? 'text-rose-700 bg-rose-50 border border-rose-200' 
-                            : rep.severity === 'tinggi'
-                              ? 'text-amber-700 bg-amber-50 border border-amber-200'
-                              : 'text-[#348D32] bg-[#EAF5E6] border border-[#d2ebd0]'
-                        }`}>
-                          {rep.severity.toUpperCase()}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="pt-2">
-                    <Link
-                      href="/peta"
-                      className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] transition-colors shadow-xs"
-                    >
-                      <span>Buka di Peta Lengkap WebGIS</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
-                </div>
-              )}
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* 4. DOKUMENTASI RESTORASI LAPANGAN: SEBELUM VS TARGET PEMULIHAN */}
+      {/* 3. DOKUMENTASI RESTORASI LAPANGAN: SEBELUM VS TARGET PEMULIHAN */}
       <section className="py-16 sm:py-20 bg-white border-b border-[#E7ECE5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
@@ -630,7 +379,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. BLUE CARBON INTELLIGENCE: CARBONERY ECO SPREAD */}
+      {/* 4. BLUE CARBON INTELLIGENCE: CARBONERY ECO SPREAD */}
       <section className="py-20 bg-[#F7F9F6] text-[#202820] relative overflow-hidden border-b border-[#E7ECE5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           
@@ -771,7 +520,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 6. CALL TO ACTION: OPEN CITIZEN SCIENCE GATEWAY */}
+      {/* 5. CALL TO ACTION: OPEN CITIZEN SCIENCE GATEWAY */}
       <section className="py-16 sm:py-20 bg-white border-t border-[#E7ECE5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 pb-8 text-center md:text-left">
