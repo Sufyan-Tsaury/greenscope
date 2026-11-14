@@ -228,12 +228,84 @@ export async function saveReport(report: Omit<Report, 'id' | 'created_at'>): Pro
   return newReport;
 }
 
+const LOCAL_STORAGE_CAMPAIGNS_KEY = 'greenscope_custom_campaigns';
+const LOCAL_STORAGE_VOLUNTEERS_KEY = 'greenscope_volunteer_registrations';
+
+export interface VolunteerRegistration {
+  campaign_id: string;
+  name: string;
+  whatsapp: string;
+  squad: string;
+  registered_at: string;
+}
+
 /**
- * Mengambil daftar kampanye aksi konservasi
+ * Membaca kampanye aksi buatan pengguna dari localStorage
+ */
+export function getLocalCampaigns(): Campaign[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(LOCAL_STORAGE_CAMPAIGNS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (err) {
+    console.warn('Gagal membaca localStorage kampanye:', err);
+    return [];
+  }
+}
+
+/**
+ * Menyimpan kampanye baru ke localStorage
+ */
+export function saveLocalCampaign(campaign: Campaign) {
+  if (typeof window === 'undefined') return;
+  try {
+    const existing = getLocalCampaigns();
+    const updated = [campaign, ...existing.filter((c) => c.id !== campaign.id)];
+    localStorage.setItem(LOCAL_STORAGE_CAMPAIGNS_KEY, JSON.stringify(updated));
+  } catch (err) {
+    console.warn('Gagal menyimpan kampanye ke localStorage:', err);
+  }
+}
+
+/**
+ * Membaca pendaftaran relawan dari localStorage
+ */
+export function getLocalVolunteerRegistrations(): VolunteerRegistration[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(LOCAL_STORAGE_VOLUNTEERS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (err) {
+    console.warn('Gagal membaca registrasi relawan:', err);
+    return [];
+  }
+}
+
+/**
+ * Menyimpan pendaftaran relawan baru
+ */
+export function saveLocalVolunteerRegistration(reg: VolunteerRegistration) {
+  if (typeof window === 'undefined') return;
+  try {
+    const existing = getLocalVolunteerRegistrations();
+    const updated = [reg, ...existing.filter((r) => !(r.campaign_id === reg.campaign_id && r.whatsapp === reg.whatsapp))];
+    localStorage.setItem(LOCAL_STORAGE_VOLUNTEERS_KEY, JSON.stringify(updated));
+  } catch (err) {
+    console.warn('Gagal menyimpan pendaftaran relawan:', err);
+  }
+}
+
+/**
+ * Mengambil daftar kampanye aksi konservasi (Local-First + Supabase)
  */
 export async function fetchCampaigns(): Promise<Campaign[]> {
+  const localCustom = getLocalCampaigns();
+
   if (!isSupabaseConfigured || !supabase) {
-    return INITIAL_CAMPAIGNS;
+    return [
+      ...localCustom,
+      ...INITIAL_CAMPAIGNS.filter((init) => !localCustom.some((c) => c.id === init.id))
+    ];
   }
 
   try {
@@ -243,12 +315,100 @@ export async function fetchCampaigns(): Promise<Campaign[]> {
       .order('created_at', { ascending: false });
 
     if (error || !data || data.length === 0) {
-      return INITIAL_CAMPAIGNS;
+      return [
+        ...localCustom,
+        ...INITIAL_CAMPAIGNS.filter((init) => !localCustom.some((c) => c.id === init.id))
+      ];
     }
 
-    return data as Campaign[];
+    return [
+      ...localCustom,
+      ...(data as Campaign[]).filter((c) => !localCustom.some((lc) => lc.id === c.id))
+    ];
   } catch (err) {
     console.warn('Gagal memuat kampanye Supabase:', err);
-    return INITIAL_CAMPAIGNS;
+    return [
+      ...localCustom,
+      ...INITIAL_CAMPAIGNS.filter((init) => !localCustom.some((c) => c.id === init.id))
+    ];
+  }
+}
+
+/**
+ * Menyimpan kampanye restorasi baru
+ */
+export async function saveCampaign(campaign: Campaign): Promise<Campaign> {
+  saveLocalCampaign(campaign);
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .insert([campaign])
+        .select()
+        .single();
+      if (!error && data) {
+        const saved = data as Campaign;
+        saveLocalCampaign(saved);
+        return saved;
+      }
+    } catch (err) {
+      console.error('Gagal simpan kampanye ke Supabase:', err);
+    }
+  }
+
+  return campaign;
+}
+
+/**
+ * Menambah jumlah relawan pada kampanye tertentu secara persisten
+ */
+export function incrementCampaignVolunteer(campaignId: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const local = getLocalCampaigns();
+    const updated = local.map((c) => (c.id === campaignId ? { ...c, volunteers_count: c.volunteers_count + 1 } : c));
+    localStorage.setItem(LOCAL_STORAGE_CAMPAIGNS_KEY, JSON.stringify(updated));
+  } catch (err) {
+    console.warn('Gagal update volunteer count:', err);
+  }
+}
+
+/**
+ * Menghapus kampanye buatan lokal (dan Supabase jika terhubung)
+ */
+export async function deleteCampaign(id: string): Promise<boolean> {
+  if (typeof window !== 'undefined') {
+    try {
+      const existing = getLocalCampaigns();
+      const updated = existing.filter((c) => c.id !== id);
+      localStorage.setItem(LOCAL_STORAGE_CAMPAIGNS_KEY, JSON.stringify(updated));
+    } catch (err) {
+      console.warn('Gagal menghapus kampanye dari localStorage:', err);
+    }
+  }
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      await supabase.from('campaigns').delete().eq('id', id);
+    } catch (err) {
+      console.error('Error saat menghapus kampanye dari Supabase:', err);
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Reset seluruh kampanye kustom lokal
+ */
+export function resetLocalCampaigns(): void {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.removeItem(LOCAL_STORAGE_CAMPAIGNS_KEY);
+      localStorage.removeItem(LOCAL_STORAGE_VOLUNTEERS_KEY);
+    } catch (err) {
+      console.warn('Gagal reset kampanye lokal:', err);
+    }
   }
 }

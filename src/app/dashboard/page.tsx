@@ -960,10 +960,10 @@ export default function DashboardPage() {
 
                 <div className="flex items-center gap-2">
                   <Link
-                    href="/aksi"
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#E3EAE3] bg-white text-[#17251B] hover:bg-[#F5F7F4] text-xs font-medium transition-colors"
+                    href={`/aksi?report_id=${selectedReport.id}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E3EAE3] bg-white text-[#17251B] hover:bg-[#F5F7F4] text-xs font-medium transition-colors"
                   >
-                    <span>Ke Halaman Aksi</span>
+                    <span>Jadikan Rencana Aksi</span>
                     <ExternalLink className="w-3 h-3 text-[#78847B]" />
                   </Link>
 

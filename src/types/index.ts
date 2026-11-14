@@ -84,6 +84,14 @@ export interface Campaign {
   created_at: string;
 }
 
+export interface VolunteerRegistration {
+  campaign_id: string;
+  name: string;
+  whatsapp: string;
+  squad: string;
+  registered_at: string;
+}
+
 export interface Profile {
   id: string;
   full_name: string;
