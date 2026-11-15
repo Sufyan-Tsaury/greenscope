@@ -127,7 +127,6 @@ export default function PetaPage() {
     setMobileDrawerOpen(false);
   };
 
-  // Filtered reports
   const filteredReports = reports.filter((r) => {
     const matchEco = filterEcosystem === 'all' || r.ecosystem === filterEcosystem;
     const matchSev = filterSeverity === 'all' || r.severity === filterSeverity;
@@ -179,7 +178,6 @@ export default function PetaPage() {
   return (
     <div className="relative w-full h-[calc(100vh-4rem)] sm:h-[calc(100vh-5rem)] flex flex-col overflow-hidden bg-[#F7F9F6]">
       
-      {/* Realtime Notification Toast */}
       {realtimeToast && (
         <div className="absolute top-16 left-1/2 -translate-x-1/2 z-40 bg-[#202820] text-white px-4 py-2.5 rounded-full shadow-lg border border-[#348D32] flex items-center gap-2.5 text-xs animate-bounce">
           <span className="w-2 h-2 rounded-full bg-[#52B040] animate-ping"></span>
@@ -196,7 +194,6 @@ export default function PetaPage() {
         </div>
       )}
 
-      {/* Top Controls / Filter Bar (Carbonery Glass Bar) */}
       <div className="z-20 bg-white/95 backdrop-blur-md border-b border-[#E7ECE5] px-4 py-3 shadow-xs">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
           
@@ -213,7 +210,6 @@ export default function PetaPage() {
                   </span>
                 </h1>
                 
-                {/* Multi-Device Live Realtime Indicator */}
                 <div 
                   className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#EAF5E6] border border-[#d2ebd0] text-[10px] font-semibold text-[#348D32]"
                   title="Sinkronisasi multi-perangkat aktif via Supabase WebSocket"
@@ -229,9 +225,7 @@ export default function PetaPage() {
             </div>
           </div>
 
-          {/* Filters & Action in Pill Styling */}
           <div className="flex items-center gap-2 text-xs">
-            {/* Ecosystem Filter */}
             <select
               value={filterEcosystem}
               onChange={(e) => handleEcosystemChange(e.target.value)}
@@ -244,7 +238,6 @@ export default function PetaPage() {
               <option value="hutan_tropis">Hutan Tropis</option>
             </select>
 
-            {/* Severity Filter */}
             <select
               value={filterSeverity}
               onChange={(e) => handleSeverityChange(e.target.value)}
@@ -257,7 +250,6 @@ export default function PetaPage() {
               <option value="rendah">🟢 Rendah (Observasi Rutin)</option>
             </select>
 
-            {/* CTA Button */}
             <Link
               href="/lapor"
               className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] shadow-xs transition-all"
@@ -270,10 +262,8 @@ export default function PetaPage() {
         </div>
       </div>
 
-      {/* Map & Desktop Side Panel Container */}
       <div className="relative flex-1 w-full h-full flex">
         
-        {/* Full Interactive Leaflet WebGIS Map Component */}
         <div className="flex-1 w-full h-full relative">
           <MapInner
             reports={filteredReports}
@@ -282,10 +272,8 @@ export default function PetaPage() {
           />
         </div>
 
-        {/* Desktop Sidebar: Detailed Report Dossier (Collapsible/Floating) */}
         {selectedReport && (
           <aside className="hidden lg:flex w-96 bg-white border-l border-[#E7ECE5] flex-col h-full shadow-lg z-20 overflow-y-auto">
-            {/* Header */}
             <div className="p-4 border-b border-[#E7ECE5] flex items-center justify-between bg-[#F7F9F6]">
               <div className="flex items-center gap-2">
                 <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
@@ -316,9 +304,7 @@ export default function PetaPage() {
               </button>
             </div>
 
-            {/* Body */}
             <div className="p-5 space-y-4">
-              {/* Photo Evidence */}
               <div className="relative aspect-16/10 rounded-2xl overflow-hidden bg-stone-900 border border-[#E7ECE5] shadow-xs">
                 <Image
                   src={selectedReport.image_url}
@@ -335,7 +321,6 @@ export default function PetaPage() {
                 </div>
               </div>
 
-              {/* Title & Metadata */}
               <div>
                 <h2 className="text-base font-bold text-[#202820] leading-snug">
                   {selectedReport.title}
@@ -346,12 +331,10 @@ export default function PetaPage() {
                 </div>
               </div>
 
-              {/* Description */}
               <div className="text-xs text-[#202820] leading-relaxed bg-[#F7F9F6] p-3 rounded-xl border border-[#E7ECE5]">
                 {selectedReport.description}
               </div>
 
-              {/* AI & Botanical Solution Dossier */}
               <div className="space-y-2 pt-1 border-t border-[#EEF1EC]">
                 <h3 className="text-xs font-bold text-[#202820] flex items-center gap-1.5">
                   <Leaf className="w-3.5 h-3.5 text-[#52B040]" />
@@ -370,7 +353,6 @@ export default function PetaPage() {
                 </div>
               </div>
 
-              {/* Actions: Hubungkan ke Aksi & Hapus (Protected) */}
               <div className="pt-2 flex items-center gap-2">
                 <Link
                   href={`/aksi?report_id=${selectedReport.id}`}
@@ -412,7 +394,6 @@ export default function PetaPage() {
           </aside>
         )}
 
-        {/* Mobile Bottom Drawer for Selected Report */}
         {selectedReport && mobileDrawerOpen && (
           <div className="lg:hidden absolute bottom-16 inset-x-2 z-30 bg-white rounded-3xl p-4 shadow-xl border border-[#E7ECE5] space-y-3 max-h-[75vh] overflow-y-auto animate-in slide-in-from-bottom">
             <div className="flex items-center justify-between pb-1 border-b border-[#EEF1EC]">

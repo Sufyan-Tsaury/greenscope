@@ -8,7 +8,12 @@ export const isGeminiConfigured = Boolean(apiKey && !apiKey.includes('your-gemin
 const aiClient = isGeminiConfigured ? new GoogleGenAI({ apiKey }) : null;
 
 /**
- * Helper to normalize image input (base64 data URL or external HTTP URL)
+ * Normalisasi payload citra dari format Base64 Data URL atau URL eksternal (HTTP/HTTPS)
+ * menjadi payload mentah yang kompatibel dengan Google GenAI SDK.
+ * 
+ * @param rawImage - String citra berupa HTTP(S) URL, Data URL, atau Base64 mentah
+ * @param defaultMime - MIME type default jika header tidak terdeteksi (default: 'image/jpeg')
+ * @returns Objek terstandarisasi `{ data: string, mimeType: string }`
  */
 async function normalizeImagePayload(rawImage: string, defaultMime: string = 'image/jpeg'): Promise<{ data: string; mimeType: string }> {
   // If it's a web URL (e.g. Unsplash specimen)
@@ -35,8 +40,15 @@ async function normalizeImagePayload(rawImage: string, defaultMime: string = 'im
 }
 
 /**
- * ScopeLens: Analisis Visi Lingkungan Multimodal menggunakan Gemini 3.5 Flash
- * Otomatis mendeteksi tipe ekosistem (Hutan, Mangrove, Pesisir, Muara) tanpa bias input manual
+ * ScopeLens: Analisis Visi Komputer Multimodal menggunakan Gemini 3.5 Flash.
+ * Mengklasifikasikan tipe ekosistem pesisir/hutan Bengkulu, memvalidasi keaslian bentang alam,
+ * mendiagnosis tingkat keparahan degradasi lingkungan, dan merekomendasikan botani restorasi.
+ * 
+ * @param base64Image - Citra lapangan dalam format Base64 atau URL
+ * @param mimeType - MIME type citra (misal: 'image/jpeg', 'image/png')
+ * @param ecosystem - Jenis ekosistem indikatif opsional
+ * @param locationName - Nama lokasi pengamatan di pesisir Bengkulu
+ * @returns Struktur diagnosis lengkap AIAnalysisResult sesuai skema rubrik ekologi
  */
 export async function analyzeEnvironmentalImage(
   base64Image: string,
@@ -192,7 +204,15 @@ INSTRUKSI TUGAS UTAMA:
 }
 
 /**
- * AI Action Brief Generator: Menyusun Rencana Lapangan Konservasi
+ * AI Action Brief Generator: Menyusun dokumen rencana taktis lapangan aksi konservasi
+ * berdasarkan temuan laporan kerusakan lingkungan terverifikasi.
+ * 
+ * @param reportTitle - Judul temuan lapangan atau aksi pemulihan
+ * @param ecosystem - Tipe ekosistem lokasi intervensi
+ * @param urgencyScore - Skor urgensi keparahan (0-100)
+ * @param locationName - Titik administratif/spasial di Bengkulu
+ * @param targetVolunteers - Target partisipan relawan gotong royong
+ * @returns Struktur ActionBrief yang mencakup logistik, regu kerja, tahapan waktu, dan SOP keselamatan
  */
 export async function generateActionBrief(
   reportTitle: string,

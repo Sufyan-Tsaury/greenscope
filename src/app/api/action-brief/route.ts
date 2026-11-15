@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateActionBrief } from '@/lib/gemini';
 import { EcosystemType } from '@/types';
 
+// Batas waktu eksekusi Serverless Function Vercel (30 detik) untuk perumusan rencana taktis Gemini
 export const maxDuration = 30;
 
 export async function POST(req: NextRequest) {

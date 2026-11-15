@@ -75,16 +75,13 @@ function AksiContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Volunteer registrations mapping { [campaign_id]: VolunteerRegistration }
   const [registeredMap, setRegisteredMap] = useState<Record<string, VolunteerRegistration>>({});
 
-  // Volunteer form state
   const [volName, setVolName] = useState('');
   const [volWhatsapp, setVolWhatsapp] = useState('');
   const [volSquad, setVolSquad] = useState('Regu Sapu Bersih');
   const [isSubmittingVol, setIsSubmittingVol] = useState(false);
 
-  // New Campaign Form States
   const [linkedReportId, setLinkedReportId] = useState<string>('none');
   const [newTitle, setNewTitle] = useState('Restorasi Sabuk Mangrove Pulau Baai Tahap 2');
   const [newLocation, setNewLocation] = useState('Teluk Pulau Baai, Bengkulu');
@@ -95,7 +92,6 @@ function AksiContent() {
   const [newLng, setNewLng] = useState(102.3021);
   const [isGeneratingBrief, setIsGeneratingBrief] = useState(false);
 
-  // Load initial data
   useEffect(() => {
     async function loadData() {
       const [campData, reportData] = await Promise.all([
@@ -105,7 +101,6 @@ function AksiContent() {
       setCampaigns(campData);
       setReports(reportData);
 
-      // Load registered volunteers
       const regs = getLocalVolunteerRegistrations();
       const map: Record<string, VolunteerRegistration> = {};
       regs.forEach((r) => {
@@ -113,7 +108,7 @@ function AksiContent() {
       });
       setRegisteredMap(map);
 
-      // If report_id was passed in URL, pre-fill creation modal
+      // Inisialisasi formulir modal jika ID laporan ditautkan melalui parameter URL
       if (urlReportId) {
         const targetReport = reportData.find((r) => r.id === urlReportId);
         if (targetReport) {
@@ -132,7 +127,6 @@ function AksiContent() {
     loadData();
   }, [urlReportId]);
 
-  // When user selects a linked report in the modal dropdown
   const handleSelectReport = (reportId: string) => {
     setLinkedReportId(reportId);
     if (reportId === 'none') return;
@@ -148,13 +142,11 @@ function AksiContent() {
     }
   };
 
-  // Helper Toast
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 4000);
   };
 
-  // Handle volunteer registration submission
   const handleConfirmVolunteer = (e: React.FormEvent) => {
     e.preventDefault();
     if (!volunteerCamp) return;
@@ -332,7 +324,6 @@ function AksiContent() {
         }
       `}</style>
 
-      {/* Floating Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 bg-[#17251B] text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-emerald-500/30 text-xs animate-in slide-in-from-bottom-3 duration-200">
           <CheckCircle2 className="w-4 h-4 text-[#52B040] shrink-0" />
@@ -342,7 +333,6 @@ function AksiContent() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         
-        {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#E7ECE5]">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-semibold bg-[#EAF5E6] text-[#348D32] border border-[#d2ebd0]">
@@ -370,7 +360,6 @@ function AksiContent() {
           </button>
         </div>
 
-        {/* CAMPAIGNS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {campaigns.map((camp) => {
             const userRegistration = registeredMap[camp.id];
@@ -385,7 +374,6 @@ function AksiContent() {
                 className="rounded-3xl bg-white border border-[#E7ECE5] overflow-hidden flex flex-col justify-between hover:shadow-md transition-all shadow-xs"
               >
                 <div>
-                  {/* Photo Header */}
                   <div className="relative aspect-16/9 bg-stone-900">
                     <Image
                       src={camp.after_image_url || camp.before_image_url}
@@ -396,7 +384,6 @@ function AksiContent() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                     
-                    {/* Status & Report Badge */}
                     <div className="absolute top-3 inset-x-3 flex items-center justify-between gap-2">
                       <span className={`px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider ${
                         camp.status === 'selesai' 
@@ -425,13 +412,11 @@ function AksiContent() {
                     </div>
                   </div>
 
-                  {/* Body Content */}
                   <div className="p-6 space-y-4">
                     <p className="text-xs text-[#4A5449] leading-relaxed line-clamp-2">
                       {camp.description}
                     </p>
 
-                    {/* Progress Bar & Volunteers Count */}
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-xs">
                         <span className="font-semibold text-[#202820] flex items-center gap-1.5">
@@ -449,7 +434,6 @@ function AksiContent() {
                       </div>
                     </div>
 
-                    {/* Eco Target Highlights */}
                     <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#EEF1EC] text-xs">
                       <div className="p-3 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] space-y-0.5">
                         <span className="text-[#4A5449] text-[10px] uppercase font-semibold block">Target Restorasi:</span>
@@ -465,7 +449,6 @@ function AksiContent() {
                       </div>
                     </div>
 
-                    {/* Registration Status Pill if user has registered */}
                     {hasJoined && (
                       <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-[#17251B] flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -480,7 +463,6 @@ function AksiContent() {
                   </div>
                 </div>
 
-                {/* Footer Action Buttons */}
                 <div className="p-6 pt-0 space-y-2">
                   <div className="flex items-center gap-3">
                     {camp.action_brief && (
@@ -525,7 +507,6 @@ function AksiContent() {
                     )}
                   </div>
 
-                  {/* Custom Test Campaign Delete Option */}
                   {isCustom && (
                     <div className="flex justify-end pt-1">
                       <button
@@ -547,9 +528,7 @@ function AksiContent() {
 
       </div>
 
-      {/* =========================================================================
-          MODAL: ACTION BRIEF DETAILED VIEW (WITH PRINT & WHATSAPP COORDINATION)
-          ========================================================================= */}
+      {/* --- MODAL: ACTION BRIEF LAPANGAN --- */}
       {selectedBrief && selectedBrief.action_brief && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in-50">
           <div 
@@ -588,7 +567,6 @@ function AksiContent() {
               </button>
             </div>
 
-            {/* Tactical Summary */}
             <div className="p-4 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] text-xs space-y-1">
               <span className="font-semibold text-[#202820] uppercase tracking-wider block text-[11px]">
                 Fokus Taktis Operasi:
@@ -598,7 +576,6 @@ function AksiContent() {
               </p>
             </div>
 
-            {/* Logistics Requirements */}
             <div className="space-y-2">
               <span className="text-xs font-bold text-[#202820] uppercase tracking-wider block">
                 Kebutuhan Logistik &amp; Alat Lapangan:
@@ -613,7 +590,6 @@ function AksiContent() {
               </div>
             </div>
 
-            {/* Volunteer Teams Breakdown */}
             <div className="space-y-2">
               <span className="text-xs font-bold text-[#202820] uppercase tracking-wider block">
                 Pembagian Regu Relawan:
@@ -650,7 +626,6 @@ function AksiContent() {
               </div>
             </div>
 
-            {/* Execution Stages */}
             <div className="space-y-2">
               <span className="text-xs font-bold text-[#202820] uppercase tracking-wider block">
                 Linimasa Eksekusi Lapangan:
@@ -665,7 +640,6 @@ function AksiContent() {
               </div>
             </div>
 
-            {/* Safety & Ethics */}
             <div className="space-y-2">
               <span className="text-xs font-bold text-[#202820] uppercase tracking-wider block">
                 SOP Keselamatan &amp; Etika Konservasi:
@@ -680,7 +654,6 @@ function AksiContent() {
               </div>
             </div>
 
-            {/* Modal Actions Footer (Print & WhatsApp) */}
             <div className="pt-4 border-t border-[#EEF1EC] flex flex-wrap items-center justify-between gap-3 no-print">
               <div className="flex items-center gap-2">
                 <button
@@ -718,9 +691,7 @@ function AksiContent() {
         </div>
       )}
 
-      {/* =========================================================================
-          MODAL: REAL VOLUNTEER REGISTRATION WITH SQUAD SELECTION
-          ========================================================================= */}
+      {/* --- MODAL: PENDAFTARAN RELAWAN AKSI --- */}
       {volunteerCamp && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in-50">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-5 border border-[#E7ECE5] shadow-xl">
@@ -852,9 +823,7 @@ function AksiContent() {
         </div>
       )}
 
-      {/* =========================================================================
-          MODAL: CREATE NEW ACTION BRIEF FORM (CONNECTED TO CITIZEN REPORTS)
-          ========================================================================= */}
+      {/* --- MODAL: FORMULIR KAMPANYE AKSI BARU --- */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in-50">
           <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-5 border border-[#E7ECE5] shadow-xl">
@@ -882,7 +851,6 @@ function AksiContent() {
 
             <div className="space-y-3.5 text-xs">
               
-              {/* Linked Field Report Selector */}
               <div className="space-y-1 p-3.5 rounded-2xl bg-[#EAF5E6]/40 border border-[#d2ebd0]">
                 <label className="font-bold text-[#17251B] block flex items-center gap-1.5">
                   <Layers className="w-3.5 h-3.5 text-[#348D32]" />
@@ -905,7 +873,6 @@ function AksiContent() {
                 </p>
               </div>
 
-              {/* Report AI Preview if selected */}
               {activeReport && (
                 <div className="p-3 rounded-2xl bg-white border border-[#E7ECE5] space-y-1.5">
                   <div className="flex items-center justify-between text-[11px]">

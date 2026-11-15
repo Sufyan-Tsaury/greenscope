@@ -1,3 +1,12 @@
+/**
+ * GreenScope Multi-Tier Data Synchronization Engine
+ * 
+ * Mengelola persistensi dan reaktivitas data laporan serta kampanye melalui 3 lapisan:
+ * 1. Cache Lokal (LocalStorage): Memastikan UI instan tanpa latency pada render awal dan toleran offline.
+ * 2. Cloud Persistence (Supabase PostgreSQL): Basis data relasional terpusat dengan Row Level Security (RLS).
+ * 3. Multi-Device WebSockets (Supabase Realtime): Menyiarkan status pemulihan dan verifikasi laporan secara langsung ke seluruh klien aktif.
+ */
+
 import { createClient } from '@supabase/supabase-js';
 import { INITIAL_REPORTS, INITIAL_CAMPAIGNS } from './mock-data';
 import { Report, Campaign, ReportStatus } from '@/types';
@@ -16,9 +25,7 @@ export const supabase = isSupabaseConfigured
   ? createClient(supabaseUrl, supabaseAnonKey) 
   : null;
 
-// ==========================================
-// AUTENTIKASI KOORDINATOR (ENTERPRISE AUTH)
-// ==========================================
+// --- AUTENTIKASI KOORDINATOR ---
 export interface CoordinatorSession {
   email: string;
   name: string;
@@ -179,9 +186,7 @@ export function subscribeToAuthChange(callback: (session: CoordinatorSession | n
   };
 }
 
-// ==========================================
-// PENANGANAN LAPORAN (STORAGE & SUPABASE)
-// ==========================================
+// --- MANAJEMEN LAPORAN & CACHE PERSISTEN ---
 const LOCAL_STORAGE_REPORTS_KEY = 'greenscope_custom_reports';
 const LOCAL_STORAGE_DELETED_KEY = 'greenscope_deleted_report_ids';
 
@@ -265,11 +270,7 @@ export function updateLocalReportStatus(id: string, status: Report['status']) {
   }
 }
 
-// ==========================================
-// REAL-TIME SYNC (SUPABASE WEBSOCKET BROADCAST)
-// ==========================================
-// SINKRONISASI REAL-TIME MULTI-PERANGKAT (SUPABASE WEBSOCKETS)
-// ==========================================
+// --- SINKRONISASI REALTIME WEBSOCKET (SUPABASE CHANNEL) ---
 let activeRealtimeChannel: any = null;
 let realtimeListeners: Array<(payload: { type: 'INSERT' | 'UPDATE' | 'DELETE'; report?: Report; id?: string; status?: ReportStatus }) => void> = [];
 
@@ -603,9 +604,7 @@ export async function saveReport(report: Omit<Report, 'id' | 'created_at'>): Pro
   return newReport;
 }
 
-// ==========================================
-// KAMPANYE AKSI & RELAWAN
-// ==========================================
+// --- MANAJEMEN KAMPANYE AKSI & RELAWAN ---
 const LOCAL_STORAGE_CAMPAIGNS_KEY = 'greenscope_custom_campaigns';
 const LOCAL_STORAGE_VOLUNTEERS_KEY = 'greenscope_volunteer_registrations';
 

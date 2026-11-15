@@ -94,26 +94,21 @@ export default function HomePage() {
   return (
     <div className="flex flex-col bg-[#F7F9F6] text-[#202820]">
       
-      {/* 1. HERO SECTION: CLEAN NATURE-FORWARD COMPOSITION (CARBONERY STYLE) */}
       <section className="relative overflow-hidden bg-white pt-12 pb-16 lg:pt-20 lg:pb-24 border-b border-[#E7ECE5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
             
-            {/* Left Content (7 cols): Clean Friendly Typography & Pill Actions */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               
-              {/* Fresh Modern Headline */}
               <h1 className="font-sans font-bold text-3xl sm:text-5xl lg:text-6xl text-[#202820] tracking-tight leading-[1.15] text-balance">
                 Pemantauan Cerdas &amp; <span className="text-[#52B040]">Restorasi Pesisir</span> Tropis Bengkulu
               </h1>
 
-              {/* Subtitle in Clean Modern Sans */}
               <p className="text-base sm:text-lg text-[#7A8278] max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
                 Menghubungkan partisipasi warga lapangan dengan diagnosis citra AI, pemetaan geospasial WebGIS, dan mobilisasi aksi gotong royong dalam satu siklus tertutup (<strong className="text-[#348D32] font-semibold">Closed-Loop Conservation</strong>).
               </p>
 
-              {/* CTAs (Carbonery Pill Buttons) */}
               <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5">
                 <Link
                   href="/lapor"
@@ -134,7 +129,6 @@ export default function HomePage() {
 
             </div>
 
-            {/* Right Hero Graphic: Auto-Rotating 3-Second Real Photo Showcase (Opsi B) */}
             <div 
               className="lg:col-span-5 relative flex justify-center"
               onMouseEnter={() => setIsSlidePaused(true)}
@@ -142,7 +136,6 @@ export default function HomePage() {
             >
               <div className="relative w-full max-w-md rounded-3xl overflow-hidden border border-[#E7ECE5] bg-white shadow-sm hover:shadow-md transition-shadow group">
                 
-                {/* 3-Second Animated Auto-Slider Image Canvas */}
                 <div className="relative aspect-4/3 w-full bg-[#F7F9F6] overflow-hidden">
                   {HERO_SLIDES.map((slide, idx) => (
                     <div
@@ -164,7 +157,6 @@ export default function HomePage() {
                   
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 z-15 pointer-events-none"></div>
                   
-                  {/* Subtle Top Coordinate Pill */}
                   <div className="absolute top-3.5 inset-x-3.5 flex items-center justify-between text-[11px] z-20">
                     <div className="inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[#202820] border border-[#E7ECE5] shadow-xs font-mono text-[10px]">
                       <Compass className="w-3.5 h-3.5 text-[#52B040]" />
@@ -176,7 +168,6 @@ export default function HomePage() {
                     </div>
                   </div>
 
-                  {/* 3-Dots Auto-Slide Navigation Indicator */}
                   <div className="absolute bottom-3 inset-x-0 flex items-center justify-center gap-1.5 z-20">
                     {HERO_SLIDES.map((_, dotIdx) => (
                       <button
@@ -194,7 +185,6 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Bottom Dossier Caption & Attribution */}
                 <div className="p-5 bg-white text-[#202820] space-y-2 text-left">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-[#348D32] bg-[#EAF5E6] px-2.5 py-0.5 rounded-full border border-[#d2ebd0]">
@@ -223,7 +213,6 @@ export default function HomePage() {
                     </Link>
                   </div>
 
-                  {/* Attribution Block (Sesuai Hak Cipta & Lisensi) */}
                   {HERO_SLIDES[currentHeroSlide].attribution && (
                     <div className="pt-2 border-t border-[#EEF1EC]/80">
                       {HERO_SLIDES[currentHeroSlide].attribution}
@@ -239,10 +228,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. PETUNJUK ALUR SISTEM & PANDUAN PENGGUNAAN (CLOSED-LOOP WORKFLOW) */}
       <WorkflowGuide />
 
-      {/* 3. DOKUMENTASI RESTORASI LAPANGAN: SEBELUM VS TARGET PEMULIHAN */}
       <section className="py-16 sm:py-20 bg-white border-b border-[#E7ECE5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
@@ -259,10 +246,8 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* 2-Column Comparative Card Grid (Resilient, Accessible, Fast) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
             
-            {/* Card 1: Kondisi Awal */}
             <div className="rounded-3xl border border-[#E7ECE5] bg-[#F7F9F6] p-5 sm:p-6 flex flex-col justify-between space-y-5 shadow-xs">
               <div className="space-y-4">
                 <div className="relative aspect-16/10 rounded-2xl overflow-hidden border border-[#E7ECE5] bg-[#E5EAE3]">
@@ -307,7 +292,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Card 2: Sasaran Pemulihan */}
             <div className="rounded-3xl border border-[#d2ebd0] bg-[#FAFCF9] p-5 sm:p-6 flex flex-col justify-between space-y-5 shadow-xs">
               <div className="space-y-4">
                 <div className="relative aspect-16/10 rounded-2xl overflow-hidden border border-[#d2ebd0] bg-[#EAF5E6]">
@@ -354,7 +338,6 @@ export default function HomePage() {
 
           </div>
 
-          {/* Quick Action Navigation Bar */}
           <div className="p-4 sm:p-5 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
             <div className="flex items-center gap-2.5 text-[#4A5449]">
               <span className="w-2 h-2 rounded-full bg-[#52B040] shrink-0"></span>
@@ -379,14 +362,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. BLUE CARBON INTELLIGENCE: CARBONERY ECO SPREAD */}
       <section className="py-20 bg-[#F7F9F6] text-[#202820] relative overflow-hidden border-b border-[#E7ECE5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           
           <div className="p-8 sm:p-12 rounded-3xl bg-white border border-[#E7ECE5] shadow-xs">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
               
-              {/* Left Column (7 cols): Editorial Narrative & Caliper Slider */}
               <div className="lg:col-span-7 space-y-8 text-left font-sans">
                 
                 <div className="space-y-3">
@@ -398,7 +379,6 @@ export default function HomePage() {
                   </p>
                 </div>
 
-                {/* Precision Caliper Slider Scale */}
                 <div className="pt-6 border-t border-[#EEF1EC] space-y-4">
                   <div className="flex items-baseline justify-between">
                     <div>
@@ -419,7 +399,6 @@ export default function HomePage() {
                     </div>
                   </div>
 
-                  {/* Range Scale with Carbonery Green Accent */}
                   <div className="space-y-2">
                     <input
                       type="range"
@@ -445,10 +424,8 @@ export default function HomePage() {
 
               </div>
 
-              {/* Right Column (5 cols): Open Structured Data Sheet */}
               <div className="lg:col-span-5 border-t lg:border-t-0 lg:border-l border-[#EEF1EC] pt-8 lg:pt-0 lg:pl-10 space-y-8 text-left font-sans">
                 
-                {/* Primary Metric Output */}
                 <div className="space-y-1.5 p-6 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5]">
                   <div className="text-xs font-semibold uppercase tracking-wider text-[#348D32]">
                     Estimasi Serapan Karbon Tahunan
@@ -464,7 +441,6 @@ export default function HomePage() {
                   </p>
                 </div>
 
-                {/* Structured Data Rows */}
                 <div className="border-y border-[#EEF1EC] divide-y divide-[#EEF1EC] text-xs">
                   
                   <div className="py-3 flex items-center justify-between">
@@ -498,7 +474,6 @@ export default function HomePage() {
 
                 </div>
 
-                {/* Direct Field Action Link (Pill CTA) */}
                 <div className="pt-2">
                   <Link
                     href="/aksi"
@@ -520,7 +495,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. CALL TO ACTION: OPEN CITIZEN SCIENCE GATEWAY */}
       <section className="py-16 sm:py-20 bg-white border-t border-[#E7ECE5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 pb-8 text-center md:text-left">

@@ -258,12 +258,9 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
 
   return (
     <div className="relative w-full h-full overflow-hidden select-none">
-      {/* Map Container */}
       <div ref={mapContainerRef} className="w-full h-full" />
 
-      {/* FLOATING GIS TOOLBAR: LAYER SWITCHER & RECENTER (TOP-LEFT POSITION) */}
       <div className="absolute top-3 left-14 z-[999] flex flex-wrap items-center gap-2">
-        {/* Layer Switcher Pill */}
         <div className="flex items-center p-1 rounded-full bg-white/95 backdrop-blur-md border border-[#E7ECE5] shadow-md text-xs">
           {(['satellite', 'streets', 'topo'] as BaseLayerType[]).map((layerKey) => {
             const isActive = baseLayer === layerKey;
@@ -287,7 +284,6 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
           })}
         </div>
 
-        {/* Toggle Conservation Buffer Zone (350m) */}
         <button
           type="button"
           onClick={() => setShowBufferZone(!showBufferZone)}
@@ -303,7 +299,6 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
           <span>{showBufferZone ? 'Aktif' : 'Mati'}</span>
         </button>
 
-        {/* Recenter / Focus Bengkulu */}
         <button
           type="button"
           onClick={handleRecenter}
@@ -315,7 +310,6 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
         </button>
       </div>
 
-      {/* FLOATING REAL-TIME COORDINATE & ZOOM BADGE (BOTTOM-LEFT BESIDE SCALE BAR) */}
       <div className="absolute bottom-2 left-28 z-[999] hidden sm:flex items-center gap-2 bg-white/90 backdrop-blur-md border border-[#E7ECE5] px-3 py-1 rounded-full text-[11px] font-mono text-[#4A5449] shadow-sm">
         <Crosshair className="w-3 h-3 text-[#52B040]" />
         {cursorCoords ? (

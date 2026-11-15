@@ -85,20 +85,17 @@ export default function LaporPage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Form States (Default KOSONG / Empty State yang Bersih)
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedMime, setSelectedMime] = useState<string>('image/jpeg');
   const [locationName, setLocationName] = useState<string>('');
   const [customTitle, setCustomTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
 
-  // GPS Coordinates & Status
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
   const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
   const [isLocating, setIsLocating] = useState(false);
   const [locationStatus, setLocationStatus] = useState<string>('');
 
-  // AI Analysis States
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState(1);
   const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult | null>(null);
@@ -107,7 +104,7 @@ export default function LaporPage() {
   const [savedReportId, setSavedReportId] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(false);
 
-  // Ambil Lokasi GPS Aktual dari Perangkat / Ponsel Pengguna
+  // Akses sensor geolokasi GPS aktual dari browser perangkat pengguna
   const handleGetActualLocation = () => {
     if (typeof window === 'undefined' || !navigator.geolocation) {
       setLocationStatus('Peramban Anda tidak mendukung sensor geolokasi GPS.');
@@ -140,7 +137,6 @@ export default function LaporPage() {
     );
   };
 
-  // Pilih Lokasi Preset Bengkulu
   const handleSelectPresetLocation = (loc: typeof BENGKULU_PRESET_LOCATIONS[0]) => {
     setLocationName(loc.name);
     setCoordinates({ lat: loc.lat, lng: loc.lng });
@@ -148,7 +144,6 @@ export default function LaporPage() {
     setLocationStatus(`Koordinat disetel ke ${loc.name}`);
   };
 
-  // Quick Sample Selector (Hanya jika pengguna memilih mencoba spesimen)
   const handleSelectSample = (sample: typeof FIELD_SPECIMEN_SAMPLES[0]) => {
     setSelectedImage(sample.imageUrl);
     setSelectedMime('image/jpeg');
@@ -158,7 +153,6 @@ export default function LaporPage() {
     setAnalysisResult(null);
     setSavedSuccess(false);
 
-    // Pasangkan koordinat preset
     const match = BENGKULU_PRESET_LOCATIONS.find((loc) => loc.name === sample.location);
     if (match) {
       setCoordinates({ lat: match.lat, lng: match.lng });
@@ -167,7 +161,6 @@ export default function LaporPage() {
     }
   };
 
-  // Reset / Clear Image
   const handleClearImage = () => {
     setSelectedImage(null);
     setAnalysisResult(null);
@@ -177,7 +170,6 @@ export default function LaporPage() {
     }
   };
 
-  // Handle Custom File Upload from Camera or Device
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -289,7 +281,6 @@ export default function LaporPage() {
     <div className="py-8 sm:py-12 bg-[#F7F9F6] min-h-[calc(100vh-4rem)] text-[#202820]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         
-        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#E7ECE5]">
           <div className="space-y-2">
             <h1 className="text-2xl sm:text-4xl font-bold text-[#202820] tracking-tight">
@@ -300,7 +291,6 @@ export default function LaporPage() {
             </p>
           </div>
 
-          {/* Diagnostic System Info with Scopey Avatar */}
           <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white border border-[#E7ECE5] max-w-sm shrink-0 shadow-xs">
             <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#E7ECE5] shrink-0 bg-[#EAF5E6]">
               <Image 
@@ -318,7 +308,6 @@ export default function LaporPage() {
           </div>
         </div>
 
-        {/* PANDUAN OBSERVASI FOTOGRAFI LAPANGAN */}
         <div className="rounded-3xl bg-white border border-[#E7ECE5] p-5 sm:p-6 shadow-xs space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
@@ -389,10 +378,7 @@ export default function LaporPage() {
           )}
         </div>
 
-        {/* WORKSPACE GRID: INPUT & PREVIEW vs AI DIAGNOSIS */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* Left Column: Image Uploader & Metadata (TANPA DROPDOWN MANUAL) */}
           <div className="lg:col-span-6 space-y-5">
             <div className="p-6 sm:p-7 rounded-3xl bg-white border border-[#E7ECE5] shadow-xs space-y-5">
               
@@ -413,7 +399,6 @@ export default function LaporPage() {
                 )}
               </div>
 
-              {/* Photo Viewport: Empty State atau Pratinjau Foto */}
               <div className="relative aspect-4/3 rounded-2xl overflow-hidden bg-white border-2 border-dashed border-[#D5DDD3] hover:border-[#52B040] transition-colors group shadow-xs">
                 {selectedImage ? (
                   <>
@@ -425,7 +410,6 @@ export default function LaporPage() {
                       sizes="(max-width: 1024px) 100vw, 600px"
                     />
 
-                    {/* Tombol Hapus Cepat di Pojok Gambar */}
                     <button
                       type="button"
                       onClick={handleClearImage}
@@ -435,7 +419,6 @@ export default function LaporPage() {
                       <X className="w-4 h-4" />
                     </button>
                     
-                    {/* Laser Beam Animation during AI Scanning */}
                     {isAnalyzing && (
                       <>
                         <div className="laser-beam pointer-events-none"></div>
@@ -458,7 +441,6 @@ export default function LaporPage() {
                     )}
                   </>
                 ) : (
-                  /* EMPTY STATE BERSIH (TANPA GAMBAR LAUT BAWAAN) */
                   <div 
                     onClick={() => fileInputRef.current?.click()}
                     className="h-full flex flex-col items-center justify-center p-6 text-center text-[#7A8278] cursor-pointer hover:bg-[#F7F9F6] transition-colors space-y-3"
@@ -490,7 +472,6 @@ export default function LaporPage() {
                 />
               </div>
 
-              {/* Form Metadata: Lokasi & Geotagging GPS */}
               <div className="space-y-3.5 pt-1">
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
@@ -499,7 +480,6 @@ export default function LaporPage() {
                       <span>Nama Lokasi / Sektor Bengkulu</span>
                     </label>
                     
-                    {/* Tombol Deteksi GPS Aktual */}
                     <button
                       type="button"
                       onClick={handleGetActualLocation}
@@ -557,7 +537,6 @@ export default function LaporPage() {
                     </div>
                   ) : null}
 
-                  {/* Preset Cepat Kawasan Konservasi Bengkulu */}
                   <div className="space-y-1.5 pt-1">
                     <span className="text-[11px] text-[#7A8278] block">
                       Atau pilih lokasi prioritas konservasi pesisir Bengkulu:
@@ -589,7 +568,6 @@ export default function LaporPage() {
                 </div>
               </div>
 
-              {/* Tombol Eksekusi Pindai Diagnosis */}
               <button
                 type="button"
                 onClick={handleRunAnalysis}
@@ -617,12 +595,10 @@ export default function LaporPage() {
             </div>
           </div>
 
-          {/* Right Column: AI Output Diagnostic Card */}
           <div className="lg:col-span-6 space-y-5">
             {analysisResult ? (
               <div className="p-6 sm:p-7 rounded-3xl bg-white border border-[#E7ECE5] shadow-sm space-y-6 animate-in fade-in-50 duration-500">
                 
-                {/* Result Status: Valid or Non-Environment Rejection */}
                 {!analysisResult.valid ? (
                   <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 space-y-2">
                     <div className="flex items-center gap-2 text-amber-900 font-bold text-xs uppercase">
@@ -635,10 +611,8 @@ export default function LaporPage() {
                   </div>
                 ) : (
                   <>
-                    {/* Header Score & Detected Ecosystem Badge */}
                     <div className="space-y-3 pb-4 border-b border-[#EEF1EC]">
                       
-                      {/* Badge Ekosistem yang Dideteksi Otomatis oleh AI */}
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-[#EAF5E9] text-[#176B35] border border-[#C3E6CB]">
                           <Leaf className="w-3.5 h-3.5 text-[#329F45]" />
@@ -683,7 +657,6 @@ export default function LaporPage() {
                         </div>
                       </div>
 
-                      {/* Rubrik Kriteria Penilaian Objektif */}
                       {analysisResult.kriteria_penilaian && (
                         <div className="p-3 rounded-xl bg-[#F7F9F6] border border-[#E7ECE5] text-xs space-y-1">
                           <span className="font-semibold text-[#202820] text-[11px] block">Dasar Evaluasi Visual Lapangan:</span>
@@ -695,7 +668,6 @@ export default function LaporPage() {
 
                     </div>
 
-                    {/* Detected Visual Indicators */}
                     <div className="space-y-2">
                       <span className="text-xs font-bold text-[#202820] uppercase tracking-wider flex items-center gap-1.5">
                         <Layers className="w-3.5 h-3.5 text-[#52B040]" />
@@ -711,7 +683,6 @@ export default function LaporPage() {
                       </ul>
                     </div>
 
-                    {/* Recommended Botanical Species (SESUAI EKOSISTEM ASLI) */}
                     <div className="p-4 rounded-2xl bg-[#EAF5E6] border border-[#d2ebd0] space-y-1">
                       <div className="flex items-center gap-1.5 text-xs font-semibold text-[#348D32] uppercase tracking-wider">
                         <Leaf className="w-3.5 h-3.5 text-[#52B040]" />
@@ -722,7 +693,6 @@ export default function LaporPage() {
                       </div>
                     </div>
 
-                    {/* Conservation Actions */}
                     <div className="space-y-2">
                       <span className="text-xs font-bold text-[#202820] uppercase tracking-wider flex items-center gap-1.5">
                         <Trees className="w-3.5 h-3.5 text-[#52B040]" />
@@ -740,7 +710,6 @@ export default function LaporPage() {
                       </div>
                     </div>
 
-                    {/* Ecological Risk & Blue Carbon */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-[#EEF1EC]">
                       <div className="p-3.5 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] text-xs">
                         <span className="font-semibold text-[#202820] text-[10px] uppercase tracking-wider block mb-1">Potensi Dampak Ekologis:</span>
@@ -754,7 +723,6 @@ export default function LaporPage() {
                       </div>
                     </div>
 
-                    {/* Scientific & Operational Disclaimer */}
                     <div className="p-3 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] text-[11px] text-[#4A5449] flex items-start gap-2.5">
                       <Info className="w-4 h-4 text-[#52B040] shrink-0 mt-0.5" />
                       <p className="leading-relaxed">
@@ -762,7 +730,6 @@ export default function LaporPage() {
                       </p>
                     </div>
 
-                    {/* Save to ScopeMap & Actions Button */}
                     <div className="pt-2">
                       {savedSuccess ? (
                         <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-3">
@@ -834,7 +801,6 @@ export default function LaporPage() {
 
         </div>
 
-        {/* QUICK SPECIMEN TESTING TRAY (DENGAN PRATINJAU VISUAL THUMBNAIL) */}
         <div className="rounded-3xl border border-[#E7ECE5] bg-white p-6 space-y-4 shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="space-y-0.5">

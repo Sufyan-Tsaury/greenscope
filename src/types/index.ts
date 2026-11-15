@@ -6,6 +6,13 @@ export type EcosystemType =
   | 'muara_sungai' 
   | 'hutan_tropis';
 
+/**
+ * Tingkat keparahan kerusakan lingkungan berdasarkan rubrik penilaian GreenScope:
+ * - 'rendah' : Skor urgensi 0-39 (indikasi degradasi ringan, pemantauan berkala)
+ * - 'sedang' : Skor urgensi 40-69 (kerusakan parsial teridentifikasi, perlu mitigasi terencana)
+ * - 'tinggi' : Skor urgensi 70-89 (ancaman erosi/penebangan aktif, butuh intervensi segera)
+ * - 'kritis' : Skor urgensi 90-100 (kerusakan struktural masif, prioritas tertinggi tindakan darurat)
+ */
 export type SeverityLevel = 'rendah' | 'sedang' | 'tinggi' | 'kritis';
 
 export type ReportStatus = 'menunggu' | 'terverifikasi' | 'dalam_aksi' | 'pulih' | 'ditolak';
@@ -18,9 +25,9 @@ export interface AIAnalysisResult {
   ekosistem_terdeteksi?: EcosystemType;
   nama_ekosistem?: string;
   judul_rekomendasi?: string;
-  skor_urgensi: number; // 0 - 100
+  skor_urgensi: number; // Skala 0 - 100
   tingkat_keparahan: SeverityLevel;
-  confidence_score?: number; // 0 - 100 % (Computer Vision detection confidence)
+  confidence_score?: number; // Skala 0 - 100% (Computer Vision detection confidence)
   kriteria_penilaian?: string; // Alasan objektif rubrik evaluasi keparahan
   indikator_visual: string[];
   spesies_rekomendasi: string;

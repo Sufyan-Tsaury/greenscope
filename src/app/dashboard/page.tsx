@@ -134,12 +134,10 @@ export default function DashboardPage() {
     };
   }, []);
   
-  // Filter States
   const [sectorFilter, setSectorFilter] = useState<'all' | 'pesisir' | 'hutan'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | ReportStatus>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Modal & Toast States
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'info' | 'error' } | null>(null);
 
@@ -208,7 +206,6 @@ export default function DashboardPage() {
     showToast('Seluruh data uji berhasil dibersihkan.', 'success');
   };
 
-  // Counts for Dynamic Filter Tabs
   const counts = useMemo(() => {
     const pesisir = reports.filter(
       (r) => r.ecosystem === 'pesisir_pantai' || r.ecosystem === 'mangrove' || r.ecosystem === 'muara_sungai'
@@ -222,7 +219,6 @@ export default function DashboardPage() {
     return { total: reports.length, pesisir, hutan, menunggu, dalamAksi, terverifikasi, ditolak };
   }, [reports]);
 
-  // Dynamic Telemetry Metrics
   const totalCarbonKg = useMemo(() => {
     return reports.reduce((acc, r) => acc + (r.ai_analysis?.estimasi_serapan_karbon_tahunan_kg || 0), 0);
   }, [reports]);
@@ -235,7 +231,7 @@ export default function DashboardPage() {
     return campaigns.reduce((acc, c) => acc + (c.volunteers_count || 0), 0);
   }, [campaigns]);
 
-  // Priority Reports (Top 2 most critical)
+  // Prioritas intervensi: 2 laporan paling mendesak berdasarkan bobot keparahan dan skor urgensi
   const priorityReports = useMemo(() => {
     const severityWeight: Record<SeverityLevel, number> = {
       kritis: 4,
@@ -252,10 +248,8 @@ export default function DashboardPage() {
       .slice(0, 2);
   }, [reports]);
 
-  // Filtered and Searched Reports
   const filteredReports = useMemo(() => {
     return reports.filter((rep) => {
-      // Sector filter
       if (sectorFilter === 'pesisir') {
         const isPesisir = rep.ecosystem === 'pesisir_pantai' || rep.ecosystem === 'mangrove' || rep.ecosystem === 'muara_sungai';
         if (!isPesisir) return false;
@@ -263,12 +257,10 @@ export default function DashboardPage() {
         if (rep.ecosystem !== 'hutan_tropis') return false;
       }
 
-      // Status filter
       if (statusFilter !== 'all' && rep.status !== statusFilter) {
         return false;
       }
 
-      // Search query
       if (searchQuery.trim() !== '') {
         const q = searchQuery.toLowerCase();
         const matchTitle = rep.title.toLowerCase().includes(q);
@@ -362,7 +354,6 @@ export default function DashboardPage() {
   return (
     <div className="py-8 sm:py-12 bg-[#F5F7F4] min-h-[calc(100vh-4rem)] text-[#17251B] font-sans">
       
-      {/* Toast Notification */}
       <AnimatePresence>
         {toastMessage && (
           <motion.div
@@ -388,20 +379,16 @@ export default function DashboardPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
         
-        {/* =========================================================================
-            ZONA 1: DASHBOARD INTRODUCTION & OPERATIONAL BAR (SHEELD + TWITHR BANNER)
-            ========================================================================= */}
+        {/* --- ZONA 1: DASHBOARD INTRODUCTION & OPERATIONAL BAR --- */}
         <div className="space-y-4">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 pb-6 border-b border-[#E3EAE3]">
             
-            {/* Left: Welcoming Editorial Header */}
             <div className="space-y-1.5 text-left">
               <div className="flex flex-wrap items-center gap-2.5">
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#17251B] tracking-tight">
                   Pusat Kendali Restorasi Lapangan
                 </h1>
                 
-                {/* Multi-Device Realtime Pulse Badge */}
                 <div 
                   className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EAF5E6] border border-[#d2ebd0] text-[11px] font-semibold text-[#176B35]"
                   title="Sinkronisasi WebSocket Supabase aktif di seluruh perangkat"
@@ -415,7 +402,6 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            {/* Right: Operational Controls (Auth State & Print) */}
             <div className="flex flex-wrap items-center gap-2.5 self-start lg:self-center">
               {coordinator?.isAuthenticated ? (
                 <div className="flex items-center gap-2 p-1 rounded-full bg-white border border-[#E3EAE3] shadow-xs">
@@ -459,7 +445,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Guest Mode Informational Alert Banner (Subtle & Non-Intrusive) */}
           {!coordinator?.isAuthenticated && (
             <div className="p-4 rounded-2xl bg-white border border-[#E3EAE3] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left">
               <div className="flex items-start gap-3">
@@ -486,13 +471,10 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* =========================================================================
-            ZONA 2: TELEMETRI HORIZONTAL TUNGGAL (SHEELD FLAT STATS STYLE)
-            ========================================================================= */}
+        {/* --- ZONA 2: TELEMETRI HORIZONTAL TUNGGAL --- */}
         <div className="bg-white rounded-2xl border border-[#E3EAE3] shadow-xs overflow-hidden">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#E3EAE3]">
             
-            {/* Metric 1 */}
             <div className="p-5 sm:p-6 text-left space-y-1">
               <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#78847B] uppercase tracking-wider">
                 <Leaf className="w-3.5 h-3.5 text-[#329F45]" />
@@ -506,7 +488,6 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Metric 2 */}
             <div className="p-5 sm:p-6 text-left space-y-1">
               <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#78847B] uppercase tracking-wider">
                 <AlertTriangle className="w-3.5 h-3.5 text-[#DC3545]" />
@@ -520,7 +501,6 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Metric 3 */}
             <div className="p-5 sm:p-6 text-left space-y-1">
               <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#78847B] uppercase tracking-wider">
                 <FileText className="w-3.5 h-3.5 text-[#329F45]" />
@@ -534,7 +514,6 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Metric 4 */}
             <div className="p-5 sm:p-6 text-left space-y-1">
               <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#78847B] uppercase tracking-wider">
                 <Users className="w-3.5 h-3.5 text-[#329F45]" />
@@ -551,12 +530,9 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* =========================================================================
-            ZONA 3: PUSAT PEMANTAUAN GEOSPASIAL & PRIORITAS (TWITHR SPLIT VIEW 65% : 35%)
-            ========================================================================= */}
+        {/* --- ZONA 3: PUSAT PEMANTAUAN GEOSPASIAL & PRIORITAS --- */}
         <div className="space-y-4">
           
-          {/* Section Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-2 border-b border-[#E3EAE3] gap-2 text-left">
             <div>
               <h2 className="text-sm font-bold text-[#17251B] uppercase tracking-wider flex items-center gap-2">
@@ -577,13 +553,10 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          {/* Asymmetric Split Layout (65% Map : 35% Priority Hotspots) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             
-            {/* Main Content (65% on Desktop - 8 of 12 cols): Interactive WebGIS Map Canvas */}
             <div className="lg:col-span-8 rounded-2xl border border-[#E3EAE3] bg-white overflow-hidden shadow-xs relative flex flex-col min-h-[400px] sm:min-h-[460px]">
               
-              {/* Map Canvas - 100% clean & unblocked */}
               <div className="w-full flex-1 relative min-h-[380px] sm:min-h-[420px]">
                 <MapInner
                   reports={reports}
@@ -592,7 +565,6 @@ export default function DashboardPage() {
                 />
               </div>
 
-              {/* Discrete Map Footer Bar (Clean & External to Map Canvas) */}
               <div className="py-2.5 px-4 bg-[#F5F7F4] border-t border-[#E3EAE3] flex items-center justify-between text-xs text-[#78847B]">
                 <div className="flex items-center gap-2 truncate">
                   <span className="w-2 h-2 rounded-full bg-[#329F45] shrink-0"></span>
@@ -614,7 +586,6 @@ export default function DashboardPage() {
 
             </div>
 
-            {/* Secondary Panel (35% on Desktop - 4 of 12 cols): Priority Hotspot Cards */}
             <div className="lg:col-span-4 rounded-2xl border border-[#E3EAE3] bg-white p-5 sm:p-6 shadow-xs flex flex-col justify-between text-left space-y-4">
               
               <div className="space-y-3">
@@ -674,7 +645,6 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* Bottom Quick Action Link */}
               <div className="pt-2 border-t border-[#E3EAE3]">
                 <Link
                   href="/aksi"
@@ -691,12 +661,9 @@ export default function DashboardPage() {
 
         </div>
 
-        {/* =========================================================================
-            ZONA 4: TABEL ANTREAN VERIFIKASI LAPANGAN (SHEELD CALM DATA TABLE)
-            ========================================================================= */}
+        {/* --- ZONA 4: TABEL ANTREAN VERIFIKASI LAPANGAN --- */}
         <div className="bg-white rounded-2xl border border-[#E3EAE3] shadow-xs overflow-hidden text-left space-y-0">
           
-          {/* Header & Filter Controls Bar */}
           <div className="p-5 sm:p-6 border-b border-[#E3EAE3] space-y-4">
             
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -710,7 +677,6 @@ export default function DashboardPage() {
                 </p>
               </div>
 
-              {/* Status Indicator Legend */}
               <div className="flex items-center gap-4 text-xs text-[#78847B]">
                 <span className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-[#D97706]"></span>
@@ -723,10 +689,8 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Filter & Search Bar (Clean Segmented Layout) */}
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-3 border-t border-[#E3EAE3]">
               
-              {/* Sector Tabs (Clean Segmented Buttons) */}
               <div className="flex flex-wrap items-center gap-1.5">
                 <button
                   type="button"
@@ -816,7 +780,6 @@ export default function DashboardPage() {
 
           </div>
 
-          {/* Desktop Table View (Sheeld Calm Layout) */}
           <div className="hidden lg:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-[#F5F7F4] border-b border-[#E3EAE3] text-[#78847B] font-semibold uppercase tracking-wider text-[11px]">
@@ -837,7 +800,6 @@ export default function DashboardPage() {
                       key={rep.id} 
                       className="hover:bg-[#F9FAF8] transition-colors duration-150 group"
                     >
-                      {/* 1. Thumbnail */}
                       <td className="py-3.5 px-4 text-center">
                         <button
                           type="button"
@@ -855,7 +817,6 @@ export default function DashboardPage() {
                         </button>
                       </td>
 
-                      {/* 2. Temuan & Lokasi */}
                       <td className="py-3.5 px-4 max-w-sm">
                         <div 
                           onClick={() => setSelectedReport(rep)}
@@ -873,12 +834,10 @@ export default function DashboardPage() {
                         </div>
                       </td>
 
-                      {/* 3. Tingkat Risiko (Clean dot + text indicator - Anti-AI-slop) */}
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         {renderRiskBadge(rep.severity)}
                       </td>
 
-                      {/* 4. Skor Risiko vs Keyakinan AI */}
                       <td className="py-3.5 px-4 whitespace-nowrap font-mono">
                         <div className="text-xs font-bold text-[#17251B]">
                           {rep.urgency_score}<span className="text-[10px] text-[#78847B] font-normal">/100</span>
@@ -888,7 +847,6 @@ export default function DashboardPage() {
                         </div>
                       </td>
 
-                      {/* 5. Rekomendasi Botani */}
                       <td className="py-3.5 px-4 max-w-xs text-[11px]">
                         <div className="flex items-center gap-1 text-[#176B35] font-medium truncate" title={rep.ai_analysis?.spesies_rekomendasi}>
                           <Leaf className="w-3 h-3 text-[#329F45] shrink-0" />
@@ -899,12 +857,10 @@ export default function DashboardPage() {
                         </div>
                       </td>
 
-                      {/* 6. Status Verifikasi */}
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         {renderStatusBadge(rep.status)}
                       </td>
 
-                      {/* 7. Contextual Actions */}
                       <td className="py-3.5 px-4 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1.5">
                           {rep.status === 'menunggu' ? (
@@ -1001,7 +957,6 @@ export default function DashboardPage() {
                     </div>
                   </div>
 
-                  {/* Supporting Botanical & AI Info */}
                   <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] pt-1">
                     <span className="text-[#176B35] font-medium flex items-center gap-1 truncate max-w-[200px]">
                       <Leaf className="w-3 h-3 text-[#329F45] shrink-0" />
@@ -1012,7 +967,6 @@ export default function DashboardPage() {
                     </span>
                   </div>
 
-                  {/* Status & Action Row */}
                   <div className="flex items-center justify-between gap-2 pt-2 border-t border-[#E3EAE3]">
                     <div>
                       {renderStatusBadge(rep.status)}
@@ -1047,7 +1001,6 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* Table Footer Summary */}
           <div className="p-4 bg-[#F5F7F4] border-t border-[#E3EAE3] flex flex-col sm:flex-row items-center justify-between text-xs text-[#78847B] gap-2">
             <span>
               Menampilkan <strong className="text-[#17251B]">{filteredReports.length}</strong> dari {reports.length} total laporan lapangan
@@ -1066,9 +1019,7 @@ export default function DashboardPage() {
 
       </div>
 
-      {/* =========================================================================
-          VERIFICATION & DETAIL DRAWER MODAL (CLEAN SAAS DOSSIER)
-          ========================================================================= */}
+      {/* Modal Verifikasi & Detail Dossier Temuan */}
       <AnimatePresence>
         {selectedReport && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
@@ -1080,7 +1031,6 @@ export default function DashboardPage() {
               className="bg-white rounded-2xl border border-[#E3EAE3] shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden text-left"
             >
               
-              {/* Modal Header */}
               <div className="p-4 sm:p-5 border-b border-[#E3EAE3] flex items-center justify-between bg-[#F5F7F4]">
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-2">
@@ -1102,10 +1052,8 @@ export default function DashboardPage() {
                 </button>
               </div>
 
-              {/* Modal Body */}
               <div className="p-5 overflow-y-auto space-y-4 text-xs">
                 
-                {/* Photo & GPS Banner */}
                 <div className="relative aspect-16/9 rounded-xl overflow-hidden border border-[#E3EAE3] bg-stone-900">
                   <Image
                     src={selectedReport.image_url}
@@ -1123,7 +1071,6 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                {/* Finding Details */}
                 <div className="space-y-1 pt-1">
                   <h4 className="text-base font-bold text-[#17251B]">
                     {selectedReport.title}
@@ -1133,7 +1080,6 @@ export default function DashboardPage() {
                   </p>
                 </div>
 
-                {/* Metadata Row (Clean 4-column divider layout - NO nested gray box) */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-3 border-y border-[#E3EAE3]">
                   <div>
                     <span className="text-[10px] text-[#78847B] block uppercase tracking-wider font-semibold">Lokasi</span>
@@ -1153,7 +1099,6 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                {/* Technical Diagnostics */}
                 <div className="space-y-1.5 pt-1">
                   <div className="font-bold text-xs text-[#17251B] flex items-center gap-1.5">
                     <Leaf className="w-3.5 h-3.5 text-[#329F45]" />
@@ -1167,7 +1112,6 @@ export default function DashboardPage() {
                   </p>
                 </div>
 
-                {/* Rubrik Evaluasi Visual Citra */}
                 {selectedReport.ai_analysis?.kriteria_penilaian && (
                   <div className="p-3.5 rounded-xl bg-[#F5F7F4] border border-[#E3EAE3] text-xs space-y-1">
                     <span className="font-semibold text-[#17251B] text-[11px] block">Dasar Penilaian Citra AI:</span>
@@ -1177,7 +1121,6 @@ export default function DashboardPage() {
                   </div>
                 )}
 
-                {/* AI Transparency Notice */}
                 <div className="p-3 rounded-xl bg-[#F5F7F4] border border-[#E3EAE3] text-[11px] text-[#4A5449] flex items-start gap-2">
                   <Info className="w-3.5 h-3.5 text-[#329F45] shrink-0 mt-0.5" />
                   <p className="leading-relaxed">
@@ -1187,7 +1130,7 @@ export default function DashboardPage() {
 
               </div>
 
-              {/* Modal Footer Action Bar (RBAC Coordinator Protection) */}
+              {/* Kontrol aksi dan verifikasi (RBAC Koordinator) */}
               <div className="p-4 border-t border-[#E3EAE3] bg-[#F5F7F4] flex flex-wrap items-center justify-between gap-2.5">
                 {coordinator?.isAuthenticated ? (
                   <>

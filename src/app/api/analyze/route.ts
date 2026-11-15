@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { analyzeEnvironmentalImage } from '@/lib/gemini';
 import { EcosystemType } from '@/types';
 
-export const maxDuration = 30; // 30 detik untuk analisis AI multimodal
+// Batas waktu eksekusi Serverless Function Vercel (30 detik) untuk inferensi multimodal Gemini
+export const maxDuration = 30;
 
 export async function POST(req: NextRequest) {
   try {
