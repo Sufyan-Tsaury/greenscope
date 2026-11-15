@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -30,7 +31,10 @@ import {
   Lock,
   LogIn,
   LogOut,
-  Radio
+  Radio,
+  Compass,
+  Layers,
+  Sparkles
 } from 'lucide-react';
 import { INITIAL_REPORTS, INITIAL_CAMPAIGNS } from '@/lib/mock-data';
 import { 
@@ -47,10 +51,22 @@ import {
 } from '@/lib/supabase';
 import { Report, Campaign, ReportStatus, SeverityLevel } from '@/types';
 
+// Dynamic import Leaflet Map with SSR disabled
+const MapInner = dynamic(() => import('@/components/map-inner'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full min-h-[360px] flex flex-col items-center justify-center bg-[#F5F7F4] text-[#78847B] space-y-3 font-sans">
+      <div className="w-8 h-8 border-3 border-[#329F45] border-t-transparent rounded-full animate-spin"></div>
+      <span className="text-xs font-medium">Memuat Peta Geospasial Bengkulu...</span>
+    </div>
+  ),
+});
+
 export default function DashboardPage() {
   const [coordinator, setCoordinator] = useState<CoordinatorSession | null>(null);
   const [reports, setReports] = useState<Report[]>(INITIAL_REPORTS);
   const [campaigns, setCampaigns] = useState<Campaign[]>(INITIAL_CAMPAIGNS);
+  const [mapSelectedReport, setMapSelectedReport] = useState<Report | null>(INITIAL_REPORTS[0]);
 
   useEffect(() => {
     // 1. Berlangganan status otentikasi koordinator (RBAC)
@@ -66,6 +82,9 @@ export default function DashboardPage() {
       ]);
       setReports(reportData);
       setCampaigns(campData);
+      if (reportData.length > 0) {
+        setMapSelectedReport((prev) => (prev ? (reportData.find((d) => d.id === prev.id) || reportData[0]) : reportData[0]));
+      }
     }
     loadData();
 
@@ -88,10 +107,14 @@ export default function DashboardPage() {
           setSelectedReport((prev) =>
             prev && prev.id === targetId ? { ...prev, ...(event.report || {}), status: event.status || event.report?.status || prev.status } : prev
           );
+          setMapSelectedReport((prev) =>
+            prev && prev.id === targetId ? { ...prev, ...(event.report || {}), status: event.status || event.report?.status || prev.status } : prev
+          );
         } else if (event.type === 'DELETE' && event.id) {
           const targetId = event.id;
           setReports((prev) => prev.filter((r) => r.id !== targetId));
           setSelectedReport((prev) => (prev?.id === targetId ? null : prev));
+          setMapSelectedReport((prev) => (prev?.id === targetId ? null : prev));
         }
       });
     } catch (e) {
@@ -138,11 +161,13 @@ export default function DashboardPage() {
       prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r))
     );
 
-    // Simpan ke local storage, broadcast realtime WebSocket, dan update PostgreSQL Supabase
     await updateReportStatus(id, newStatus);
 
     if (selectedReport && selectedReport.id === id) {
       setSelectedReport((prev) => (prev ? { ...prev, status: newStatus } : null));
+    }
+    if (mapSelectedReport && mapSelectedReport.id === id) {
+      setMapSelectedReport((prev) => (prev ? { ...prev, status: newStatus } : null));
     }
 
     if (newStatus === 'terverifikasi') {
@@ -167,6 +192,9 @@ export default function DashboardPage() {
     await deleteReport(id);
     setReports((prev) => prev.filter((r) => r.id !== id));
     setSelectedReport(null);
+    if (mapSelectedReport?.id === id) {
+      setMapSelectedReport(reports.find((r) => r.id !== id) || null);
+    }
     showToast('Laporan berhasil dihapus dan disinkronkan ke semua perangkat.', 'info');
   };
 
@@ -176,6 +204,7 @@ export default function DashboardPage() {
     resetLocalReports();
     setReports(INITIAL_REPORTS);
     setSelectedReport(null);
+    setMapSelectedReport(INITIAL_REPORTS[0] || null);
     showToast('Seluruh data uji berhasil dibersihkan.', 'success');
   };
 
@@ -206,6 +235,7 @@ export default function DashboardPage() {
     return campaigns.reduce((acc, c) => acc + (c.volunteers_count || 0), 0);
   }, [campaigns]);
 
+  // Priority Reports (Top 2 most critical)
   const priorityReports = useMemo(() => {
     const severityWeight: Record<SeverityLevel, number> = {
       kritis: 4,
@@ -214,7 +244,11 @@ export default function DashboardPage() {
       rendah: 1
     };
     return [...reports]
-      .sort((a, b) => (severityWeight[b.severity] || 0) - (severityWeight[a.severity] || 0))
+      .sort((a, b) => {
+        const weightDiff = (severityWeight[b.severity] || 0) - (severityWeight[a.severity] || 0);
+        if (weightDiff !== 0) return weightDiff;
+        return (b.urgency_score || 0) - (a.urgency_score || 0);
+      })
       .slice(0, 2);
   }, [reports]);
 
@@ -248,7 +282,7 @@ export default function DashboardPage() {
     });
   }, [reports, sectorFilter, statusFilter, searchQuery]);
 
-  // Format Helper for Risk Severity (Clean dot + text indicator - NO pastel candy boxes)
+  // Format Helper for Risk Severity (Clean dot + text indicator - Anti-AI-slop)
   const renderRiskBadge = (severity: SeverityLevel) => {
     switch (severity) {
       case 'kritis':
@@ -283,7 +317,7 @@ export default function DashboardPage() {
     }
   };
 
-  // Format Helper for Verification Status Badge (Clean semantic icon + text - NO pastel candy boxes)
+  // Format Helper for Verification Status Badge
   const renderStatusBadge = (status: ReportStatus) => {
     switch (status) {
       case 'menunggu':
@@ -326,9 +360,9 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="py-8 sm:py-10 bg-[#F5F7F4] min-h-[calc(100vh-4rem)] text-[#17251B]">
+    <div className="py-8 sm:py-12 bg-[#F5F7F4] min-h-[calc(100vh-4rem)] text-[#17251B] font-sans">
       
-      {/* Toast Notification (Solid white card with semantic accent) */}
+      {/* Toast Notification */}
       <AnimatePresence>
         {toastMessage && (
           <motion.div
@@ -336,7 +370,7 @@ export default function DashboardPage() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className={`fixed top-20 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-lg shadow-lg border border-[#E3EAE3] bg-white text-xs font-medium border-l-4 ${
+            className={`fixed top-20 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg border border-[#E3EAE3] bg-white text-xs font-medium border-l-4 ${
               toastMessage.type === 'success'
                 ? 'border-l-[#329F45] text-[#17251B]'
                 : toastMessage.type === 'error'
@@ -352,243 +386,328 @@ export default function DashboardPage() {
         )}
       </AnimatePresence>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-7">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
         
-        {/* Top Header & Operational Mode Controls */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[#E3EAE3]">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2.5">
-              <h1 className="text-2xl sm:text-3xl font-bold text-[#17251B] tracking-tight">
-                Pusat Kendali Verifikasi Lapangan
-              </h1>
-              {/* Multi-Device Realtime Live Badge */}
-              <div 
-                className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EAF5E6] border border-[#d2ebd0] text-[10px] font-semibold text-[#348D32]"
-                title="Sinkronisasi WebSocket Supabase aktif di seluruh perangkat"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-[#52B040] animate-pulse"></span>
-                <span>Realtime Aktif</span>
-              </div>
-            </div>
-            <p className="text-[#78847B] text-xs sm:text-sm font-normal max-w-2xl">
-              Platform evaluasi citra Computer Vision, validasi temuan lapangan warga, dan orkestrasi rencana pemulihan ekosistem Bengkulu.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2.5 self-start md:self-center">
-            {/* Real Coordinator Auth State */}
-            {coordinator?.isAuthenticated ? (
-              <div className="flex items-center gap-2 p-1 rounded-lg bg-white border border-[#E3EAE3] shadow-xs">
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#EAF5E6] text-xs font-semibold text-[#348D32]">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span className="truncate max-w-[160px]">{coordinator.name || coordinator.email}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => signOutCoordinator()}
-                  className="p-1.5 text-[#78847B] hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors cursor-pointer"
-                  title="Keluar dari sesi koordinator"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E3EAE3] bg-white text-xs text-[#78847B] shadow-xs">
-                  <Leaf className="w-3.5 h-3.5 text-[#52B040]" />
-                  <span>Mode Tamu / Publik</span>
-                </div>
-                <Link
-                  href="/login?redirect=/dashboard"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] transition-colors shadow-xs"
-                >
-                  <LogIn className="w-3.5 h-3.5" />
-                  <span>Portal Koordinator</span>
-                </Link>
-              </div>
-            )}
-
-            <button
-              type="button"
-              onClick={() => window.print()}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-[#E3EAE3] bg-white hover:bg-[#F5F7F4] text-[#17251B] text-xs font-medium transition-colors cursor-pointer shadow-xs"
-            >
-              <Printer className="w-3.5 h-3.5 text-[#329F45]" />
-              <span className="hidden sm:inline">Cetak Ringkasan</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Guest Mode Informational Alert Banner */}
-        {!coordinator?.isAuthenticated && (
-          <div className="p-4 rounded-2xl bg-white border border-[#E3EAE3] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-full bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
-                <Lock className="w-4 h-4" />
-              </div>
-              <div className="space-y-0.5">
-                <div className="text-xs font-semibold text-[#17251B]">
-                  Peran Pengamat Publik Aktif
-                </div>
-                <p className="text-[11px] text-[#78847B] leading-relaxed">
-                  Anda dapat meninjau telemetri ekosistem dan dossier laporan. Untuk memvalidasi status, menolak, atau menghapus titik koordinat di database cloud, silakan masuk dengan akun koordinator.
-                </p>
-              </div>
-            </div>
-            <Link
-              href="/login?redirect=/dashboard"
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] transition-colors shrink-0 shadow-xs cursor-pointer"
-            >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Masuk Portal Koordinator</span>
-            </Link>
-          </div>
-        )}
-
-        {/* 1. OPERATIONAL TELEMETRY & URGENT HOTSPOTS (CLEAN UNIFIED SAAS ARCHITECTURE) */}
-        <div className="space-y-5">
-          
-          {/* A. Unified 4-Metric Telemetry Strip (Dinamis dari Data Riil) */}
-          <div className="bg-white rounded-xl border border-[#E3EAE3] shadow-xs overflow-hidden">
-            <div className="grid grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#E3EAE3]">
-              
-              {/* Metric 1 */}
-              <div className="p-4 sm:p-5 text-left">
-                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#78847B] uppercase tracking-wider">
-                  <Leaf className="w-3.5 h-3.5 text-[#329F45]" />
-                  <span>Serapan Karbon</span>
-                </div>
-                <div className="text-2xl sm:text-3xl font-bold text-[#17251B] font-mono tracking-tight mt-1">
-                  {totalCarbonKg.toLocaleString('id-ID')} <span className="text-xs font-normal text-[#78847B] font-sans">kg CO₂e/th</span>
-                </div>
-                <div className="text-[11px] text-[#78847B] mt-0.5">
-                  Akumulasi biomassa dari {reports.length} titik observasi
-                </div>
-              </div>
-
-              {/* Metric 2 */}
-              <div className="p-4 sm:p-5 text-left">
-                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#78847B] uppercase tracking-wider">
-                  <AlertTriangle className="w-3.5 h-3.5 text-[#DC3545]" />
-                  <span>Sektor Kritis Aktif</span>
-                </div>
-                <div className="text-2xl sm:text-3xl font-bold text-[#DC3545] font-mono tracking-tight mt-1">
-                  {kritisReportsCount} <span className="text-xs font-normal text-[#78847B] font-sans">lokasi</span>
-                </div>
-                <div className="text-[11px] text-[#78847B] mt-0.5">
-                  Kerusakan parah butuh aksi restorasi
-                </div>
-              </div>
-
-              {/* Metric 3 */}
-              <div className="p-4 sm:p-5 text-left">
-                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#78847B] uppercase tracking-wider">
-                  <FileText className="w-3.5 h-3.5 text-[#329F45]" />
-                  <span>Laporan Temuan</span>
-                </div>
-                <div className="text-2xl sm:text-3xl font-bold text-[#17251B] font-mono tracking-tight mt-1">
-                  {reports.length} <span className="text-xs font-normal text-[#78847B] font-sans">laporan</span>
-                </div>
-                <div className="text-[11px] text-[#78847B] mt-0.5">
-                  {counts.terverifikasi} terverifikasi • {counts.menunggu} menunggu
-                </div>
-              </div>
-
-              {/* Metric 4 */}
-              <div className="p-4 sm:p-5 text-left">
-                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#78847B] uppercase tracking-wider">
-                  <Users className="w-3.5 h-3.5 text-[#329F45]" />
-                  <span>Relawan Siaga</span>
-                </div>
-                <div className="text-2xl sm:text-3xl font-bold text-[#17251B] font-mono tracking-tight mt-1">
-                  {totalVolunteersCount} <span className="text-xs font-normal text-[#78847B] font-sans">Personel</span>
-                </div>
-                <div className="text-[11px] text-[#78847B] mt-0.5">
-                  Tersebar di {campaigns.length} rencana aksi
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          {/* B. Urgent Conservation Hotspots (Dinamis Berdasarkan Tingkat Keparahan Nyata) */}
-          <div className="bg-white rounded-xl border border-[#E3EAE3] shadow-xs p-5 text-left space-y-4">
+        {/* =========================================================================
+            ZONA 1: DASHBOARD INTRODUCTION & OPERATIONAL BAR (SHEELD + TWITHR BANNER)
+            ========================================================================= */}
+        <div className="space-y-4">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 pb-6 border-b border-[#E3EAE3]">
             
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#E3EAE3] gap-2">
-              <div>
-                <h2 className="text-xs font-bold text-[#17251B] uppercase tracking-wider flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-[#DC3545]" />
-                  <span>Titik Pantau Prioritas Konservasi Bengkulu</span>
-                </h2>
-                <p className="text-[11px] text-[#78847B] mt-0.5">
-                  Zona pesisir dan hutan Bengkulu dengan status keparahan tertinggi yang membutuhkan verifikasi atau tindakan lapangan.
-                </p>
+            {/* Left: Welcoming Editorial Header */}
+            <div className="space-y-1.5 text-left">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#17251B] tracking-tight">
+                  Pusat Kendali Restorasi Lapangan
+                </h1>
+                
+                {/* Multi-Device Realtime Pulse Badge */}
+                <div 
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EAF5E6] border border-[#d2ebd0] text-[11px] font-semibold text-[#176B35]"
+                  title="Sinkronisasi WebSocket Supabase aktif di seluruh perangkat"
+                >
+                  <span className="w-2 h-2 rounded-full bg-[#329F45] animate-pulse"></span>
+                  <span>Realtime Aktif</span>
+                </div>
               </div>
+              <p className="text-[#78847B] text-xs sm:text-sm font-normal max-w-2xl leading-relaxed">
+                Pemantauan spasial pesisir Bengkulu secara langsung, evaluasi citra Computer Vision, dan orkestrasi gotong royong penanaman bibit mangrove.
+              </p>
+            </div>
 
-              <Link
-                href="/peta"
-                className="text-xs font-medium text-[#176B35] hover:text-[#329F45] inline-flex items-center gap-1 transition-colors self-start sm:self-auto"
+            {/* Right: Operational Controls (Auth State & Print) */}
+            <div className="flex flex-wrap items-center gap-2.5 self-start lg:self-center">
+              {coordinator?.isAuthenticated ? (
+                <div className="flex items-center gap-2 p-1 rounded-full bg-white border border-[#E3EAE3] shadow-xs">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#EAF5E6] text-xs font-semibold text-[#176B35]">
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#329F45]" />
+                    <span className="truncate max-w-[150px]">{coordinator.name || coordinator.email}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => signOutCoordinator()}
+                    className="p-1.5 text-[#78847B] hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors cursor-pointer"
+                    title="Keluar dari sesi koordinator"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#E3EAE3] bg-white text-xs text-[#78847B] shadow-xs">
+                    <Leaf className="w-3.5 h-3.5 text-[#329F45]" />
+                    <span>Mode Pengamat Publik</span>
+                  </div>
+                  <Link
+                    href="/login?redirect=/dashboard"
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold text-white bg-[#176B35] hover:bg-[#0D381E] transition-colors shadow-xs"
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                    <span>Masuk Koordinator</span>
+                  </Link>
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#E3EAE3] bg-white hover:bg-[#F5F7F4] text-[#17251B] text-xs font-medium transition-colors cursor-pointer shadow-xs"
               >
-                <span>Buka ScopeMap WebGIS</span>
-                <ChevronRight className="w-3.5 h-3.5" />
+                <Printer className="w-3.5 h-3.5 text-[#329F45]" />
+                <span className="hidden sm:inline">Cetak Ringkasan</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Guest Mode Informational Alert Banner (Subtle & Non-Intrusive) */}
+          {!coordinator?.isAuthenticated && (
+            <div className="p-4 rounded-2xl bg-white border border-[#E3EAE3] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
+                  <Lock className="w-4 h-4" />
+                </div>
+                <div className="space-y-0.5">
+                  <div className="text-xs font-semibold text-[#17251B]">
+                    Akses Validasi Terproteksi untuk Koordinator BKSDA &amp; GreenScope
+                  </div>
+                  <p className="text-[11px] text-[#78847B] leading-relaxed">
+                    Pengunjung dapat menginspeksi peta geospasial dan dossier temuan. Untuk menyetujui, menolak, atau menghapus titik koordinat di cloud database, gunakan akun koordinator resmi.
+                  </p>
+                </div>
+              </div>
+              <Link
+                href="/login?redirect=/dashboard"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] transition-colors shrink-0 shadow-xs cursor-pointer"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Uji Coba Akun Koordinator</span>
               </Link>
             </div>
+          )}
+        </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 divide-y md:divide-y-0 md:divide-x divide-[#E3EAE3]">
-              {priorityReports.map((item, idx) => (
-                <div 
-                  key={item.id}
-                  className={`space-y-1.5 pt-3 md:pt-0 ${idx > 0 ? 'md:pl-5' : ''}`}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-sm font-bold text-[#17251B] truncate">
-                      {item.title}
-                    </span>
-                    <span className="shrink-0">
-                      {renderRiskBadge(item.severity)}
-                    </span>
-                  </div>
-                  <div className="text-[11px] text-[#78847B] flex items-center gap-1 font-mono">
-                    <MapPin className="w-3 h-3 text-[#329F45]" />
-                    <span>{item.location_name}</span>
-                  </div>
-                  <p className="text-xs text-[#78847B] leading-relaxed line-clamp-2">
-                    {item.description}
-                  </p>
-                  <div className="flex items-center justify-between pt-1">
-                    <div className="text-xs text-[#176B35] font-medium truncate pr-2">
-                      Solusi Botani: {item.ai_analysis?.spesies_rekomendasi?.split(',')[0]}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedReport(item)}
-                      className="text-xs text-[#329F45] hover:underline font-semibold shrink-0 cursor-pointer"
-                    >
-                      Buka Dossier &rarr;
-                    </button>
-                  </div>
+        {/* =========================================================================
+            ZONA 2: TELEMETRI HORIZONTAL TUNGGAL (SHEELD FLAT STATS STYLE)
+            ========================================================================= */}
+        <div className="bg-white rounded-2xl border border-[#E3EAE3] shadow-xs overflow-hidden">
+          <div className="grid grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#E3EAE3]">
+            
+            {/* Metric 1 */}
+            <div className="p-5 sm:p-6 text-left space-y-1">
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#78847B] uppercase tracking-wider">
+                <Leaf className="w-3.5 h-3.5 text-[#329F45]" />
+                <span>Serapan Karbon Biru</span>
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-[#17251B] font-mono tracking-tight tabular-nums">
+                {totalCarbonKg.toLocaleString('id-ID')} <span className="text-xs font-normal text-[#78847B] font-sans">kg CO₂e/th</span>
+              </div>
+              <div className="text-[11px] text-[#78847B]">
+                Biomassa terakumulasi dari {reports.length} titik pantau
+              </div>
+            </div>
+
+            {/* Metric 2 */}
+            <div className="p-5 sm:p-6 text-left space-y-1">
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#78847B] uppercase tracking-wider">
+                <AlertTriangle className="w-3.5 h-3.5 text-[#DC3545]" />
+                <span>Sektor Kritis Aktif</span>
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-[#DC3545] font-mono tracking-tight tabular-nums">
+                {kritisReportsCount} <span className="text-xs font-normal text-[#78847B] font-sans">Lokasi</span>
+              </div>
+              <div className="text-[11px] text-[#78847B]">
+                Kerusakan parah menuntut aksi rehabilitasi
+              </div>
+            </div>
+
+            {/* Metric 3 */}
+            <div className="p-5 sm:p-6 text-left space-y-1">
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#78847B] uppercase tracking-wider">
+                <FileText className="w-3.5 h-3.5 text-[#329F45]" />
+                <span>Antrean Laporan Temuan</span>
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-[#17251B] font-mono tracking-tight tabular-nums">
+                {reports.length} <span className="text-xs font-normal text-[#78847B] font-sans">Laporan</span>
+              </div>
+              <div className="text-[11px] text-[#78847B]">
+                {counts.terverifikasi} terverifikasi &bull; {counts.menunggu} menunggu
+              </div>
+            </div>
+
+            {/* Metric 4 */}
+            <div className="p-5 sm:p-6 text-left space-y-1">
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#78847B] uppercase tracking-wider">
+                <Users className="w-3.5 h-3.5 text-[#329F45]" />
+                <span>Relawan Siaga</span>
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-[#17251B] font-mono tracking-tight tabular-nums">
+                {totalVolunteersCount} <span className="text-xs font-normal text-[#78847B] font-sans">Personel</span>
+              </div>
+              <div className="text-[11px] text-[#78847B]">
+                Terdaftar di {campaigns.length} kampanye gotong royong
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* =========================================================================
+            ZONA 3: PUSAT PEMANTAUAN GEOSPASIAL & PRIORITAS (TWITHR SPLIT VIEW 65% : 35%)
+            ========================================================================= */}
+        <div className="space-y-4">
+          
+          {/* Section Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-2 border-b border-[#E3EAE3] gap-2 text-left">
+            <div>
+              <h2 className="text-sm font-bold text-[#17251B] uppercase tracking-wider flex items-center gap-2">
+                <Compass className="w-4 h-4 text-[#329F45]" />
+                <span>Pusat Pengawasan Geospasial &amp; Sektor Prioritas</span>
+              </h2>
+              <p className="text-xs text-[#78847B] mt-0.5">
+                Pemetaan satelit real-time pesisir Bengkulu bersanding dengan sektor prioritas tindakan paling mendesak.
+              </p>
+            </div>
+            
+            <Link
+              href="/peta"
+              className="text-xs font-semibold text-[#176B35] hover:text-[#329F45] inline-flex items-center gap-1 transition-colors self-start sm:self-auto"
+            >
+              <span>Buka WebGIS Layar Penuh</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* Asymmetric Split Layout (65% Map : 35% Priority Hotspots) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            
+            {/* Main Content (65% on Desktop - 8 of 12 cols): Interactive WebGIS Map Canvas */}
+            <div className="lg:col-span-8 rounded-2xl border border-[#E3EAE3] bg-white overflow-hidden shadow-xs relative flex flex-col min-h-[380px] sm:min-h-[440px]">
+              
+              {/* Map Canvas */}
+              <div className="w-full flex-1 relative min-h-[380px] sm:min-h-[440px]">
+                <MapInner
+                  reports={reports}
+                  selectedReport={mapSelectedReport}
+                  onSelectReport={(r) => setMapSelectedReport(r)}
+                />
+              </div>
+
+              {/* Floating Spatial Quick Status Ribbon */}
+              <div className="absolute top-3 left-3 z-1000 bg-white/95 backdrop-blur-md border border-[#E3EAE3] rounded-full px-3.5 py-1.5 text-xs text-[#17251B] shadow-sm flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#329F45]"></span>
+                <span className="font-medium text-[11px]">Bengkulu Coastline WebGIS</span>
+              </div>
+
+              <div className="absolute bottom-3 left-3 z-1000 bg-white/95 backdrop-blur-md border border-[#E3EAE3] rounded-full px-3.5 py-1.5 text-xs text-[#17251B] shadow-sm hidden sm:flex items-center gap-3">
+                <span className="text-[11px] text-[#78847B]">
+                  Titik Terpilih: <strong className="text-[#17251B]">{mapSelectedReport?.title.split('&')[0] || 'Semua Sektor'}</strong>
+                </span>
+                {mapSelectedReport && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedReport(mapSelectedReport)}
+                    className="text-[11px] text-[#329F45] hover:underline font-semibold cursor-pointer"
+                  >
+                    Buka Dossier &rarr;
+                  </button>
+                )}
+              </div>
+
+            </div>
+
+            {/* Secondary Panel (35% on Desktop - 4 of 12 cols): Priority Hotspot Cards */}
+            <div className="lg:col-span-4 rounded-2xl border border-[#E3EAE3] bg-white p-5 sm:p-6 shadow-xs flex flex-col justify-between text-left space-y-4">
+              
+              <div className="space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-[#E3EAE3]">
+                  <span className="text-xs font-bold text-[#17251B] uppercase tracking-wider flex items-center gap-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5 text-[#DC3545]" />
+                    <span>Prioritas Mendesak</span>
+                  </span>
+                  <span className="text-[10px] font-semibold text-[#DC3545] bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full">
+                    2 Hotspot
+                  </span>
                 </div>
-              ))}
+
+                <div className="space-y-3">
+                  {priorityReports.map((item) => (
+                    <div 
+                      key={item.id}
+                      className="p-3.5 rounded-xl border border-[#E3EAE3] bg-[#FAFCF9] hover:bg-white hover:border-[#329F45] transition-all space-y-2 group cursor-pointer"
+                      onClick={() => {
+                        setMapSelectedReport(item);
+                        setSelectedReport(item);
+                      }}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-[#E3EAE3] shrink-0">
+                            <Image src={item.image_url} alt={item.title} fill className="object-cover group-hover:scale-105 transition-transform" sizes="40px" />
+                          </div>
+                          <div className="truncate">
+                            <h4 className="text-xs font-bold text-[#17251B] truncate group-hover:text-[#329F45] transition-colors">
+                              {item.title}
+                            </h4>
+                            <div className="flex items-center gap-1 text-[10px] text-[#78847B] font-mono truncate">
+                              <MapPin className="w-2.5 h-2.5 text-[#329F45]" />
+                              <span>{item.location_name.split(',')[0]}</span>
+                            </div>
+                          </div>
+                        </div>
+                        {renderRiskBadge(item.severity)}
+                      </div>
+
+                      <p className="text-[11px] text-[#78847B] line-clamp-2 leading-relaxed">
+                        {item.description}
+                      </p>
+
+                      <div className="flex items-center justify-between pt-1 text-[10px] border-t border-[#EEF1EC]">
+                        <span className="text-[#176B35] font-medium truncate max-w-[150px]">
+                          {item.ai_analysis?.spesies_rekomendasi?.split(',')[0]}
+                        </span>
+                        <span className="text-[#329F45] font-semibold inline-flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
+                          <span>Buka Dossier</span>
+                          <ArrowRight className="w-2.5 h-2.5" />
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Bottom Quick Action Link */}
+              <div className="pt-2 border-t border-[#E3EAE3]">
+                <Link
+                  href="/aksi"
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-[#176B35] hover:bg-[#0D381E] shadow-xs transition-colors"
+                >
+                  <Users className="w-3.5 h-3.5" />
+                  <span>Jadwalkan Aksi Restorasi</span>
+                </Link>
+              </div>
+
             </div>
 
           </div>
 
         </div>
 
-        {/* 2. CORE FOCUS: TABEL ANTREAN VERIFIKASI LAPANGAN (CLEAN ENTERPRISE DATA TABLE) */}
-        <div className="bg-white rounded-xl border border-[#E3EAE3] shadow-xs overflow-hidden text-left">
+        {/* =========================================================================
+            ZONA 4: TABEL ANTREAN VERIFIKASI LAPANGAN (SHEELD CALM DATA TABLE)
+            ========================================================================= */}
+        <div className="bg-white rounded-2xl border border-[#E3EAE3] shadow-xs overflow-hidden text-left space-y-0">
           
           {/* Header & Filter Controls Bar */}
-          <div className="p-5 border-b border-[#E3EAE3] space-y-4">
+          <div className="p-5 sm:p-6 border-b border-[#E3EAE3] space-y-4">
             
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h3 className="text-base font-bold text-[#17251B] flex items-center gap-2">
+                <h3 className="text-base sm:text-lg font-bold text-[#17251B] flex items-center gap-2">
                   <FileText className="w-4 h-4 text-[#329F45]" />
-                  <span>Antrean Verifikasi Lapangan</span>
+                  <span>Antrean Verifikasi Laporan Warga</span>
                 </h3>
                 <p className="text-xs text-[#78847B] mt-0.5">
-                  Validasi laporan masyarakat dan hasil Computer Vision sebelum diterbitkan ke kampanye gotong royong.
+                  Validasi temuan foto lapangan dan akurasi Computer Vision sebelum diterbitkan ke kampanye gotong royong.
                 </p>
               </div>
 
@@ -605,15 +724,15 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Filter & Search Bar */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-2 border-t border-[#E3EAE3]">
+            {/* Filter & Search Bar (Clean Segmented Layout) */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-3 border-t border-[#E3EAE3]">
               
               {/* Sector Tabs (Clean Segmented Buttons) */}
               <div className="flex flex-wrap items-center gap-1.5">
                 <button
                   type="button"
                   onClick={() => setSectorFilter('all')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors cursor-pointer ${
                     sectorFilter === 'all'
                       ? 'bg-[#17251B] text-white shadow-xs'
                       : 'bg-white text-[#78847B] hover:text-[#17251B] hover:bg-[#F5F7F4] border border-[#E3EAE3]'
@@ -625,7 +744,7 @@ export default function DashboardPage() {
                 <button
                   type="button"
                   onClick={() => setSectorFilter('pesisir')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors cursor-pointer ${
                     sectorFilter === 'pesisir'
                       ? 'bg-[#17251B] text-white shadow-xs'
                       : 'bg-white text-[#78847B] hover:text-[#17251B] hover:bg-[#F5F7F4] border border-[#E3EAE3]'
@@ -637,7 +756,7 @@ export default function DashboardPage() {
                 <button
                   type="button"
                   onClick={() => setSectorFilter('hutan')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors cursor-pointer ${
                     sectorFilter === 'hutan'
                       ? 'bg-[#17251B] text-white shadow-xs'
                       : 'bg-white text-[#78847B] hover:text-[#17251B] hover:bg-[#F5F7F4] border border-[#E3EAE3]'
@@ -652,7 +771,7 @@ export default function DashboardPage() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as any)}
-                  className="px-2.5 py-1.5 rounded-lg border border-[#E3EAE3] bg-white text-xs text-[#17251B] focus:outline-hidden focus:border-[#329F45] cursor-pointer shadow-xs"
+                  className="px-3 py-1.5 rounded-full border border-[#E3EAE3] bg-white text-xs text-[#17251B] focus:outline-hidden focus:border-[#329F45] cursor-pointer shadow-xs"
                   aria-label="Filter status verifikasi"
                 >
                   <option value="all">Semua Status Verifikasi</option>
@@ -669,7 +788,7 @@ export default function DashboardPage() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Cari temuan, lokasi..."
-                    className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-[#E3EAE3] text-xs text-[#17251B] bg-white placeholder-[#78847B] focus:outline-hidden focus:border-[#329F45] shadow-xs"
+                    className="w-full pl-8 pr-3 py-1.5 rounded-full border border-[#E3EAE3] text-xs text-[#17251B] bg-white placeholder-[#78847B] focus:outline-hidden focus:border-[#329F45] shadow-xs"
                   />
                   {searchQuery && (
                     <button
@@ -686,11 +805,11 @@ export default function DashboardPage() {
                 <button
                   type="button"
                   onClick={handleResetData}
-                  className="px-2.5 py-1.5 rounded-lg border border-[#E3EAE3] text-[#78847B] hover:text-rose-700 hover:bg-rose-50 hover:border-rose-200 text-xs font-medium transition-colors cursor-pointer inline-flex items-center gap-1 shrink-0"
+                  className="px-3 py-1.5 rounded-full border border-[#E3EAE3] text-[#78847B] hover:text-rose-700 hover:bg-rose-50 hover:border-rose-200 text-xs font-medium transition-colors cursor-pointer inline-flex items-center gap-1 shrink-0"
                   title="Bersihkan laporan uji lokal dan kembalikan ke data awal Bengkulu"
                 >
                   <RotateCcw className="w-3 h-3" />
-                  <span>Reset Data Uji</span>
+                  <span>Reset Data</span>
                 </button>
               </div>
 
@@ -698,7 +817,7 @@ export default function DashboardPage() {
 
           </div>
 
-          {/* Desktop Table View */}
+          {/* Desktop Table View (Sheeld Calm Layout) */}
           <div className="hidden lg:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-[#F5F7F4] border-b border-[#E3EAE3] text-[#78847B] font-semibold uppercase tracking-wider text-[11px]">
@@ -706,7 +825,7 @@ export default function DashboardPage() {
                   <th className="py-3 px-4 w-16 text-center">Bukti</th>
                   <th className="py-3 px-4">Temuan &amp; Lokasi</th>
                   <th className="py-3 px-4 w-28">Tingkat Risiko</th>
-                  <th className="py-3 px-4 w-36">Skor &amp; AI Keyakinan</th>
+                  <th className="py-3 px-4 w-36">Skor &amp; AI Conf</th>
                   <th className="py-3 px-4">Rekomendasi Botani</th>
                   <th className="py-3 px-4 w-44">Status Verifikasi</th>
                   <th className="py-3 px-4 w-36 text-right">Aksi</th>
@@ -724,7 +843,7 @@ export default function DashboardPage() {
                         <button
                           type="button"
                           onClick={() => setSelectedReport(rep)}
-                          className="relative w-12 h-12 rounded-lg overflow-hidden border border-[#E3EAE3] block mx-auto group-hover:border-[#329F45] transition-colors cursor-pointer"
+                          className="relative w-12 h-12 rounded-xl overflow-hidden border border-[#E3EAE3] block mx-auto group-hover:border-[#329F45] transition-colors cursor-pointer"
                           title="Klik untuk pratinjau bukti"
                         >
                           <Image
@@ -747,20 +866,20 @@ export default function DashboardPage() {
                           {rep.title}
                         </div>
                         
-                        <div className="flex items-center gap-1.5 text-[11px] text-[#78847B] mt-1">
+                        <div className="flex items-center gap-1.5 text-[11px] text-[#78847B] mt-1 font-mono">
                           <MapPin className="w-3 h-3 text-[#329F45] shrink-0" />
-                          <span className="truncate max-w-[240px]">{rep.location_name}</span>
-                          <span className="text-[#E3EAE3]">•</span>
+                          <span className="truncate max-w-[220px]">{rep.location_name}</span>
+                          <span className="text-[#E3EAE3]">&bull;</span>
                           <span className="shrink-0">{rep.reporter_name.split(' ')[0]}</span>
                         </div>
                       </td>
 
-                      {/* 3. Tingkat Risiko (Clean dot + text indicator - NO pastel box) */}
+                      {/* 3. Tingkat Risiko (Clean dot + text indicator - Anti-AI-slop) */}
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         {renderRiskBadge(rep.severity)}
                       </td>
 
-                      {/* 4. Skor Risiko vs Keyakinan AI (Separated cleanly) */}
+                      {/* 4. Skor Risiko vs Keyakinan AI */}
                       <td className="py-3.5 px-4 whitespace-nowrap font-mono">
                         <div className="text-xs font-bold text-[#17251B]">
                           {rep.urgency_score}<span className="text-[10px] text-[#78847B] font-normal">/100</span>
@@ -781,7 +900,7 @@ export default function DashboardPage() {
                         </div>
                       </td>
 
-                      {/* 6. Status Verifikasi (Clean semantic icon + text - NO pastel box) */}
+                      {/* 6. Status Verifikasi */}
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         {renderStatusBadge(rep.status)}
                       </td>
@@ -793,7 +912,7 @@ export default function DashboardPage() {
                             <button
                               type="button"
                               onClick={() => setSelectedReport(rep)}
-                              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] transition-colors cursor-pointer shadow-xs"
+                              className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] transition-colors cursor-pointer shadow-xs"
                             >
                               Verifikasi
                             </button>
@@ -801,7 +920,7 @@ export default function DashboardPage() {
                             <button
                               type="button"
                               onClick={() => setSelectedReport(rep)}
-                              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#176B35] hover:bg-[#17251B] transition-colors cursor-pointer shadow-xs"
+                              className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-white bg-[#176B35] hover:bg-[#17251B] transition-colors cursor-pointer shadow-xs"
                             >
                               Lanjutkan
                             </button>
@@ -809,7 +928,7 @@ export default function DashboardPage() {
                             <button
                               type="button"
                               onClick={() => setSelectedReport(rep)}
-                              className="px-3 py-1.5 rounded-lg text-xs font-medium text-[#78847B] bg-white border border-[#E3EAE3] hover:bg-[#F5F7F4] transition-colors cursor-pointer shadow-xs"
+                              className="px-3 py-1.5 rounded-full text-xs font-medium text-[#78847B] bg-white border border-[#E3EAE3] hover:bg-[#F5F7F4] transition-colors cursor-pointer shadow-xs"
                             >
                               Lihat Alasan
                             </button>
@@ -818,13 +937,13 @@ export default function DashboardPage() {
                               <button
                                 type="button"
                                 onClick={() => setSelectedReport(rep)}
-                                className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#17251B] bg-white border border-[#E3EAE3] hover:bg-[#F5F7F4] transition-colors cursor-pointer shadow-xs"
+                                className="px-3 py-1.5 rounded-full text-xs font-medium text-[#17251B] bg-white border border-[#E3EAE3] hover:bg-[#F5F7F4] transition-colors cursor-pointer shadow-xs"
                               >
                                 Detail
                               </button>
                               <Link
                                 href="/aksi"
-                                className="p-1.5 rounded-lg border border-[#E3EAE3] text-[#78847B] hover:text-[#329F45] hover:bg-[#F5F7F4] transition-colors"
+                                className="p-1.5 rounded-full border border-[#E3EAE3] text-[#78847B] hover:text-[#329F45] hover:bg-[#F5F7F4] transition-colors"
                                 title="Buka lembar aksi"
                               >
                                 <ArrowRight className="w-3.5 h-3.5" />
@@ -856,7 +975,7 @@ export default function DashboardPage() {
                     <button
                       type="button"
                       onClick={() => setSelectedReport(rep)}
-                      className="relative w-14 h-14 rounded-lg overflow-hidden border border-[#E3EAE3] shrink-0"
+                      className="relative w-14 h-14 rounded-xl overflow-hidden border border-[#E3EAE3] shrink-0"
                     >
                       <Image src={rep.image_url} alt={rep.title} fill className="object-cover" sizes="56px" />
                     </button>
@@ -905,7 +1024,7 @@ export default function DashboardPage() {
                         <button
                           type="button"
                           onClick={() => setSelectedReport(rep)}
-                          className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] shadow-xs"
+                          className="px-4 py-1.5 rounded-full text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] shadow-xs"
                         >
                           Verifikasi
                         </button>
@@ -913,7 +1032,7 @@ export default function DashboardPage() {
                         <button
                           type="button"
                           onClick={() => setSelectedReport(rep)}
-                          className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-[#17251B] bg-white border border-[#E3EAE3] hover:bg-[#F5F7F4] shadow-xs"
+                          className="px-3.5 py-1.5 rounded-full text-xs font-medium text-[#17251B] bg-white border border-[#E3EAE3] hover:bg-[#F5F7F4] shadow-xs"
                         >
                           Detail
                         </button>
@@ -938,7 +1057,7 @@ export default function DashboardPage() {
               <span className={`w-2 h-2 rounded-full ${isSupabaseConfigured ? 'bg-[#329F45]' : 'bg-emerald-500'}`}></span>
               <span>
                 {isSupabaseConfigured
-                  ? 'Sinkronisasi database Supabase PostgreSQL aktif'
+                  ? 'Sinkronisasi cloud Supabase PostgreSQL aktif'
                   : 'Penyimpanan Lokal Aktif (Tersimpan di peramban)'}
               </span>
             </div>
@@ -949,7 +1068,7 @@ export default function DashboardPage() {
       </div>
 
       {/* =========================================================================
-          3. VERIFICATION & DETAIL DRAWER MODAL (CLEAN SAAS DOSSIER)
+          VERIFICATION & DETAIL DRAWER MODAL (CLEAN SAAS DOSSIER)
           ========================================================================= */}
       <AnimatePresence>
         {selectedReport && (
@@ -959,7 +1078,7 @@ export default function DashboardPage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: 15 }}
               transition={{ duration: 0.2 }}
-              className="bg-white rounded-xl border border-[#E3EAE3] shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden text-left"
+              className="bg-white rounded-2xl border border-[#E3EAE3] shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden text-left"
             >
               
               {/* Modal Header */}
@@ -967,7 +1086,7 @@ export default function DashboardPage() {
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-2">
                     <span className="text-[11px] font-mono text-[#78847B] uppercase">{selectedReport.id}</span>
-                    <span className="text-[#E3EAE3]">•</span>
+                    <span className="text-[#E3EAE3]">&bull;</span>
                     {renderStatusBadge(selectedReport.status)}
                   </div>
                   <h3 className="text-base font-bold text-[#17251B]">
@@ -978,7 +1097,7 @@ export default function DashboardPage() {
                 <button
                   type="button"
                   onClick={() => setSelectedReport(null)}
-                  className="p-1.5 rounded-lg text-[#78847B] hover:text-[#17251B] hover:bg-[#E3EAE3]/60 transition-colors"
+                  className="p-1.5 rounded-full text-[#78847B] hover:text-[#17251B] hover:bg-[#E3EAE3]/60 transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -988,7 +1107,7 @@ export default function DashboardPage() {
               <div className="p-5 overflow-y-auto space-y-4 text-xs">
                 
                 {/* Photo & GPS Banner */}
-                <div className="relative aspect-16/9 rounded-lg overflow-hidden border border-[#E3EAE3] bg-stone-900">
+                <div className="relative aspect-16/9 rounded-xl overflow-hidden border border-[#E3EAE3] bg-stone-900">
                   <Image
                     src={selectedReport.image_url}
                     alt={selectedReport.title}
@@ -997,9 +1116,9 @@ export default function DashboardPage() {
                     sizes="600px"
                   />
                   <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between text-[11px]">
-                    <div className="inline-flex items-center gap-1.5 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-md text-white font-mono text-[10px]">
+                    <div className="inline-flex items-center gap-1.5 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-full text-white font-mono text-[10px]">
                       <MapPin className="w-3 h-3 text-[#329F45]" />
-                      <span>{selectedReport.latitude}, {selectedReport.longitude}</span>
+                      <span>{selectedReport.latitude.toFixed(4)}, {selectedReport.longitude.toFixed(4)}</span>
                     </div>
                     {renderRiskBadge(selectedReport.severity)}
                   </div>
@@ -1051,7 +1170,7 @@ export default function DashboardPage() {
 
                 {/* Rubrik Evaluasi Visual Citra */}
                 {selectedReport.ai_analysis?.kriteria_penilaian && (
-                  <div className="p-3 rounded-xl bg-[#F5F7F4] border border-[#E3EAE3] text-xs space-y-1">
+                  <div className="p-3.5 rounded-xl bg-[#F5F7F4] border border-[#E3EAE3] text-xs space-y-1">
                     <span className="font-semibold text-[#17251B] text-[11px] block">Dasar Penilaian Citra AI:</span>
                     <p className="text-[#4A5449] leading-relaxed">
                       {selectedReport.ai_analysis.kriteria_penilaian}
@@ -1060,10 +1179,10 @@ export default function DashboardPage() {
                 )}
 
                 {/* AI Transparency Notice */}
-                <div className="p-2.5 rounded-xl bg-[#F5F7F4] border border-[#E3EAE3] text-[11px] text-[#4A5449] flex items-start gap-2">
+                <div className="p-3 rounded-xl bg-[#F5F7F4] border border-[#E3EAE3] text-[11px] text-[#4A5449] flex items-start gap-2">
                   <Info className="w-3.5 h-3.5 text-[#329F45] shrink-0 mt-0.5" />
                   <p className="leading-relaxed">
-                    Data diagnosis berasal dari pemindaian awal Gemini 3.5 Flash Multimodal. Koordinator disarankan memvalidasi bukti visual sebelum menyetujui jadwal aksi lapangan.
+                    Data diagnosis dianalisis secara otomatis oleh Gemini 3.5 Flash Multimodal. Koordinator disarankan memvalidasi bukti visual sebelum menyetujui jadwal aksi lapangan.
                   </p>
                 </div>
 
@@ -1077,7 +1196,7 @@ export default function DashboardPage() {
                       <button
                         type="button"
                         onClick={() => handleDeleteReport(selectedReport.id)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-medium transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-medium transition-colors cursor-pointer"
                         title="Hapus permanen laporan ini dari sistem"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -1087,7 +1206,7 @@ export default function DashboardPage() {
                       <button
                         type="button"
                         onClick={() => handleUpdateStatus(selectedReport.id, 'ditolak')}
-                        className="px-3 py-1.5 rounded-lg border border-[#E3EAE3] text-[#DC3545] hover:bg-white text-xs font-medium transition-colors cursor-pointer"
+                        className="px-3 py-1.5 rounded-full border border-[#E3EAE3] text-[#DC3545] hover:bg-white text-xs font-medium transition-colors cursor-pointer"
                       >
                         Tolak Temuan
                       </button>
@@ -1095,16 +1214,16 @@ export default function DashboardPage() {
                       <button
                         type="button"
                         onClick={() => handleUpdateStatus(selectedReport.id, 'dalam_aksi')}
-                        className="px-3 py-1.5 rounded-lg border border-[#E3EAE3] bg-white text-[#17251B] hover:bg-[#F5F7F4] text-xs font-medium transition-colors cursor-pointer"
+                        className="px-3 py-1.5 rounded-full border border-[#E3EAE3] bg-white text-[#17251B] hover:bg-[#F5F7F4] text-xs font-medium transition-colors cursor-pointer"
                       >
-                        Tandai Sedang Ditinjau
+                        Tandai Ditinjau
                       </button>
                     </div>
 
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/aksi?report_id=${selectedReport.id}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E3EAE3] bg-white text-[#17251B] hover:bg-[#F5F7F4] text-xs font-medium transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#E3EAE3] bg-white text-[#17251B] hover:bg-[#F5F7F4] text-xs font-medium transition-colors"
                       >
                         <span>Jadikan Rencana Aksi</span>
                         <ExternalLink className="w-3 h-3 text-[#78847B]" />
@@ -1113,7 +1232,7 @@ export default function DashboardPage() {
                       <button
                         type="button"
                         onClick={() => handleUpdateStatus(selectedReport.id, 'terverifikasi')}
-                        className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] shadow-xs transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] shadow-xs transition-colors cursor-pointer"
                       >
                         <Check className="w-3.5 h-3.5" />
                         <span>Setujui &amp; Verifikasi</span>
@@ -1129,14 +1248,14 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-2 shrink-0">
                       <Link
                         href={`/aksi?report_id=${selectedReport.id}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E3EAE3] bg-white text-[#17251B] text-xs font-medium transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#E3EAE3] bg-white text-[#17251B] text-xs font-medium transition-colors"
                       >
                         <span>Lihat Rencana Aksi</span>
                         <ExternalLink className="w-3 h-3 text-[#78847B]" />
                       </Link>
                       <Link
                         href="/login?redirect=/dashboard"
-                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] transition-colors shadow-xs"
+                        className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] transition-colors shadow-xs"
                       >
                         <ShieldCheck className="w-3.5 h-3.5" />
                         <span>Masuk Koordinator</span>
