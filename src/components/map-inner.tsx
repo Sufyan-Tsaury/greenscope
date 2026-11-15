@@ -42,7 +42,7 @@ function createCustomIcon(severity: string, status: string, isSelected: boolean 
   });
 }
 
-type BaseLayerType = 'satellite' | 'streets' | 'carto';
+type BaseLayerType = 'satellite' | 'streets' | 'topo';
 
 const TILE_LAYERS: Record<BaseLayerType, { name: string; url: string; attribution: string; maxZoom: number }> = {
   satellite: {
@@ -57,11 +57,11 @@ const TILE_LAYERS: Record<BaseLayerType, { name: string; url: string; attributio
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     maxZoom: 19
   },
-  carto: {
-    name: 'Minimalis',
-    url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
-    maxZoom: 20
+  topo: {
+    name: 'Topografi',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri, USGS, Garmin',
+    maxZoom: 19
   }
 };
 
@@ -265,7 +265,7 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
       <div className="absolute top-3 left-14 z-[999] flex flex-wrap items-center gap-2">
         {/* Layer Switcher Pill */}
         <div className="flex items-center p-1 rounded-full bg-white/95 backdrop-blur-md border border-[#E7ECE5] shadow-md text-xs">
-          {(['satellite', 'streets', 'carto'] as BaseLayerType[]).map((layerKey) => {
+          {(['satellite', 'streets', 'topo'] as BaseLayerType[]).map((layerKey) => {
             const isActive = baseLayer === layerKey;
             return (
               <button
@@ -280,7 +280,7 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
               >
                 {layerKey === 'satellite' && <Globe className="w-3 h-3" />}
                 {layerKey === 'streets' && <MapIcon className="w-3 h-3" />}
-                {layerKey === 'carto' && <Layers className="w-3 h-3" />}
+                {layerKey === 'topo' && <Layers className="w-3 h-3" />}
                 <span>{TILE_LAYERS[layerKey].name}</span>
               </button>
             );

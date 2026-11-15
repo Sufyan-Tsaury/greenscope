@@ -581,10 +581,10 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             
             {/* Main Content (65% on Desktop - 8 of 12 cols): Interactive WebGIS Map Canvas */}
-            <div className="lg:col-span-8 rounded-2xl border border-[#E3EAE3] bg-white overflow-hidden shadow-xs relative flex flex-col min-h-[380px] sm:min-h-[440px]">
+            <div className="lg:col-span-8 rounded-2xl border border-[#E3EAE3] bg-white overflow-hidden shadow-xs relative flex flex-col min-h-[400px] sm:min-h-[460px]">
               
-              {/* Map Canvas */}
-              <div className="w-full flex-1 relative min-h-[380px] sm:min-h-[440px]">
+              {/* Map Canvas - 100% clean & unblocked */}
+              <div className="w-full flex-1 relative min-h-[380px] sm:min-h-[420px]">
                 <MapInner
                   reports={reports}
                   selectedReport={mapSelectedReport}
@@ -592,23 +592,22 @@ export default function DashboardPage() {
                 />
               </div>
 
-              {/* Floating Spatial Quick Status Ribbon */}
-              <div className="absolute top-3 left-3 z-1000 bg-white/95 backdrop-blur-md border border-[#E3EAE3] rounded-full px-3.5 py-1.5 text-xs text-[#17251B] shadow-sm flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#329F45]"></span>
-                <span className="font-medium text-[11px]">Bengkulu Coastline WebGIS</span>
-              </div>
-
-              <div className="absolute bottom-3 left-3 z-1000 bg-white/95 backdrop-blur-md border border-[#E3EAE3] rounded-full px-3.5 py-1.5 text-xs text-[#17251B] shadow-sm hidden sm:flex items-center gap-3">
-                <span className="text-[11px] text-[#78847B]">
-                  Titik Terpilih: <strong className="text-[#17251B]">{mapSelectedReport?.title.split('&')[0] || 'Semua Sektor'}</strong>
-                </span>
+              {/* Discrete Map Footer Bar (Clean & External to Map Canvas) */}
+              <div className="py-2.5 px-4 bg-[#F5F7F4] border-t border-[#E3EAE3] flex items-center justify-between text-xs text-[#78847B]">
+                <div className="flex items-center gap-2 truncate">
+                  <span className="w-2 h-2 rounded-full bg-[#329F45] shrink-0"></span>
+                  <span className="truncate">
+                    Sektor Terpilih: <strong className="text-[#17251B]">{mapSelectedReport?.title.split('&')[0] || 'Seluruh Titik Bengkulu'}</strong>
+                  </span>
+                </div>
                 {mapSelectedReport && (
                   <button
                     type="button"
                     onClick={() => setSelectedReport(mapSelectedReport)}
-                    className="text-[11px] text-[#329F45] hover:underline font-semibold cursor-pointer"
+                    className="text-xs text-[#329F45] hover:text-[#176B35] font-semibold hover:underline shrink-0 ml-2 cursor-pointer inline-flex items-center gap-1"
                   >
-                    Buka Dossier &rarr;
+                    <span>Buka Dossier</span>
+                    <ArrowRight className="w-3 h-3" />
                   </button>
                 )}
               </div>
