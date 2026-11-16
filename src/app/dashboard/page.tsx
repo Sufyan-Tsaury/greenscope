@@ -67,8 +67,15 @@ export default function DashboardPage() {
   const [reports, setReports] = useState<Report[]>(INITIAL_REPORTS);
   const [campaigns, setCampaigns] = useState<Campaign[]>(INITIAL_CAMPAIGNS);
   const [mapSelectedReport, setMapSelectedReport] = useState<Report | null>(INITIAL_REPORTS[0]);
+  const [printDate, setPrintDate] = useState<string>('16 November 2026');
+  const [printTime, setPrintTime] = useState<string>('23:30 WIB');
 
   useEffect(() => {
+    // Set formatted client print date and time to prevent hydration mismatch
+    const now = new Date();
+    setPrintDate(now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }));
+    setPrintTime(now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB');
+
     // 1. Berlangganan status otentikasi koordinator (RBAC)
     const unsubAuth = subscribeToAuthChange((session) => {
       setCoordinator(session);
@@ -377,7 +384,7 @@ export default function DashboardPage() {
         )}
       </AnimatePresence>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
+      <div className="no-print max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
         
         {/* --- ZONA 1: DASHBOARD INTRODUCTION & OPERATIONAL BAR --- */}
         <div className="space-y-4">
@@ -1022,7 +1029,7 @@ export default function DashboardPage() {
       {/* Modal Verifikasi & Detail Dossier Temuan */}
       <AnimatePresence>
         {selectedReport && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="no-print fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
             <motion.div
               initial={{ opacity: 0, scale: 0.96, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -1211,6 +1218,226 @@ export default function DashboardPage() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* ============================================================
+          DOSSIER RESMI CETAK (HANYA MUNCUL SAAT WINDOW.PRINT)
+          LEMBAR LAPORAN RINGKASAN EKSEKUTIF RESTORASI BENGKULU
+          ============================================================ */}
+      <div className="print-only font-sans text-black p-2 space-y-3.5 max-w-4xl mx-auto">
+        {/* Kop Surat Dokumen Resmi */}
+        <div className="border-b-2 border-black pb-2 space-y-1">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full border-2 border-black flex items-center justify-center font-bold text-sm bg-emerald-100 text-emerald-950 shrink-0">
+                GS
+              </div>
+              <div className="text-left">
+                <h1 className="text-xs font-bold tracking-wider uppercase text-black">
+                  PEMERINTAH PROVINSI BENGKULU
+                </h1>
+                <h2 className="text-xs font-bold tracking-wide text-black">
+                  BALAI KONSERVASI SUMBER DAYA ALAM (BKSDA) &amp; GREENSCOPE
+                </h2>
+                <p className="text-[9px] text-gray-700">
+                  Sistem Informasi Pemantauan &amp; Restorasi Pesisir, Cagar Mangrove &amp; Hutan Tropis
+                </p>
+              </div>
+            </div>
+            <div className="text-right text-[8.5px] border-l border-gray-400 pl-3 space-y-0.5">
+              <div className="font-bold text-black">KODE DOKUMEN: GS-BKL/RPT-2026/XI</div>
+              <div>Tanggal Cetak: {printDate}</div>
+              <div>Waktu Cetak: {printTime}</div>
+              <div className="text-emerald-800 font-semibold">Status: Data Sinkron Realtime</div>
+            </div>
+          </div>
+          <div className="border-b border-black mt-1"></div>
+        </div>
+
+        {/* Judul Lembar Berita Acara */}
+        <div className="text-center py-0.5">
+          <h3 className="text-xs font-bold uppercase tracking-wider underline">
+            BERITA ACARA &amp; RINGKASAN OPERASIONAL PEMANTAUAN LAPANGAN
+          </h3>
+          <p className="text-[8.5px] text-gray-600 italic mt-0.5">
+            Ringkasan Telemetri Ekologi, Matriks Temuan Degradasi, dan Kesiapan Sektor Pemulihan Bengkulu
+          </p>
+        </div>
+
+        {/* 4 Kotak Metrik KPI Telemetri Konservasi */}
+        <div className="grid grid-cols-4 gap-2">
+          <div className="border border-black p-1.5 rounded text-center">
+            <div className="text-[7.5px] uppercase font-bold text-gray-700">Serapan Karbon Biru</div>
+            <div className="text-xs font-bold text-black font-mono">
+              {totalCarbonKg.toLocaleString('id-ID')} <span className="text-[7.5px] font-normal">kg CO₂e/th</span>
+            </div>
+            <div className="text-[7px] text-gray-500">Estimasi biomassa pulih</div>
+          </div>
+
+          <div className="border border-black p-1.5 rounded text-center">
+            <div className="text-[7.5px] uppercase font-bold text-red-700">Sektor Kritis Aktif</div>
+            <div className="text-xs font-bold text-red-700 font-mono">
+              {kritisReportsCount} <span className="text-[7.5px] font-normal text-black">Lokasi</span>
+            </div>
+            <div className="text-[7px] text-gray-500">Perlu tindakan rehabilitasi</div>
+          </div>
+
+          <div className="border border-black p-1.5 rounded text-center">
+            <div className="text-[7.5px] uppercase font-bold text-gray-700">Total Temuan</div>
+            <div className="text-xs font-bold text-black font-mono">
+              {reports.length} <span className="text-[7.5px] font-normal">Laporan</span>
+            </div>
+            <div className="text-[7px] text-gray-500">{counts.terverifikasi} verifikasi &bull; {counts.menunggu} antre</div>
+          </div>
+
+          <div className="border border-black p-1.5 rounded text-center">
+            <div className="text-[7.5px] uppercase font-bold text-gray-700">Relawan Siaga</div>
+            <div className="text-xs font-bold text-black font-mono">
+              {totalVolunteersCount} <span className="text-[7.5px] font-normal">Personel</span>
+            </div>
+            <div className="text-[7px] text-gray-500">{campaigns.length} aksi gotong royong</div>
+          </div>
+        </div>
+
+        {/* Tabel I: Matriks Laporan Temuan Lapangan */}
+        <div className="space-y-1">
+          <div className="text-[9.5px] font-bold uppercase tracking-wide flex justify-between">
+            <span>I. MATRIKS DOSSIER TEMUAN DEGRADASI LINGKUNGAN</span>
+            <span className="text-[8px] text-gray-600 font-normal">Total: {reports.length} Titik Terpantau</span>
+          </div>
+          <table className="w-full text-left border-collapse border border-black text-[8px]">
+            <thead>
+              <tr className="bg-gray-100 border-b border-black text-black">
+                <th className="border border-black p-1 w-6 text-center">No</th>
+                <th className="border border-black p-1">Sektor &amp; Lokasi Bengkulu</th>
+                <th className="border border-black p-1 w-20">Ekosistem</th>
+                <th className="border border-black p-1">Temuan Kerusakan Visual</th>
+                <th className="border border-black p-1 w-14 text-center">Urgensi</th>
+                <th className="border border-black p-1">Rekomendasi Botani Restorasi</th>
+                <th className="border border-black p-1 w-18 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reports.map((report, idx) => {
+                const ecoLabel = 
+                  report.ecosystem === 'mangrove' ? 'Hutan Mangrove' :
+                  report.ecosystem === 'hutan_tropis' ? 'Hutan Tropis' :
+                  report.ecosystem === 'muara_sungai' ? 'Muara Sungai' : 'Pesisir Pantai';
+                
+                return (
+                  <tr key={report.id} className="border-b border-gray-300">
+                    <td className="border border-black p-1 text-center font-mono">{idx + 1}</td>
+                    <td className="border border-black p-1">
+                      <div className="font-bold">{report.location_name}</div>
+                      <div className="text-[7px] text-gray-600 font-mono">
+                        {report.latitude.toFixed(4)}, {report.longitude.toFixed(4)}
+                      </div>
+                    </td>
+                    <td className="border border-black p-1">{ecoLabel}</td>
+                    <td className="border border-black p-1">
+                      <div className="font-semibold">{report.title}</div>
+                      <div className="text-[7px] text-gray-600 line-clamp-1">{report.description}</div>
+                    </td>
+                    <td className="border border-black p-1 text-center font-bold">
+                      <span className={
+                        report.severity === 'kritis' ? 'text-red-700' :
+                        report.severity === 'tinggi' ? 'text-amber-700' : 'text-emerald-800'
+                      }>
+                        {report.severity.toUpperCase()}
+                      </span>
+                      <div className="text-[6.5px] text-gray-500 font-mono">Skor: {report.urgency_score}/100</div>
+                    </td>
+                    <td className="border border-black p-1">
+                      <div className="italic">{report.ai_analysis?.spesies_rekomendasi || 'Vegetasi lokal penahan abrasi'}</div>
+                      <div className="text-[6.5px] text-emerald-800 font-medium">
+                        Potensi: +{report.ai_analysis?.estimasi_serapan_karbon_tahunan_kg || 250} kg CO₂e/th
+                      </div>
+                    </td>
+                    <td className="border border-black p-1 text-center capitalize font-semibold">
+                      {report.status === 'terverifikasi' ? 'Terverifikasi' :
+                       report.status === 'dalam_aksi' ? 'Ditinjau' :
+                       report.status === 'ditolak' ? 'Ditolak' : 'Menunggu'}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Tabel II: Ringkas Kampanye Restorasi Gotong Royong */}
+        {campaigns.length > 0 && (
+          <div className="space-y-1">
+            <div className="text-[9.5px] font-bold uppercase tracking-wide">
+              II. RENCANA AKSI MOBILISASI RESTORASI (KAMPANYE GOTONG ROYONG)
+            </div>
+            <table className="w-full text-left border-collapse border border-black text-[8px]">
+              <thead>
+                <tr className="bg-gray-100 border-b border-black">
+                  <th className="border border-black p-1 w-6 text-center">No</th>
+                  <th className="border border-black p-1">Nama Gerakan Aksi</th>
+                  <th className="border border-black p-1">Lokasi Sektor</th>
+                  <th className="border border-black p-1 text-center">Target Bibit</th>
+                  <th className="border border-black p-1 text-center">Relawan Siaga</th>
+                  <th className="border border-black p-1">Mitra Penggerak</th>
+                </tr>
+              </thead>
+              <tbody>
+                {campaigns.map((camp, idx) => (
+                  <tr key={camp.id} className="border-b border-gray-300">
+                    <td className="border border-black p-1 text-center font-mono">{idx + 1}</td>
+                    <td className="border border-black p-1 font-bold">{camp.title}</td>
+                    <td className="border border-black p-1">{camp.location_name}</td>
+                    <td className="border border-black p-1 text-center font-mono font-semibold">
+                      {camp.target_trees.toLocaleString('id-ID')} Batang
+                    </td>
+                    <td className="border border-black p-1 text-center font-mono">
+                      {camp.volunteers_count} / {camp.target_volunteers} Personel
+                    </td>
+                    <td className="border border-black p-1">{camp.coordinator_name}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Lembar Tanda Tangan & Pengesahan Resmi */}
+        <div className="pt-3 border-t border-gray-400 print-avoid-break">
+          <div className="grid grid-cols-2 gap-8 text-center text-[8.5px]">
+            <div className="space-y-8">
+              <div>
+                <p className="text-gray-600">Disusun dan Diverifikasi oleh:</p>
+                <p className="font-bold">Surveyor &amp; Petugas Lapangan GreenScope</p>
+              </div>
+              <div>
+                <div className="w-40 border-b border-black mx-auto"></div>
+                <p className="font-semibold mt-1">Tim Monitoring Lapangan Bengkulu</p>
+                <p className="text-[7px] text-gray-500">ID Dokumen: GS-BKL-FLD-01</p>
+              </div>
+            </div>
+
+            <div className="space-y-8">
+              <div>
+                <p className="text-gray-600">Mengetahui dan Mengesahkan:</p>
+                <p className="font-bold">Koordinator Konservasi Wilayah Bengkulu</p>
+              </div>
+              <div>
+                <div className="w-40 border-b border-black mx-auto"></div>
+                <p className="font-semibold mt-1">
+                  {coordinator?.isAuthenticated ? (coordinator.name || 'Koordinator Resmi BKSDA Bengkulu') : 'Koordinator BKSDA & GreenScope Bengkulu'}
+                </p>
+                <p className="text-[7px] text-gray-500">Otoritas Wilayah Konservasi &amp; Restorasi</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Catatan Kaki Dokumen */}
+        <div className="border-t border-gray-300 pt-1 text-[7px] text-gray-500 flex justify-between items-center">
+          <span>Dicetak otomatis melalui Platform GreenScope &bull; IT RUSH 2026 Web Development Competition</span>
+          <span className="font-mono">Lembar Berita Acara Resmi Lapangan</span>
+        </div>
+      </div>
 
     </div>
   );

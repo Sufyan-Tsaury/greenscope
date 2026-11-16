@@ -117,3 +117,62 @@ body {
   border-radius: inherit;
   z-index: 10;
 }
+
+/* ============================================================
+   PRINT MEDIA STYLES - GREENSCOPE OFFICIAL DOSSIER REPORT
+   ============================================================ */
+@media screen {
+  .print-only {
+    display: none !important;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm;
+  }
+
+  /* Sembunyikan elemen web yang tidak diperlukan dalam dokumen cetak resmi */
+  header,
+  nav,
+  footer,
+  aside,
+  .no-print,
+  button,
+  input,
+  .leaflet-container,
+  [data-no-print="true"] {
+    display: none !important;
+  }
+
+  /* Reset layout agar konten cetak mengambil lebar penuh kertas putih bersih */
+  html, body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    font-size: 10pt !important;
+    line-height: 1.35 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Tampilkan dokumen cetak resmi */
+  .print-only {
+    display: block !important;
+  }
+
+  /* Hilangkan bayangan kartu dan efek hover */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Hindari pemotongan baris di tengah tabel atau blok tanda tangan */
+  table, tr, td, th, .print-avoid-break {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}
