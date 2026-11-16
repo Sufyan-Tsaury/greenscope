@@ -96,6 +96,6 @@ Buka [http://localhost:3000](http://localhost:3000) pada browser Anda.
 
 * **Nama:** Sufyan Tsaury
 * **Kategori:** Individu (Solo Developer)
-* **Kompetisi:** IT RUSH 2026 — Web Development Competition
+* **Kompetisi:** IT RUSH 2026 - Web Development Competition
 * **Subtema:** Subtema 1 (Lingkungan dan Konservasi)
 * **Penyelenggara:** Himpunan Mahasiswa Teknik Informatika (HIMATIF) Universitas Bengkulu (UNIB)
