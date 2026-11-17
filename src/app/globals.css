@@ -130,7 +130,7 @@ body {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 10mm 12mm;
+    margin: 12mm 14mm 12mm 14mm;
   }
 
   /* Sembunyikan elemen web yang tidak diperlukan dalam dokumen cetak resmi */
@@ -149,9 +149,9 @@ body {
   /* Reset layout agar konten cetak mengambil lebar penuh kertas putih bersih */
   html, body {
     background: #FFFFFF !important;
-    color: #000000 !important;
-    font-size: 10pt !important;
-    line-height: 1.35 !important;
+    color: #17251B !important;
+    font-size: 11pt !important;
+    line-height: 1.4 !important;
     margin: 0 !important;
     padding: 0 !important;
     overflow: visible !important;
@@ -162,6 +162,10 @@ body {
   /* Tampilkan dokumen cetak resmi */
   .print-only {
     display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
   }
 
   /* Hilangkan bayangan kartu dan efek hover */
@@ -174,5 +178,14 @@ body {
   table, tr, td, th, .print-avoid-break {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  .print-page-break {
+    page-break-before: always !important;
+    break-before: page !important;
   }
 }
