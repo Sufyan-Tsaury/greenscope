@@ -67,14 +67,32 @@ export default function DashboardPage() {
   const [reports, setReports] = useState<Report[]>(INITIAL_REPORTS);
   const [campaigns, setCampaigns] = useState<Campaign[]>(INITIAL_CAMPAIGNS);
   const [mapSelectedReport, setMapSelectedReport] = useState<Report | null>(INITIAL_REPORTS[0]);
-  const [printDate, setPrintDate] = useState<string>('16 November 2026');
+  const [printDate, setPrintDate] = useState<string>('17 November 2026');
   const [printTime, setPrintTime] = useState<string>('23:30 WIB');
+  const [docNumber, setDocNumber] = useState<string>('BA.08/GS-BKL/BKSDA/XI/2026');
+
+  const getFormattedDocNumber = (num: number, date: Date) => {
+    const romanMonths = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+    const romanMonth = romanMonths[date.getMonth()] || 'XI';
+    const year = date.getFullYear();
+    const padded = String(num).padStart(2, '0');
+    return `BA.${padded}/GS-BKL/BKSDA/${romanMonth}/${year}`;
+  };
 
   useEffect(() => {
-    // Set formatted client print date and time to prevent hydration mismatch
+    // Set formatted client print date, time, and dynamic document number
     const now = new Date();
     setPrintDate(now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }));
     setPrintTime(now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB');
+
+    const savedCounter = parseInt(localStorage.getItem('greenscope_print_counter') || '8', 10);
+    setDocNumber(getFormattedDocNumber(savedCounter, now));
+
+    const handleAfterPrint = () => {
+      const next = parseInt(localStorage.getItem('greenscope_print_counter') || '8', 10);
+      setDocNumber(getFormattedDocNumber(next, new Date()));
+    };
+    window.addEventListener('afterprint', handleAfterPrint);
 
     // 1. Berlangganan status otentikasi koordinator (RBAC)
     const unsubAuth = subscribeToAuthChange((session) => {
@@ -139,6 +157,7 @@ export default function DashboardPage() {
       unsubAuth();
       unsubRealtime();
       window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('afterprint', handleAfterPrint);
     };
   }, []);
   
@@ -154,6 +173,21 @@ export default function DashboardPage() {
     setTimeout(() => {
       setToastMessage(null);
     }, 3500);
+  };
+
+  // Fungsi Cetak Berita Acara & Pemantauan (Auto-Increment Nomor Surat pada Setiap Cetak Baru)
+  const handlePrint = () => {
+    const now = new Date();
+    setPrintDate(now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }));
+    setPrintTime(now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB');
+
+    const currentCounter = parseInt(localStorage.getItem('greenscope_print_counter') || '8', 10);
+    setDocNumber(getFormattedDocNumber(currentCounter, now));
+    localStorage.setItem('greenscope_print_counter', String(currentCounter + 1));
+
+    window.print();
+
+    setDocNumber(getFormattedDocNumber(currentCounter + 1, now));
   };
 
   // Update Status Logic (Sinkronisasi Multi-Perangkat + Supabase Cloud + RBAC)
@@ -425,7 +459,7 @@ export default function DashboardPage() {
 
               <button
                 type="button"
-                onClick={() => window.print()}
+                onClick={handlePrint}
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#E3EAE3] bg-white hover:bg-[#F5F7F4] text-[#17251B] text-xs font-medium transition-colors cursor-pointer shadow-xs whitespace-nowrap"
                 title="Cetak Berita Acara & Ringkasan Eksekutif (PDF / A4)"
               >
@@ -1206,119 +1240,82 @@ export default function DashboardPage() {
 
       {/* ============================================================
           DOSSIER RESMI CETAK (HANYA MUNCUL SAAT WINDOW.PRINT)
-          LEMBAR BERITA ACARA RESMI A4 POTRET 2 HALAMAN TERTATA RAPI
+          PEMANTAUAN GEOSPASIAL & EVALUASI LAPANGAN (100% HITAM PUTIH A4)
           ============================================================ */}
-      <div className="print-only hidden print:block font-sans text-[#17251B] p-0 max-w-[210mm] mx-auto">
+      <div className="print-only hidden print:block font-sans text-black p-0 max-w-[210mm] mx-auto bg-white">
         
         {/* ============================================================
-            HALAMAN 1: IDENTITAS RESMI, METRIK TELEMETRI & MATRIKS TEMUAN
+            HALAMAN 1: IDENTITAS DOKUMEN & MATRIKS TEMUAN LAPANGAN
             ============================================================ */}
-        <div className="space-y-3.5">
-          {/* Kop Surat Dokumen Resmi Pemerintahan & BKSDA */}
-          <div className="border-b-[2.5px] border-[#1B432C] pb-2">
-            <div className="flex items-center justify-between gap-4">
-              {/* Logo Asli GreenScope & Identitas Institusi */}
-              <div className="flex items-center gap-3.5">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img 
-                  src="/logo-icon.jpg" 
-                  alt="Logo Resmi GreenScope" 
-                  className="w-14 h-14 object-contain rounded-xl border border-[#D5E2D3] shrink-0" 
-                />
-                <div className="text-left space-y-0.5">
-                  <h1 className="text-[12pt] font-extrabold tracking-wider uppercase text-[#1B432C] leading-tight">
-                    PEMERINTAH PROVINSI BENGKULU
-                  </h1>
-                  <h2 className="text-[10.5pt] font-bold text-[#17251B] leading-tight">
-                    DINAS LINGKUNGAN HIDUP &amp; BALAI KONSERVASI SUMBER DAYA ALAM (BKSDA)
-                  </h2>
-                  <p className="text-[9pt] text-[#4A574D] font-medium leading-tight">
-                    Sistem Pemantauan Geospasial &amp; Restorasi Ekosistem Pesisir Barat dan Hutan Tropis — GreenScope
-                  </p>
-                  <p className="text-[8pt] text-[#718073]">
-                    Jl. Pangeran Duayu No. 1, Bengkulu &bull; Surel: info@greenscope.id &bull; Laman: greenscope-phi.vercel.app
-                  </p>
-                </div>
-              </div>
-
-              {/* Document Tracking Control Box */}
-              <div className="text-right text-[8.5pt] border-l-2 border-[#D5E2D3] pl-3 space-y-0.5 shrink-0 bg-[#F6FAF5] p-2 rounded-lg border border-[#E0ECE0]">
-                <div className="font-mono font-bold text-[#1B432C]">NO: BA.08/GS-BKL/XI/2026</div>
-                <div className="text-[#3A453C]">Tanggal: <strong className="text-[#17251B]">{printDate}</strong></div>
-                <div className="text-[#3A453C]">Waktu: <strong className="text-[#17251B]">{printTime}</strong></div>
-                <div className="text-[7.5pt] font-semibold text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded mt-0.5 text-center">
-                  Status: Terverifikasi Digital
-                </div>
-              </div>
-            </div>
-            {/* Garis Ganda Tipis Kop Surat */}
-            <div className="border-b-[0.75px] border-[#1B432C] mt-1"></div>
-          </div>
-
-          {/* Judul Lembar Berita Acara */}
-          <div className="text-center py-1">
-            <h3 className="text-[12pt] font-extrabold uppercase tracking-wide text-[#1B432C]">
-              BERITA ACARA PEMANTAUAN GEOSPASIAL &amp; EVALUASI KERUSAKAN EKOSISTEM
-            </h3>
-            <p className="text-[9.5pt] text-[#556358] italic mt-0.5 font-medium">
-              Ringkasan Audit Telemetri Ekologi, Matriks Temuan Lapangan, dan Rekomendasi Restorasi Bengkulu
+        <div className="space-y-4">
+          
+          {/* Judul & Nomor Surat Rata Tengah Sederhana */}
+          <div className="text-center pt-2 pb-2.5 border-b-2 border-black">
+            <h1 className="text-[13pt] font-extrabold uppercase tracking-wide text-black leading-tight">
+              PEMANTAUAN GEOSPASIAL &amp; EVALUASI LAPANGAN
+            </h1>
+            <p className="text-[10.5pt] font-mono font-bold text-black mt-1">
+              Nomor: {docNumber}
+            </p>
+            <p className="text-[8.5pt] text-gray-700 mt-0.5">
+              Provinsi Bengkulu &bull; Tanggal Cetak: {printDate} &bull; Pukul: {printTime}
             </p>
           </div>
 
-          {/* 4 Kotak Metrik Ringkasan Eksekutif Telemetri (Modern Badges) */}
+          {/* 4 Kotak Metrik Ringkasan Eksekutif (Hitam Putih Murni) */}
           <div className="grid grid-cols-4 gap-2.5">
-            <div className="bg-[#F6FAF5] border border-[#D5E2D3] p-2 rounded-lg text-center">
-              <div className="text-[8pt] uppercase font-bold text-[#4A574D]">Serapan Karbon Biru</div>
-              <div className="text-[12pt] font-extrabold text-[#1B432C] font-mono mt-0.5">
-                {totalCarbonKg.toLocaleString('id-ID')} <span className="text-[8pt] font-normal text-[#556358]">kg CO₂e/th</span>
+            <div className="border border-black p-2 text-center bg-white">
+              <div className="text-[8pt] uppercase font-bold text-black">Serapan Karbon Biru</div>
+              <div className="text-[11.5pt] font-extrabold text-black font-mono mt-0.5">
+                {totalCarbonKg.toLocaleString('id-ID')} <span className="text-[8pt] font-normal text-gray-700">kg CO₂e/th</span>
               </div>
-              <div className="text-[7.5pt] text-[#718073]">Estimasi biomassa pulih</div>
+              <div className="text-[7.5pt] text-gray-600">Estimasi biomassa pulih</div>
             </div>
 
-            <div className="bg-[#FEF2F2] border border-[#FECACA] p-2 rounded-lg text-center">
-              <div className="text-[8pt] uppercase font-bold text-red-800">Sektor Kritis Aktif</div>
-              <div className="text-[12pt] font-extrabold text-red-700 font-mono mt-0.5">
-                {kritisReportsCount} <span className="text-[8pt] font-normal text-red-900">Lokasi</span>
+            <div className="border border-black p-2 text-center bg-white">
+              <div className="text-[8pt] uppercase font-bold text-black">Sektor Kritis Aktif</div>
+              <div className="text-[11.5pt] font-extrabold text-black font-mono mt-0.5">
+                {kritisReportsCount} <span className="text-[8pt] font-normal text-black">Lokasi</span>
               </div>
-              <div className="text-[7.5pt] text-red-600">Perlu rehabilitasi darurat</div>
+              <div className="text-[7.5pt] text-gray-600">Perlu rehabilitasi darurat</div>
             </div>
 
-            <div className="bg-[#F6FAF5] border border-[#D5E2D3] p-2 rounded-lg text-center">
-              <div className="text-[8pt] uppercase font-bold text-[#4A574D]">Total Temuan Lapangan</div>
-              <div className="text-[12pt] font-extrabold text-[#17251B] font-mono mt-0.5">
-                {reports.length} <span className="text-[8pt] font-normal text-[#556358]">Laporan</span>
+            <div className="border border-black p-2 text-center bg-white">
+              <div className="text-[8pt] uppercase font-bold text-black">Total Temuan</div>
+              <div className="text-[11.5pt] font-extrabold text-black font-mono mt-0.5">
+                {reports.length} <span className="text-[8pt] font-normal text-gray-700">Laporan</span>
               </div>
-              <div className="text-[7.5pt] text-[#718073]">{counts.terverifikasi} verifikasi &bull; {counts.menunggu} antre</div>
+              <div className="text-[7.5pt] text-gray-600">{counts.terverifikasi} verifikasi &bull; {counts.menunggu} antre</div>
             </div>
 
-            <div className="bg-[#F6FAF5] border border-[#D5E2D3] p-2 rounded-lg text-center">
-              <div className="text-[8pt] uppercase font-bold text-[#4A574D]">Relawan Siaga Restorasi</div>
-              <div className="text-[12pt] font-extrabold text-[#1B432C] font-mono mt-0.5">
-                {totalVolunteersCount} <span className="text-[8pt] font-normal text-[#556358]">Personel</span>
+            <div className="border border-black p-2 text-center bg-white">
+              <div className="text-[8pt] uppercase font-bold text-black">Relawan Siaga</div>
+              <div className="text-[11.5pt] font-extrabold text-black font-mono mt-0.5">
+                {totalVolunteersCount} <span className="text-[8pt] font-normal text-gray-700">Personel</span>
               </div>
-              <div className="text-[7.5pt] text-[#718073]">{campaigns.length} aksi gotong royong</div>
+              <div className="text-[7.5pt] text-gray-600">{campaigns.length} aksi gotong royong</div>
             </div>
           </div>
 
-          {/* Bagian I: Matriks Laporan Temuan Lapangan (Standar IUCN / Laporan Lingkungan) */}
+          {/* Bagian I: Matriks Temuan Degradasi Lingkungan (Hitam Putih) */}
           <div className="space-y-1.5 pt-1">
-            <div className="flex items-center justify-between text-[10pt] font-bold text-[#1B432C]">
+            <div className="flex items-center justify-between text-[10.5pt] font-bold text-black">
               <span>I. MATRIKS DOSSIER TEMUAN DEGRADASI LINGKUNGAN</span>
-              <span className="text-[8.5pt] text-[#556358] font-normal font-mono">
-                Total: {reports.length} Titik Koordinat Terverifikasi
+              <span className="text-[8.5pt] text-gray-700 font-normal font-mono">
+                Total: {reports.length} Titik Terpantau
               </span>
             </div>
 
-            <table className="w-full text-left border-collapse text-[9.5pt]">
+            <table className="w-full text-left border-collapse border border-black text-[9.5pt]">
               <thead>
-                <tr className="bg-[#1B432C] text-white font-bold text-[9.5pt]">
-                  <th className="py-2 px-2 text-center w-7 border-b border-[#163824]">No</th>
-                  <th className="py-2 px-2.5 w-48 border-b border-[#163824]">Sektor &amp; Lokasi Bengkulu</th>
-                  <th className="py-2 px-2 w-28 border-b border-[#163824]">Ekosistem</th>
-                  <th className="py-2 px-2.5 border-b border-[#163824]">Temuan Kerusakan Visual</th>
-                  <th className="py-2 px-2 text-center w-20 border-b border-[#163824]">Urgensi</th>
-                  <th className="py-2 px-2.5 w-44 border-b border-[#163824]">Rekomendasi Botani</th>
-                  <th className="py-2 px-2 text-center w-24 border-b border-[#163824]">Status</th>
+                <tr className="bg-gray-100 border-b-2 border-black text-black font-bold text-[9.5pt]">
+                  <th className="py-2 px-2 text-center w-7 border-r border-black">No</th>
+                  <th className="py-2 px-2.5 w-48 border-r border-black">Sektor &amp; Lokasi Bengkulu</th>
+                  <th className="py-2 px-2 w-28 border-r border-black">Ekosistem</th>
+                  <th className="py-2 px-2.5 border-r border-black">Temuan Kerusakan Visual</th>
+                  <th className="py-2 px-2 text-center w-24 border-r border-black">Urgensi</th>
+                  <th className="py-2 px-2.5 w-44 border-r border-black">Rekomendasi Botani</th>
+                  <th className="py-2 px-2 text-center w-24">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -1331,54 +1328,43 @@ export default function DashboardPage() {
                   return (
                     <tr 
                       key={report.id} 
-                      className={`border-b border-[#E3ECE2] ${idx % 2 === 1 ? 'bg-[#F9FBF8]' : 'bg-white'}`}
+                      className="border-b border-black text-black bg-white"
                     >
-                      <td className="py-2 px-2 text-center font-mono text-[9pt] font-semibold text-[#556358] align-top">
+                      <td className="py-2 px-2 text-center font-mono text-[9pt] font-semibold border-r border-black align-top">
                         {idx + 1}
                       </td>
-                      <td className="py-2 px-2.5 align-top">
-                        <div className="font-bold text-[#17251B] leading-tight">{report.location_name}</div>
-                        <div className="text-[8pt] text-[#556358] font-mono mt-0.5">
+                      <td className="py-2 px-2.5 border-r border-black align-top">
+                        <div className="font-bold leading-tight">{report.location_name}</div>
+                        <div className="text-[8pt] text-gray-700 font-mono mt-0.5">
                           {report.latitude.toFixed(4)}, {report.longitude.toFixed(4)}
                         </div>
                       </td>
-                      <td className="py-2 px-2 text-[#3A453C] font-medium align-top">
+                      <td className="py-2 px-2 border-r border-black align-top">
                         {ecoLabel}
                       </td>
-                      <td className="py-2 px-2.5 align-top">
-                        <div className="font-semibold text-[#17251B] leading-tight">{report.title}</div>
-                        <div className="text-[8pt] text-[#556358] leading-tight mt-0.5 line-clamp-2">
+                      <td className="py-2 px-2.5 border-r border-black align-top">
+                        <div className="font-semibold leading-tight">{report.title}</div>
+                        <div className="text-[8pt] text-gray-700 leading-tight mt-0.5 line-clamp-2">
                           {report.description}
                         </div>
                       </td>
-                      <td className="py-2 px-2 text-center align-top">
-                        <span className={`inline-block px-1.5 py-0.5 rounded text-[8pt] font-extrabold uppercase ${
-                          report.severity === 'kritis' ? 'bg-red-100 text-red-800' :
-                          report.severity === 'tinggi' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
-                        }`}>
+                      <td className="py-2 px-2 text-center border-r border-black align-top">
+                        <div className="font-bold uppercase text-[9pt]">
                           {report.severity}
-                        </span>
-                        <div className="text-[7.5pt] text-[#556358] font-mono mt-0.5">Skor: {report.urgency_score}/100</div>
+                        </div>
+                        <div className="text-[7.5pt] text-gray-700 font-mono mt-0.5">Skor: {report.urgency_score}/100</div>
                       </td>
-                      <td className="py-2 px-2.5 align-top">
-                        <div className="italic text-[#17251B] font-medium leading-tight">
+                      <td className="py-2 px-2.5 border-r border-black align-top">
+                        <div className="italic font-medium leading-tight">
                           {report.ai_analysis?.spesies_rekomendasi || 'Vegetasi perintis abrasi'}
                         </div>
-                        <div className="text-[7.5pt] text-emerald-800 font-semibold mt-0.5">
-                          +{report.ai_analysis?.estimasi_serapan_karbon_tahunan_kg || 250} kg CO₂e/th
+                        <div className="text-[7.5pt] text-gray-700 font-medium mt-0.5">
+                          Potensi: +{report.ai_analysis?.estimasi_serapan_karbon_tahunan_kg || 250} kg CO₂e/th
                         </div>
                       </td>
-                      <td className="py-2 px-2 text-center align-top">
-                        <span className={`inline-block px-2 py-0.5 rounded-full text-[8pt] font-semibold ${
-                          report.status === 'terverifikasi' 
-                            ? 'bg-emerald-100 text-emerald-900 border border-emerald-300' 
-                            : report.status === 'dalam_aksi'
-                            ? 'bg-blue-100 text-blue-900 border border-blue-300'
-                            : 'bg-amber-100 text-amber-900 border border-amber-300'
-                        }`}>
-                          {report.status === 'terverifikasi' ? 'Terverifikasi' :
-                           report.status === 'dalam_aksi' ? 'Ditinjau' : 'Menunggu'}
-                        </span>
+                      <td className="py-2 px-2 text-center align-top font-semibold text-[9pt]">
+                        {report.status === 'terverifikasi' ? 'Terverifikasi' :
+                         report.status === 'dalam_aksi' ? 'Ditinjau' : 'Menunggu'}
                       </td>
                     </tr>
                   );
@@ -1388,68 +1374,68 @@ export default function DashboardPage() {
           </div>
 
           {/* Catatan Kaki Halaman 1 */}
-          <div className="border-t border-[#D5E2D3] pt-1.5 text-[8pt] text-[#718073] flex justify-between items-center">
-            <span>Platform Pemantauan GreenScope &bull; Berita Acara Resmi Konservasi Bengkulu</span>
+          <div className="border-t border-black pt-1.5 text-[8pt] text-gray-700 flex justify-between items-center">
+            <span>Sistem Informasi Pemantauan Lingkungan GreenScope &bull; Format Dokumen Cetak Resmi</span>
             <span className="font-mono font-semibold">Halaman 1 dari 2</span>
           </div>
         </div>
 
         {/* ============================================================
-            HALAMAN 2: RENCANA AKSI, REKOMENDASI TEKNIS & PENGESAHAN DOKUMEN
+            HALAMAN 2: RENCANA AKSI & PENGESAHAN DOKUMEN (HITAM PUTIH)
             ============================================================ */}
         <div className="print-page-break pt-4 space-y-4">
           
-          {/* Sub-Header Pengenal Halaman 2 */}
-          <div className="border-b border-[#D5E2D3] pb-1.5 flex items-center justify-between text-[8.5pt] text-[#556358]">
-            <span className="font-bold text-[#1B432C]">
-              PEMERINTAH PROVINSI BENGKULU &amp; BALAI KONSERVASI SUMBER DAYA ALAM (BKSDA)
+          {/* Sub-Header Halaman 2 */}
+          <div className="border-b border-black pb-1.5 flex items-center justify-between text-[9pt] text-black">
+            <span className="font-bold">
+              PEMANTAUAN GEOSPASIAL &amp; EVALUASI LAPANGAN
             </span>
-            <span className="font-mono">Lampiran Dokumen BA.08/GS-BKL/XI/2026</span>
+            <span className="font-mono font-bold">Nomor: {docNumber}</span>
           </div>
 
           {/* Bagian II: Rencana Aksi Mobilisasi Restorasi Gotong Royong */}
           {campaigns.length > 0 && (
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-[10pt] font-bold text-[#1B432C]">
+              <div className="flex items-center justify-between text-[10.5pt] font-bold text-black">
                 <span>II. RENCANA AKSI MOBILISASI RESTORASI (KAMPANYE GOTONG ROYONG)</span>
-                <span className="text-[8.5pt] text-[#556358] font-normal font-mono">
+                <span className="text-[8.5pt] text-gray-700 font-normal font-mono">
                   {campaigns.length} Sektor Siap Eksekusi
                 </span>
               </div>
 
-              <table className="w-full text-left border-collapse text-[9.5pt]">
+              <table className="w-full text-left border-collapse border border-black text-[9.5pt]">
                 <thead>
-                  <tr className="bg-[#1B432C] text-white font-bold text-[9.5pt]">
-                    <th className="py-2 px-2 text-center w-7 border-b border-[#163824]">No</th>
-                    <th className="py-2 px-2.5 border-b border-[#163824]">Nama Gerakan Aksi</th>
-                    <th className="py-2 px-2.5 w-48 border-b border-[#163824]">Lokasi Sektor Target</th>
-                    <th className="py-2 px-2 text-center w-28 border-b border-[#163824]">Target Restorasi</th>
-                    <th className="py-2 px-2 text-center w-28 border-b border-[#163824]">Relawan Siaga</th>
-                    <th className="py-2 px-2.5 w-44 border-b border-[#163824]">Mitra Penggerak</th>
+                  <tr className="bg-gray-100 border-b-2 border-black text-black font-bold text-[9.5pt]">
+                    <th className="py-2 px-2 text-center w-7 border-r border-black">No</th>
+                    <th className="py-2 px-2.5 border-r border-black">Nama Gerakan Aksi</th>
+                    <th className="py-2 px-2.5 w-48 border-r border-black">Lokasi Sektor Target</th>
+                    <th className="py-2 px-2 text-center w-28 border-r border-black">Target Restorasi</th>
+                    <th className="py-2 px-2 text-center w-28 border-r border-black">Relawan Siaga</th>
+                    <th className="py-2 px-2.5">Mitra Penggerak</th>
                   </tr>
                 </thead>
                 <tbody>
                   {campaigns.map((camp, idx) => (
                     <tr 
                       key={camp.id} 
-                      className={`border-b border-[#E3ECE2] ${idx % 2 === 1 ? 'bg-[#F9FBF8]' : 'bg-white'}`}
+                      className="border-b border-black text-black bg-white"
                     >
-                      <td className="py-2 px-2 text-center font-mono text-[9pt] font-semibold text-[#556358] align-top">
+                      <td className="py-2 px-2 text-center font-mono text-[9pt] font-semibold border-r border-black align-top">
                         {idx + 1}
                       </td>
-                      <td className="py-2 px-2.5 align-top font-bold text-[#17251B] leading-tight">
+                      <td className="py-2 px-2.5 border-r border-black align-top font-bold leading-tight">
                         {camp.title}
                       </td>
-                      <td className="py-2 px-2.5 align-top text-[#3A453C]">
+                      <td className="py-2 px-2.5 border-r border-black align-top">
                         {camp.location_name}
                       </td>
-                      <td className="py-2 px-2 text-center align-top font-mono font-bold text-[#1B432C]">
+                      <td className="py-2 px-2 text-center border-r border-black align-top font-mono font-bold">
                         {camp.target_trees.toLocaleString('id-ID')} Batang
                       </td>
-                      <td className="py-2 px-2 text-center align-top font-mono text-[#17251B]">
-                        <strong>{camp.volunteers_count}</strong> / {camp.target_volunteers} Personel
+                      <td className="py-2 px-2 text-center border-r border-black align-top font-mono">
+                        {camp.volunteers_count} / {camp.target_volunteers} Personel
                       </td>
-                      <td className="py-2 px-2.5 align-top text-[#3A453C] font-medium">
+                      <td className="py-2 px-2.5 align-top">
                         {camp.coordinator_name}
                       </td>
                     </tr>
@@ -1459,12 +1445,12 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* Bagian III: Telaah Rekomendasi Kebijakan Lapangan */}
-          <div className="bg-[#F6FAF5] border border-[#D5E2D3] p-3 rounded-lg space-y-1.5 text-[9.5pt]">
-            <div className="font-bold text-[#1B432C] uppercase text-[9.5pt] tracking-wide">
+          {/* Bagian III: Catatan & Rekomendasi Tindak Lanjut Teknis */}
+          <div className="border border-black p-3 space-y-1.5 text-[9.5pt] bg-white">
+            <div className="font-bold text-black uppercase text-[9.5pt] tracking-wide">
               III. CATATAN &amp; REKOMENDASI TINDAK LANJUT TEKNIS
             </div>
-            <ol className="list-decimal list-inside space-y-1 text-[#3A453C] leading-relaxed">
+            <ol className="list-decimal list-inside space-y-1 text-black leading-relaxed">
               <li>
                 <strong>Prioritas Rehabilitasi Segera:</strong> Penanganan pemulihan difokuskan pada sektor bertingkat urgensi Kritis, terutama sabuk bakau Teluk Pulau Baai dan zona abrasi aktif Pantai Panjang.
               </li>
@@ -1478,66 +1464,61 @@ export default function DashboardPage() {
           </div>
 
           {/* Bagian IV: Lembar Pengesahan & Tanda Tangan Resmi */}
-          <div className="pt-3 border-t border-[#D5E2D3] print-avoid-break space-y-3">
-            <div className="text-right text-[9.5pt] text-[#3A453C]">
+          <div className="pt-3 border-t border-black print-avoid-break space-y-4">
+            <div className="text-right text-[9.5pt] text-black">
               Ditetapkan di: <strong>Bengkulu</strong>, pada tanggal: <strong>{printDate}</strong>
             </div>
 
             <div className="grid grid-cols-2 gap-8 text-center text-[9.5pt]">
               {/* Kolom Surveyor */}
-              <div className="space-y-10 border border-[#D5E2D3] p-3 rounded-lg bg-[#FAFDF9]">
+              <div className="space-y-14 p-2">
                 <div>
-                  <p className="text-[8.5pt] text-[#556358] uppercase font-bold tracking-wider">
+                  <p className="text-[8.5pt] text-black uppercase font-bold tracking-wider">
                     Pihak Pemeriksa &amp; Surveyor:
                   </p>
-                  <p className="font-bold text-[#17251B] mt-0.5">Tim Monitoring Lapangan GreenScope</p>
+                  <p className="font-bold text-black mt-0.5">Tim Monitoring Lapangan GreenScope</p>
                 </div>
                 <div className="space-y-1">
-                  <div className="w-48 border-b-2 border-[#1B432C] mx-auto"></div>
-                  <p className="font-bold text-[#1B432C]">Sufyan Tsaury</p>
-                  <p className="text-[8pt] text-[#556358]">Surveyor Geospasial &bull; ID: GS-FLD-2026</p>
+                  <div className="w-48 border-b-2 border-black mx-auto"></div>
+                  <p className="font-bold text-black">Sufyan Tsaury</p>
+                  <p className="text-[8pt] text-gray-700">Surveyor Geospasial &bull; ID: GS-FLD-2026</p>
                 </div>
               </div>
 
               {/* Kolom Koordinator BKSDA */}
-              <div className="space-y-10 border border-[#D5E2D3] p-3 rounded-lg bg-[#FAFDF9]">
+              <div className="space-y-14 p-2">
                 <div>
-                  <p className="text-[8.5pt] text-[#556358] uppercase font-bold tracking-wider">
+                  <p className="text-[8.5pt] text-black uppercase font-bold tracking-wider">
                     Mengetahui dan Mengesahkan:
                   </p>
-                  <p className="font-bold text-[#17251B] mt-0.5">
+                  <p className="font-bold text-black mt-0.5">
                     {coordinator?.isAuthenticated ? (coordinator.name || 'Koordinator Resmi BKSDA Bengkulu') : 'Koordinator BKSDA & GreenScope Bengkulu'}
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <div className="w-52 border-b-2 border-[#1B432C] mx-auto"></div>
-                  <p className="font-bold text-[#1B432C]">
+                  <div className="w-52 border-b-2 border-black mx-auto"></div>
+                  <p className="font-bold text-black">
                     {coordinator?.isAuthenticated ? (coordinator.name || 'Rahmat Hidayat, S.Hut., M.Si.') : 'Rahmat Hidayat, S.Hut., M.Si.'}
                   </p>
-                  <p className="text-[8pt] text-[#556358]">NIP. 19850412 201001 1 008 &bull; BKSDA Bengkulu</p>
+                  <p className="text-[8pt] text-gray-700">NIP. 19850412 201001 1 008 &bull; BKSDA Bengkulu</p>
                 </div>
               </div>
             </div>
 
-            {/* Electronic Verification Token Box */}
-            <div className="border border-[#D5E2D3] bg-[#F6FAF5] p-2 rounded-lg flex items-center justify-between text-[8pt] text-[#556358]">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded bg-emerald-700 text-white flex items-center justify-center font-bold text-[7pt] shrink-0 font-mono">
-                  E-DOC
-                </div>
-                <div>
-                  <span className="font-semibold text-[#1B432C]">Sertifikasi Keabsahan Digital:</span> Dokumen ini dicetak otomatis dan tersimpan permanen pada basis data cloud PostgreSQL GreenScope.
-                </div>
+            {/* Catatan Kaki Legalitas */}
+            <div className="border border-black p-2 flex items-center justify-between text-[8pt] text-black bg-white">
+              <div>
+                <strong>Sertifikasi Keabsahan Digital:</strong> Dokumen ini dicetak otomatis dan tersimpan permanen pada basis data cloud PostgreSQL GreenScope.
               </div>
-              <div className="font-mono text-[7.5pt] text-[#718073] shrink-0 ml-2">
+              <div className="font-mono text-[7.5pt] text-gray-700 shrink-0 ml-2">
                 SHA-256: 8a7c...4f9b
               </div>
             </div>
           </div>
 
           {/* Catatan Kaki Halaman 2 */}
-          <div className="border-t border-[#D5E2D3] pt-1.5 text-[8pt] text-[#718073] flex justify-between items-center">
-            <span>Dicetak otomatis melalui Platform GreenScope &bull; IT RUSH 2026 Web Development Competition</span>
+          <div className="border-t border-black pt-1.5 text-[8pt] text-gray-700 flex justify-between items-center">
+            <span>Platform Pemantauan GreenScope &bull; IT RUSH 2026 Web Development Competition</span>
             <span className="font-mono font-semibold">Halaman 2 dari 2 (Selesai)</span>
           </div>
 

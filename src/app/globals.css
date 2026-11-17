@@ -149,7 +149,7 @@ body {
   /* Reset layout agar konten cetak mengambil lebar penuh kertas putih bersih */
   html, body {
     background: #FFFFFF !important;
-    color: #17251B !important;
+    color: #000000 !important;
     font-size: 11pt !important;
     line-height: 1.4 !important;
     margin: 0 !important;
