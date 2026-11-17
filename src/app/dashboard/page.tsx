@@ -105,6 +105,7 @@ export default function DashboardPage() {
             if (prev.some((r) => r.id === newRep.id)) return prev;
             return [newRep, ...prev];
           });
+          setMapSelectedReport(newRep);
           showToast(`Laporan baru masuk secara realtime: "${newRep.title}"`, 'info');
         } else if (event.type === 'UPDATE' && (event.report || event.id)) {
           const targetId = event.id || event.report?.id;

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { 
   MapPin, 
   Filter, 
@@ -37,14 +38,17 @@ const MapInner = dynamic(() => import('@/components/map-inner'), {
   loading: () => (
     <div className="w-full h-full flex flex-col items-center justify-center bg-[#F7F9F6] text-[#7A8278] space-y-3">
       <div className="w-10 h-10 border-4 border-[#52B040] border-t-transparent rounded-full animate-spin"></div>
-      <span className="text-xs font-semibold">Memuat Peta WebGIS Bengkulu...</span>
+      <span className="text-xs font-semibold">Memuat Peta WebGIS...</span>
     </div>
   ),
 });
 
-export default function PetaPage() {
+function PetaContent() {
+  const searchParams = useSearchParams();
+  const targetReportId = searchParams.get('report_id');
+
   const [reports, setReports] = useState<Report[]>(INITIAL_REPORTS);
-  const [selectedReport, setSelectedReport] = useState<Report | null>(INITIAL_REPORTS[0]);
+  const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [filterEcosystem, setFilterEcosystem] = useState<string>('all');
   const [filterSeverity, setFilterSeverity] = useState<string>('all');
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
@@ -62,6 +66,15 @@ export default function PetaPage() {
       const data = await fetchReports();
       setReports(data);
       if (data.length > 0) {
+        // Jika ada target report_id di URL (misal baru dibuat di Cirebon), langsung pilih & terbangkan kamera
+        if (targetReportId) {
+          const match = data.find((d) => d.id === targetReportId);
+          if (match) {
+            setSelectedReport(match);
+            return;
+          }
+        }
+        // Default ke laporan terbaru (data[0]) atau laporan aktif saat ini
         setSelectedReport((prev) => (prev ? (data.find((d) => d.id === prev.id) || data[0]) : data[0]));
       }
     }
@@ -77,6 +90,8 @@ export default function PetaPage() {
             if (prev.some((r) => r.id === newRep.id)) return prev;
             return [newRep, ...prev];
           });
+          // Otomatis aktifkan laporan baru dan terbangkan kamera peta ke titik koordinatnya secara realtime!
+          setSelectedReport(newRep);
           setRealtimeToast({
             title: newRep.title,
             location: newRep.location_name
@@ -474,5 +489,18 @@ export default function PetaPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function PetaPage() {
+  return (
+    <Suspense fallback={
+      <div className="w-full h-[calc(100vh-4rem)] flex flex-col items-center justify-center bg-[#F7F9F6] text-[#7A8278] space-y-3">
+        <div className="w-10 h-10 border-4 border-[#52B040] border-t-transparent rounded-full animate-spin"></div>
+        <span className="text-xs font-semibold">Memuat Peta WebGIS...</span>
+      </div>
+    }>
+      <PetaContent />
+    </Suspense>
   );
 }

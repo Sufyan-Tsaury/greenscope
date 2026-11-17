@@ -541,38 +541,69 @@ export async function fetchReports(): Promise<Report[]> {
       ...normalizedReports.filter((nr) => !localCustom.some((c) => c.id === nr.id))
     ];
 
-    return merged.filter((r) => !deletedIds.includes(r.id));
+    const nonDeleted = merged.filter((r) => !deletedIds.includes(r.id));
+
+    // Deduplikasi ketat: hilangkan data kembar yang tersimpan akibat ID lokal vs Supabase berbeda
+    const seenIds = new Set<string>();
+    const seenSignatures = new Set<string>();
+    const deduplicated: Report[] = [];
+
+    for (const r of nonDeleted) {
+      const signature = `${r.title.trim().toLowerCase()}-${Number(r.latitude).toFixed(3)}-${Number(r.longitude).toFixed(3)}`;
+      if (!seenIds.has(r.id) && !seenSignatures.has(signature)) {
+        seenIds.add(r.id);
+        seenSignatures.add(signature);
+        deduplicated.push(r);
+      }
+    }
+
+    return deduplicated;
   } catch (err) {
     console.warn('Gagal memuat dari Supabase, beralih ke data lokal:', err);
     const merged = [
       ...localCustom,
       ...INITIAL_REPORTS.filter((init) => !localCustom.some((c) => c.id === init.id))
     ];
-    return merged.filter((r) => !deletedIds.includes(r.id));
+    const nonDeleted = merged.filter((r) => !deletedIds.includes(r.id));
+
+    const seenIds = new Set<string>();
+    const seenSignatures = new Set<string>();
+    const deduplicated: Report[] = [];
+
+    for (const r of nonDeleted) {
+      const signature = `${r.title.trim().toLowerCase()}-${Number(r.latitude).toFixed(3)}-${Number(r.longitude).toFixed(3)}`;
+      if (!seenIds.has(r.id) && !seenSignatures.has(signature)) {
+        seenIds.add(r.id);
+        seenSignatures.add(signature);
+        deduplicated.push(r);
+      }
+    }
+
+    return deduplicated;
   }
 }
 
 /**
  * Menyimpan laporan baru hasil pemindaian ScopeLens (Local-First + Supabase + Realtime Broadcast)
+ * Menggunakan UUID tunggal yang konsisten agar tidak memicu duplikasi data di tabel
  */
 export async function saveReport(report: Omit<Report, 'id' | 'created_at'>): Promise<Report> {
+  const newId = typeof crypto !== 'undefined' && crypto.randomUUID 
+    ? crypto.randomUUID() 
+    : `rep-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+
   const newReport: Report = {
     ...report,
-    id: `rep-${Date.now()}`,
+    id: newId,
     created_at: new Date().toISOString()
   };
-
-  // Selalu simpan ke localStorage secara instan agar laporan tidak hilang
-  saveLocalReport(newReport);
-
-  // Siarkan ke seluruh perangkat lain secara real-time
-  broadcastReportChange('INSERT', newReport);
 
   if (isSupabaseConfigured && supabase) {
     try {
       const { data, error } = await supabase
         .from('reports')
         .insert([{
+          id: newId,
           reporter_name: report.reporter_name,
           title: report.title,
           description: report.description,
@@ -592,15 +623,20 @@ export async function saveReport(report: Omit<Report, 'id' | 'created_at'>): Pro
       if (!error && data) {
         const dbReport = data as Report;
         saveLocalReport(dbReport);
-        // Siarkan pembaruan dengan ID database resmi
+        // Siarkan satu kali dengan ID resmi
         broadcastReportChange('INSERT', dbReport);
         return dbReport;
+      } else if (error) {
+        console.warn('Supabase insert warning, beralih ke penyimpanan lokal:', error.message);
       }
     } catch (err) {
       console.error('Error saat menyimpan ke Supabase:', err);
     }
   }
 
+  // Fallback simpan lokal & siarkan jika Supabase tidak terhubung atau offline
+  saveLocalReport(newReport);
+  broadcastReportChange('INSERT', newReport);
   return newReport;
 }
 

@@ -3,7 +3,6 @@
 import { useState, useEffect, Suspense, useId } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import confetti from 'canvas-confetti';
 import { 
   Users, 
   Trees, 
@@ -181,12 +180,6 @@ function AksiContent() {
     setVolName('');
     setVolWhatsapp('');
 
-    confetti({
-      particleCount: 110,
-      spread: 75,
-      origin: { y: 0.6 }
-    });
-
     showToast(`Selamat ${regData.name}! Anda resmi terdaftar di ${regData.squad}.`);
   };
 
@@ -270,12 +263,6 @@ function AksiContent() {
       setCampaigns((prev) => [newCamp, ...prev]);
       setIsModalOpen(false);
       setSelectedBrief(newCamp);
-
-      confetti({
-        particleCount: 120,
-        spread: 80,
-        origin: { y: 0.5 }
-      });
 
       showToast('Rencana Aksi Berhasil Dirancang! Siklus konservasi tertutup aktif.');
     } catch (err) {

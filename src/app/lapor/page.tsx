@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import confetti from 'canvas-confetti';
 import { 
   Camera, 
   UploadCloud, 
@@ -94,6 +93,13 @@ export default function LaporPage() {
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [savedReportId, setSavedReportId] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(false);
+
+  // Otomatis aktifkan pencarian GPS riil perangkat saat halaman formulir dimuat
+  useEffect(() => {
+    if (typeof window !== 'undefined' && navigator.geolocation && !coordinates) {
+      handleGetActualLocation();
+    }
+  }, []);
 
   // Akses sensor geolokasi GPS aktual dari peramban perangkat pengguna secara universal
   const handleGetActualLocation = () => {
@@ -234,20 +240,24 @@ export default function LaporPage() {
     try {
       const detectedEco: EcosystemType = analysisResult.ekosistem_terdeteksi || 'pesisir_pantai';
       
-      // Prioritaskan koordinat GPS aktual perangkat atau lokasi Bengkulu yang dipilih
+      // Prioritaskan koordinat GPS aktual perangkat pengguna
       const fallbackLat = detectedEco === 'mangrove' ? -3.9056 : detectedEco === 'hutan_tropis' ? -3.7540 : -3.8214;
       const fallbackLng = detectedEco === 'mangrove' ? 102.3021 : detectedEco === 'hutan_tropis' ? 102.4050 : 102.2741;
       const finalLat = coordinates ? coordinates.lat : fallbackLat;
       const finalLng = coordinates ? coordinates.lng : fallbackLng;
 
+      const defaultLocName = coordinates
+        ? `Titik Pengamatan [${finalLat.toFixed(4)}, ${finalLng.toFixed(4)}]`
+        : (detectedEco === 'hutan_tropis' ? 'Kawasan Hutan Lindung' : 'Wilayah Pesisir');
+
       const saved = await saveReport({
-        reporter_name: 'Relawan Konservasi Bengkulu',
-        title: customTitle || analysisResult.judul_rekomendasi || `${analysisResult.kategori} - ${locationName || 'Bengkulu'}`,
+        reporter_name: 'Relawan Konservasi Lapangan',
+        title: customTitle || analysisResult.judul_rekomendasi || `${analysisResult.kategori} - ${locationName || 'Temuan Lapangan'}`,
         description: description || analysisResult.estimasi_risiko,
         image_url: selectedImage,
         latitude: finalLat,
         longitude: finalLng,
-        location_name: locationName.trim() || (detectedEco === 'hutan_tropis' ? 'Koridor Hutan Bengkulu' : 'Kawasan Pesisir Bengkulu'),
+        location_name: locationName.trim() || defaultLocName,
         ecosystem: detectedEco,
         urgency_score: analysisResult.skor_urgensi,
         severity: analysisResult.tingkat_keparahan,
@@ -257,11 +267,6 @@ export default function LaporPage() {
 
       setSavedReportId(saved.id);
       setSavedSuccess(true);
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
     } catch (err) {
       console.error('Gagal menyimpan:', err);
     } finally {
@@ -699,21 +704,21 @@ export default function LaporPage() {
 
                     <div className="pt-2">
                       {savedSuccess ? (
-                        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-3">
-                          <div className="flex items-center justify-center gap-2 text-emerald-800 font-bold text-sm">
-                            <CheckCircle2 className="w-5 h-5 text-[#348D32]" />
-                            <span>Laporan Berhasil Disimpan ke Sistem Konservasi!</span>
+                        <div className="p-5 rounded-2xl bg-[#F7F9F6] border border-[#d2ebd0] text-left space-y-3 shadow-xs">
+                          <div className="flex items-center gap-2 text-[#348D32] font-bold text-sm">
+                            <CheckCircle2 className="w-5 h-5 text-[#52B040] shrink-0" />
+                            <span>Laporan Berhasil Dicatat &amp; Diterbitkan ke Basis Data Cloud</span>
                           </div>
-                          <p className="text-xs text-[#4A5449]">
-                            Data temuan ini telah dipetakan ke WebGIS Bengkulu dan siap ditindaklanjuti menjadi rencana aksi gotong royong lapangan.
+                          <p className="text-xs text-[#4A5449] leading-relaxed">
+                            Data temuan kerusakan telah disinkronkan ke basis data spasial real-time. Anda dapat langsung membuka sebaran titik koordinat di peta atau menyusun agenda gotong royong lapangan.
                           </p>
-                          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-1">
+                          <div className="flex flex-col sm:flex-row items-center gap-2 pt-1">
                             <Link
-                              href="/peta"
+                              href={savedReportId ? `/peta?report_id=${savedReportId}` : '/peta'}
                               className="w-full sm:w-auto px-5 py-2.5 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] transition-colors shadow-xs flex items-center justify-center gap-1.5"
                             >
                               <MapPin className="w-3.5 h-3.5" />
-                              <span>Lihat di ScopeMap WebGIS</span>
+                              <span>Buka Posisi di Peta WebGIS</span>
                             </Link>
                             <Link
                               href={savedReportId ? `/aksi?report_id=${savedReportId}` : '/aksi'}
