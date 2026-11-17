@@ -360,7 +360,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="py-8 sm:py-12 bg-[#F5F7F4] min-h-[calc(100vh-4rem)] text-[#17251B] font-sans">
+    <div className="py-8 sm:py-12 bg-[#F5F7F4] min-h-[calc(100vh-4rem)] text-[#17251B] font-sans print:bg-white print:p-0 print:m-0 print:min-h-0">
       
       <AnimatePresence>
         {toastMessage && (
@@ -385,7 +385,7 @@ export default function DashboardPage() {
         )}
       </AnimatePresence>
 
-      <div className="no-print max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
+      <div className="no-print print:hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
         
         {/* --- ZONA 1: DASHBOARD INTRODUCTION & OPERATIONAL BAR --- */}
         <div className="space-y-4">
@@ -410,7 +410,7 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2.5 self-start lg:self-center">
+            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap shrink-0">
               {coordinator?.isAuthenticated ? (
                 <div className="flex items-center gap-2 p-1 rounded-full bg-white border border-[#E3EAE3] shadow-xs">
                   <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#EAF5E6] text-xs font-semibold text-[#176B35]">
@@ -427,29 +427,31 @@ export default function DashboardPage() {
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center gap-2">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#E3EAE3] bg-white text-xs text-[#78847B] shadow-xs">
-                    <Leaf className="w-3.5 h-3.5 text-[#329F45]" />
-                    <span>Mode Pengamat Publik</span>
-                  </div>
-                  <Link
-                    href="/login?redirect=/dashboard"
-                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold text-white bg-[#176B35] hover:bg-[#0D381E] transition-colors shadow-xs"
-                  >
-                    <LogIn className="w-3.5 h-3.5" />
-                    <span>Masuk Koordinator</span>
-                  </Link>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#E3EAE3] bg-white text-xs font-medium text-[#78847B] shadow-xs whitespace-nowrap">
+                  <Leaf className="w-3.5 h-3.5 text-[#329F45]" />
+                  <span>Pengamat Publik</span>
                 </div>
               )}
 
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#E3EAE3] bg-white hover:bg-[#F5F7F4] text-[#17251B] text-xs font-medium transition-colors cursor-pointer shadow-xs"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#E3EAE3] bg-white hover:bg-[#F5F7F4] text-[#17251B] text-xs font-medium transition-colors cursor-pointer shadow-xs whitespace-nowrap"
+                title="Cetak Berita Acara & Ringkasan Eksekutif (PDF / A4)"
               >
                 <Printer className="w-3.5 h-3.5 text-[#329F45]" />
-                <span className="hidden sm:inline">Cetak Ringkasan</span>
+                <span>Cetak Ringkasan</span>
               </button>
+
+              {!coordinator?.isAuthenticated && (
+                <Link
+                  href="/login?redirect=/dashboard"
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold text-white bg-[#176B35] hover:bg-[#0D381E] transition-colors shadow-xs whitespace-nowrap"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>Masuk Koordinator</span>
+                </Link>
+              )}
             </div>
           </div>
 
@@ -1030,7 +1032,7 @@ export default function DashboardPage() {
       {/* Modal Verifikasi & Detail Dossier Temuan */}
       <AnimatePresence>
         {selectedReport && (
-          <div className="no-print fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="no-print print:hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
             <motion.div
               initial={{ opacity: 0, scale: 0.96, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -1224,7 +1226,7 @@ export default function DashboardPage() {
           DOSSIER RESMI CETAK (HANYA MUNCUL SAAT WINDOW.PRINT)
           LEMBAR LAPORAN RINGKASAN EKSEKUTIF RESTORASI BENGKULU
           ============================================================ */}
-      <div className="print-only font-sans text-black p-2 space-y-3.5 max-w-4xl mx-auto">
+      <div className="print-only hidden print:block font-sans text-black p-2 space-y-3.5 max-w-4xl mx-auto">
         {/* Kop Surat Dokumen Resmi */}
         <div className="border-b-2 border-black pb-2 space-y-1">
           <div className="flex items-center justify-between">

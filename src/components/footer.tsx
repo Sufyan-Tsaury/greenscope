@@ -4,7 +4,7 @@ import { Globe, Heart } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#F7F9F6] text-[#7A8278] border-t border-[#E7ECE5] mt-auto pb-20 md:pb-8">
+    <footer className="no-print print:hidden bg-[#F7F9F6] text-[#7A8278] border-t border-[#E7ECE5] mt-auto pb-20 md:pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
           

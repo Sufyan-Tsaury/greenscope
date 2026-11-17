@@ -50,7 +50,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#E7ECE5] transition-all">
+      <header className="no-print print:hidden sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#E7ECE5] transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
             
@@ -221,7 +221,7 @@ export default function Navbar() {
       </header>
 
       {/* Docked Clean Bottom Navigation Bar for Mobile */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E7ECE5] px-2 py-2">
+      <div className="no-print lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E7ECE5] px-2 py-2">
         <div className="flex items-center justify-around">
           {navLinks.map((item) => {
             const Icon = item.icon;
