@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Globe, Heart } from 'lucide-react';
+import { Globe } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -98,10 +98,7 @@ export default function Footer() {
         {/* Bottom Credits */}
         <div className="pt-6 border-t border-[#E7ECE5] flex flex-col sm:flex-row items-center justify-between text-xs text-[#7A8278] gap-4">
           <p>© 2026 GreenScope. Inisiatif Pemantauan &amp; Restorasi Pesisir Bengkulu.</p>
-          <div className="flex items-center gap-1.5">
-            <span>Didedikasikan untuk kelestarian pesisir &amp; hutan Bengkulu</span>
-            <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 inline" />
-          </div>
+          <p>Didedikasikan untuk kelestarian pesisir &amp; hutan Bengkulu.</p>
         </div>
       </div>
     </footer>

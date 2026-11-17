@@ -224,15 +224,6 @@ function PetaContent() {
                     BENGKULU
                   </span>
                 </h1>
-                
-                <div 
-                  className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#EAF5E6] border border-[#d2ebd0] text-[10px] font-semibold text-[#348D32]"
-                  title="Sinkronisasi multi-perangkat aktif via Supabase WebSocket"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#52B040] animate-pulse"></span>
-                  <span className="hidden sm:inline">Realtime Aktif</span>
-                  <span className="sm:hidden">Live</span>
-                </div>
               </div>
               <span className="text-[11px] text-[#7A8278] hidden sm:block">
                 Menampilkan {filteredReports.length} dari {reports.length} titik pantau

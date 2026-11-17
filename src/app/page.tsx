@@ -157,14 +157,10 @@ export default function HomePage() {
                   
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 z-15 pointer-events-none"></div>
                   
-                  <div className="absolute top-3.5 inset-x-3.5 flex items-center justify-between text-[11px] z-20">
+                  <div className="absolute top-3.5 left-3.5 z-20">
                     <div className="inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[#202820] border border-[#E7ECE5] shadow-xs font-mono text-[10px]">
                       <Compass className="w-3.5 h-3.5 text-[#52B040]" />
                       <span>{HERO_SLIDES[currentHeroSlide].coordinates}</span>
-                    </div>
-                    <div className="inline-flex items-center gap-1.5 bg-[#202820]/80 backdrop-blur-md text-white px-3 py-1 rounded-full text-[10px] font-semibold shadow-xs border border-white/20">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#52B040] animate-ping"></span>
-                      <span>Foto Lapangan Asli</span>
                     </div>
                   </div>
 

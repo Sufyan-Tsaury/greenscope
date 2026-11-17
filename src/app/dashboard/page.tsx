@@ -392,19 +392,9 @@ export default function DashboardPage() {
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 pb-6 border-b border-[#E3EAE3]">
             
             <div className="space-y-1.5 text-left">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#17251B] tracking-tight">
-                  Pusat Kendali Restorasi Lapangan
-                </h1>
-                
-                <div 
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EAF5E6] border border-[#d2ebd0] text-[11px] font-semibold text-[#176B35]"
-                  title="Sinkronisasi WebSocket Supabase aktif di seluruh perangkat"
-                >
-                  <span className="w-2 h-2 rounded-full bg-[#329F45] animate-pulse"></span>
-                  <span>Realtime Aktif</span>
-                </div>
-              </div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#17251B] tracking-tight">
+                Pusat Kendali Restorasi Lapangan
+              </h1>
               <p className="text-[#78847B] text-xs sm:text-sm font-normal max-w-2xl leading-relaxed">
                 Pemantauan spasial pesisir Bengkulu secara langsung, evaluasi citra Computer Vision, dan orkestrasi gotong royong penanaman bibit mangrove.
               </p>
@@ -1011,18 +1001,10 @@ export default function DashboardPage() {
             )}
           </div>
 
-          <div className="p-4 bg-[#F5F7F4] border-t border-[#E3EAE3] flex flex-col sm:flex-row items-center justify-between text-xs text-[#78847B] gap-2">
+          <div className="p-4 bg-[#F5F7F4] border-t border-[#E3EAE3] flex items-center justify-between text-xs text-[#78847B]">
             <span>
               Menampilkan <strong className="text-[#17251B]">{filteredReports.length}</strong> dari {reports.length} total laporan lapangan
             </span>
-            <div className="flex items-center gap-1.5 text-[11px] text-[#4A5449]">
-              <span className={`w-2 h-2 rounded-full ${isSupabaseConfigured ? 'bg-[#329F45]' : 'bg-emerald-500'}`}></span>
-              <span>
-                {isSupabaseConfigured
-                  ? 'Sinkronisasi cloud Supabase PostgreSQL aktif'
-                  : 'Penyimpanan Lokal Aktif (Tersimpan di peramban)'}
-              </span>
-            </div>
           </div>
 
         </div>
