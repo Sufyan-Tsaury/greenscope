@@ -190,9 +190,12 @@ export function subscribeToAuthChange(callback: (session: CoordinatorSession | n
 const LOCAL_STORAGE_REPORTS_KEY = 'greenscope_custom_reports';
 const LOCAL_STORAGE_DELETED_KEY = 'greenscope_deleted_report_ids';
 
-// Titik uji di luar cakupan konservasi Bengkulu (seperti Cirebon) yang di-blacklist secara permanen
+// Titik uji sisa masa lalu yang disaring secara permanen agar seluruh perangkat menampilkan data awal yang bersih
 const KNOWN_PURGED_IDS = [
-  '00e8c932-f13a-4816-bd48-3451af30513a' // Titik Cirebon [-6.73445, 108.530707]
+  '00e8c932-f13a-4816-bd48-3451af30513a',
+  'd776cd5c-9fa8-4460-82b0-3ca6f57bc095', // Titik Lapangan Cirebon [-6.734482, 108.530736]
+  '485d8e10-16ea-49b0-a9ff-9bd9db43973e', // Titik Uji Penanganan Pemadaman
+  '152852b5-2119-49ab-838a-02401762f12b'  // Titik Uji Restorasi Pesisir
 ];
 
 /**
