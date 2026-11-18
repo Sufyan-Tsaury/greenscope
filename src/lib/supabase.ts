@@ -195,8 +195,35 @@ const KNOWN_PURGED_IDS = [
   '00e8c932-f13a-4816-bd48-3451af30513a',
   'd776cd5c-9fa8-4460-82b0-3ca6f57bc095', // Titik Lapangan Cirebon [-6.734482, 108.530736]
   '485d8e10-16ea-49b0-a9ff-9bd9db43973e', // Titik Uji Penanganan Pemadaman
-  '152852b5-2119-49ab-838a-02401762f12b'  // Titik Uji Restorasi Pesisir
+  '152852b5-2119-49ab-838a-02401762f12b', // Titik Uji Restorasi Pesisir
+  '6df7bfb6-6d5f-45ae-916e-bdb43d3b5e10', // Titik Uji Cirebon
+  '5ce677d6-ee79-408a-bcbc-514c22b0e2a8', // Titik Uji Cirebon
+  '54cce2db-949b-43d3-bd7b-1369fb2e3f88', // Titik Uji Cirebon
+  'e82a4557-cb71-4302-96eb-22c9be294c41', // Titik Uji Cirebon
+  'c2affa9d-f7e9-4263-b520-cbef1466bd23', // Titik Uji Cirebon
+  '918b83c1-5d0a-4abb-90cc-f826d853b68d', // Titik Uji Cirebon
+  '20cdc096-9065-4f17-9a47-1c9ad277f66b', // Titik Uji Cirebon
+  '7ca26ed3-9d99-4d5a-8cff-9563068a2bda'  // Titik Uji Cirebon
 ];
+
+// ID laporan resmi Bengkulu yang dilindungi agar selalu tampil seragam di semua perangkat
+export const CANONICAL_BENGKULU_IDS = [
+  '979bdd5c-a960-4c66-92c6-4528bfdb879a',
+  'ab05902d-3e91-4d41-817c-57b6ec5b983e',
+  '5012f12a-791c-4720-96f8-9a01d92ee31e',
+  '6fdd14ca-ca16-4da4-8560-a821ecc998ed',
+  'rep-bengkulu-01',
+  'rep-bengkulu-02',
+  'rep-bengkulu-03',
+  'rep-bengkulu-04'
+];
+
+/**
+ * Mendeteksi apakah koordinat berada di luar zona pemantauan Bengkulu (misal koordinat GPS pengujian di Jawa)
+ */
+export function isOutsideBengkuluTest(lat: number, lng: number): boolean {
+  return lat <= -5.8 || lng >= 106.0;
+}
 
 /**
  * Membaca daftar ID laporan yang telah dihapus agar tidak muncul kembali saat refresh
@@ -207,7 +234,13 @@ export function getDeletedReportIds(): string[] {
     const raw = localStorage.getItem(LOCAL_STORAGE_DELETED_KEY);
     const parsed = raw ? JSON.parse(raw) : [];
     const combined = Array.from(new Set([...KNOWN_PURGED_IDS, ...(Array.isArray(parsed) ? parsed : [])]));
-    return combined;
+    // Lindungi ID resmi Bengkulu agar tidak pernah tersembunyi akibat pengujian lokal
+    const cleaned = combined.filter((id) => !CANONICAL_BENGKULU_IDS.includes(id));
+    if (parsed.length > 0 && parsed.some((id: string) => CANONICAL_BENGKULU_IDS.includes(id))) {
+      const sanitizedLocal = parsed.filter((id: string) => !CANONICAL_BENGKULU_IDS.includes(id));
+      localStorage.setItem(LOCAL_STORAGE_DELETED_KEY, JSON.stringify(sanitizedLocal));
+    }
+    return cleaned;
   } catch (err) {
     return KNOWN_PURGED_IDS;
   }
@@ -238,7 +271,11 @@ export function getLocalReports(): Report[] {
     const raw = localStorage.getItem(LOCAL_STORAGE_REPORTS_KEY);
     const parsed: Report[] = raw ? JSON.parse(raw) : [];
     const deleted = getDeletedReportIds();
-    return parsed.filter((r) => !deleted.includes(r.id));
+    return parsed.filter((r) => {
+      if (isOutsideBengkuluTest(r.latitude, r.longitude)) return false;
+      if (KNOWN_PURGED_IDS.includes(r.id)) return false;
+      return !deleted.includes(r.id);
+    });
   } catch (err) {
     console.warn('Gagal membaca localStorage laporan:', err);
     return [];
@@ -288,8 +325,14 @@ function ensureSyncChannel() {
       // 1. Pasang broadcast listener SEBELUM subscribe() dipanggil
       channel.on('broadcast', { event: 'report_event' }, (msg: any) => {
         if (msg?.payload) {
+          const payload = msg.payload;
+          if (payload.report) {
+            if (isOutsideBengkuluTest(payload.report.latitude, payload.report.longitude) || KNOWN_PURGED_IDS.includes(payload.report.id)) {
+              return;
+            }
+          }
           realtimeListeners.forEach((listener) => {
-            try { listener(msg.payload); } catch (e) { console.warn('Realtime listener error:', e); }
+            try { listener(payload); } catch (e) { console.warn('Realtime listener error:', e); }
           });
         }
       });
@@ -302,13 +345,21 @@ function ensureSyncChannel() {
           let eventPayload: { type: 'INSERT' | 'UPDATE' | 'DELETE'; report?: Report; id?: string; status?: ReportStatus } | null = null;
           
           if (payload.eventType === 'INSERT' && payload.new) {
-            eventPayload = { type: 'INSERT', report: payload.new as Report };
+            const nr = payload.new as Report;
+            if (isOutsideBengkuluTest(nr.latitude, nr.longitude) || KNOWN_PURGED_IDS.includes(nr.id)) {
+              return;
+            }
+            eventPayload = { type: 'INSERT', report: nr };
           } else if (payload.eventType === 'UPDATE' && payload.new) {
+            const nr = payload.new as Report;
+            if (isOutsideBengkuluTest(nr.latitude, nr.longitude) || KNOWN_PURGED_IDS.includes(nr.id)) {
+              return;
+            }
             eventPayload = { 
               type: 'UPDATE', 
-              report: payload.new as Report, 
-              id: payload.new.id, 
-              status: payload.new.status 
+              report: nr, 
+              id: nr.id, 
+              status: nr.status 
             };
           } else if (payload.eventType === 'DELETE' && payload.old) {
             eventPayload = { type: 'DELETE', id: payload.old.id };
@@ -475,12 +526,19 @@ export async function fetchReports(): Promise<Report[]> {
   const localCustom = getLocalReports();
   const deletedIds = getDeletedReportIds();
 
+  const filterValidBengkulu = (r: Report) => {
+    if (isOutsideBengkuluTest(r.latitude, r.longitude)) return false;
+    if (KNOWN_PURGED_IDS.includes(r.id)) return false;
+    if (CANONICAL_BENGKULU_IDS.includes(r.id)) return true;
+    return !deletedIds.includes(r.id);
+  };
+
   if (!isSupabaseConfigured || !supabase) {
     const merged = [
       ...localCustom,
       ...INITIAL_REPORTS.filter((init) => !localCustom.some((c) => c.id === init.id))
     ];
-    return merged.filter((r) => !deletedIds.includes(r.id));
+    return merged.filter(filterValidBengkulu);
   }
 
   try {
@@ -494,7 +552,7 @@ export async function fetchReports(): Promise<Report[]> {
         ...localCustom,
         ...INITIAL_REPORTS.filter((init) => !localCustom.some((c) => c.id === init.id))
       ];
-      return merged.filter((r) => !deletedIds.includes(r.id));
+      return merged.filter(filterValidBengkulu);
     }
 
     // Normalisasi struktur data agar tahan terhadap variasi schema dan field Supabase
@@ -538,13 +596,13 @@ export async function fetchReports(): Promise<Report[]> {
       };
     });
 
-    // Gabungkan laporan buatan lokal dengan data Supabase, dan singkirkan ID terhapus
+    // Gabungkan laporan buatan lokal dengan data Supabase, dan singkirkan ID terhapus & titik uji luar Bengkulu
     const merged = [
       ...localCustom,
       ...normalizedReports.filter((nr) => !localCustom.some((c) => c.id === nr.id))
     ];
 
-    const nonDeleted = merged.filter((r) => !deletedIds.includes(r.id));
+    const nonDeleted = merged.filter(filterValidBengkulu);
 
     // Deduplikasi ketat: hilangkan data kembar yang tersimpan akibat ID lokal vs Supabase berbeda
     const seenIds = new Set<string>();
@@ -567,7 +625,7 @@ export async function fetchReports(): Promise<Report[]> {
       ...localCustom,
       ...INITIAL_REPORTS.filter((init) => !localCustom.some((c) => c.id === init.id))
     ];
-    const nonDeleted = merged.filter((r) => !deletedIds.includes(r.id));
+    const nonDeleted = merged.filter(filterValidBengkulu);
 
     const seenIds = new Set<string>();
     const seenSignatures = new Set<string>();

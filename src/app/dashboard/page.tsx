@@ -239,13 +239,14 @@ export default function DashboardPage() {
   };
 
   // Bersihkan Seluruh Data Laporan Uji Coba & Reset ke Data Asli Bengkulu
-  const handleResetData = () => {
-    if (!confirm('Hapus seluruh laporan uji coba lokal dan kembalikan data ke titik awal Bengkulu?')) return;
+  const handleResetData = async () => {
+    if (!confirm('Bersihkan seluruh data uji coba lokal dan kembalikan data ke laporan resmi Bengkulu?')) return;
     resetLocalReports();
-    setReports(INITIAL_REPORTS);
+    const freshReports = await fetchReports();
+    setReports(freshReports.length > 0 ? freshReports : INITIAL_REPORTS);
     setSelectedReport(null);
-    setMapSelectedReport(INITIAL_REPORTS[0] || null);
-    showToast('Seluruh data uji berhasil dibersihkan.', 'success');
+    setMapSelectedReport((freshReports[0] || INITIAL_REPORTS[0]) ?? null);
+    showToast('Seluruh data uji berhasil dibersihkan dan diselaraskan ke Bengkulu.', 'success');
   };
 
   const counts = useMemo(() => {
