@@ -74,6 +74,18 @@ function AksiContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  const [printDate, setPrintDate] = useState<string>('18 November 2026');
+  const [printTime, setPrintTime] = useState<string>('08:00 WIB');
+  const [sopDocNumber, setSopDocNumber] = useState<string>('SOP.01/GS-BKL/OPS/XI/2026');
+
+  const getFormattedSopNumber = (num: number, date: Date) => {
+    const romanMonths = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+    const romanMonth = romanMonths[date.getMonth()] || 'XI';
+    const year = date.getFullYear();
+    const padded = String(num).padStart(2, '0');
+    return `SOP.${padded}/GS-BKL/OPS/${romanMonth}/${year}`;
+  };
+
   const [registeredMap, setRegisteredMap] = useState<Record<string, VolunteerRegistration>>({});
 
   const [volName, setVolName] = useState('');
@@ -107,6 +119,14 @@ function AksiContent() {
       });
       setRegisteredMap(map);
 
+      // Set formatted client print date, time & dynamic SOP document number
+      const now = new Date();
+      setPrintDate(now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }));
+      setPrintTime(now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB');
+
+      const savedCounter = parseInt(localStorage.getItem('greenscope_sop_print_counter') || '1', 10);
+      setSopDocNumber(getFormattedSopNumber(savedCounter, now));
+
       // Inisialisasi formulir modal jika ID laporan ditautkan melalui parameter URL
       if (urlReportId) {
         const targetReport = reportData.find((r) => r.id === urlReportId);
@@ -124,7 +144,31 @@ function AksiContent() {
     }
 
     loadData();
+
+    const handleAfterPrint = () => {
+      const next = parseInt(localStorage.getItem('greenscope_sop_print_counter') || '1', 10);
+      setSopDocNumber(getFormattedSopNumber(next, new Date()));
+    };
+    window.addEventListener('afterprint', handleAfterPrint);
+
+    return () => {
+      window.removeEventListener('afterprint', handleAfterPrint);
+    };
   }, [urlReportId]);
+
+  const handlePrintSop = () => {
+    const now = new Date();
+    setPrintDate(now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }));
+    setPrintTime(now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB');
+
+    const currentCounter = parseInt(localStorage.getItem('greenscope_sop_print_counter') || '1', 10);
+    setSopDocNumber(getFormattedSopNumber(currentCounter, now));
+    localStorage.setItem('greenscope_sop_print_counter', String(currentCounter + 1));
+
+    window.print();
+
+    setSopDocNumber(getFormattedSopNumber(currentCounter + 1, now));
+  };
 
   const handleSelectReport = (reportId: string) => {
     setLinkedReportId(reportId);
@@ -287,29 +331,6 @@ function AksiContent() {
 
   return (
     <div className="py-8 sm:py-12 bg-[#F7F9F6] min-h-[calc(100vh-4rem)] text-[#202820]">
-      {/* Print Styles for Action Brief */}
-      <style jsx global>{`
-        @media print {
-          body * {
-            visibility: hidden;
-          }
-          #printable-action-brief, #printable-action-brief * {
-            visibility: visible;
-          }
-          #printable-action-brief {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            background: white !important;
-            padding: 20px !important;
-            color: black !important;
-          }
-          .no-print {
-            display: none !important;
-          }
-        }
-      `}</style>
 
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 bg-[#17251B] text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-emerald-500/30 text-xs animate-in slide-in-from-bottom-3 duration-200">
@@ -517,10 +538,9 @@ function AksiContent() {
 
       {/* --- MODAL: ACTION BRIEF LAPANGAN --- */}
       {selectedBrief && selectedBrief.action_brief && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in-50">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in-50 no-print">
           <div 
-            id="printable-action-brief"
-            className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-6 border border-[#E7ECE5] shadow-xl"
+            className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-6 border border-[#E7ECE5] shadow-xl [scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:#CBD5E1_transparent]"
           >
             
             <div className="flex items-start justify-between pb-4 border-b border-[#EEF1EC]">
@@ -645,7 +665,7 @@ function AksiContent() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => window.print()}
+                  onClick={handlePrintSop}
                   className="px-4 py-2.5 rounded-full text-xs font-medium text-[#202820] bg-white border border-[#E7ECE5] hover:bg-[#F7F9F6] flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <Printer className="w-3.5 h-3.5 text-[#52B040]" />
@@ -680,7 +700,7 @@ function AksiContent() {
 
       {/* --- MODAL: PENDAFTARAN RELAWAN AKSI --- */}
       {volunteerCamp && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in-50">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in-50 no-print">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-5 border border-[#E7ECE5] shadow-xl">
             <div className="flex items-start justify-between pb-3 border-b border-[#EEF1EC]">
               <div>
@@ -812,8 +832,8 @@ function AksiContent() {
 
       {/* --- MODAL: FORMULIR KAMPANYE AKSI BARU --- */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in-50">
-          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-5 border border-[#E7ECE5] shadow-xl">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in-50 no-print">
+          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-5 border border-[#E7ECE5] shadow-xl [scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:#CBD5E1_transparent]">
             <div className="flex items-start justify-between pb-3 border-b border-[#EEF1EC]">
               <div>
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#EAF5E6] text-[#348D32]">
@@ -956,6 +976,307 @@ function AksiContent() {
           </div>
         </div>
       )}
+
+      {/* ============================================================
+          DOKUMEN RESMI CETAK (HANYA MUNCUL SAAT WINDOW.PRINT)
+          STANDAR OPERASIONAL PROSEDUR (SOP) & LEMBAR KERJA LAPANGAN (100% HITAM PUTIH A4)
+          ============================================================ */}
+      {(() => {
+        const brief = selectedBrief || campaigns[0];
+        if (!brief || !brief.action_brief) return null;
+
+        const linkedReport = reports.find((r) => r.id === brief.report_id);
+        const ecoLabel = linkedReport?.ecosystem ? (
+          linkedReport.ecosystem === 'mangrove' ? 'Hutan Mangrove' :
+          linkedReport.ecosystem === 'hutan_tropis' ? 'Hutan Tropis' :
+          linkedReport.ecosystem === 'muara_sungai' ? 'Muara Sungai' : 'Pesisir Pantai'
+        ) : 'Pesisir & Kawasan Lindung';
+
+        return (
+          <div className="print-only hidden print:block font-sans text-black p-0 max-w-[210mm] mx-auto bg-white">
+            
+            {/* ============================================================
+                HALAMAN 1: IDENTITAS OPERASI, LOGISTIK & PEMBAGIAN REGU
+                ============================================================ */}
+            <div className="space-y-4">
+              
+              {/* Judul & Nomor Dokumen SOP Rata Tengah Sederhana */}
+              <div className="text-center pt-2 pb-2.5 border-b-2 border-black">
+                <h1 className="text-[13pt] font-extrabold uppercase tracking-wide text-black leading-tight">
+                  STANDAR OPERASIONAL PROSEDUR (SOP) &amp; LEMBAR INSTRUKSI KERJA LAPANGAN
+                </h1>
+                <p className="text-[10.5pt] font-mono font-bold text-black mt-1">
+                  Nomor: {sopDocNumber}
+                </p>
+                <p className="text-[8.5pt] text-gray-700 mt-0.5">
+                  Provinsi Bengkulu &bull; Tanggal Cetak: {printDate} &bull; Pukul: {printTime}
+                </p>
+              </div>
+
+              {/* 4 Kotak Metrik Ringkasan Operasi (Hitam Putih Murni) */}
+              <div className="grid grid-cols-4 gap-2.5">
+                <div className="border border-black p-2 text-center bg-white">
+                  <div className="text-[8pt] uppercase font-bold text-black">Target Restorasi</div>
+                  <div className="text-[11.5pt] font-extrabold text-black font-mono mt-0.5">
+                    {brief.target_trees.toLocaleString('id-ID')} <span className="text-[8pt] font-normal text-gray-700">Batang</span>
+                  </div>
+                  <div className="text-[7.5pt] text-gray-600">Bibit adaptif ekosistem</div>
+                </div>
+
+                <div className="border border-black p-2 text-center bg-white">
+                  <div className="text-[8pt] uppercase font-bold text-black">Relawan Siaga</div>
+                  <div className="text-[11.5pt] font-extrabold text-black font-mono mt-0.5">
+                    {brief.volunteers_count} / {brief.target_volunteers} <span className="text-[8pt] font-normal text-black">Personel</span>
+                  </div>
+                  <div className="text-[7.5pt] text-gray-600">Mobilisasi gotong royong</div>
+                </div>
+
+                <div className="border border-black p-2 text-center bg-white">
+                  <div className="text-[8pt] uppercase font-bold text-black">Regu Kerja</div>
+                  <div className="text-[11.5pt] font-extrabold text-black font-mono mt-0.5">
+                    {brief.action_brief.pembagian_tim.length} <span className="text-[8pt] font-normal text-gray-700">Regu</span>
+                  </div>
+                  <div className="text-[7.5pt] text-gray-600">Pembagian tugas spesifik</div>
+                </div>
+
+                <div className="border border-black p-2 text-center bg-white">
+                  <div className="text-[8pt] uppercase font-bold text-black">Status Kesiapan</div>
+                  <div className="text-[11.5pt] font-extrabold text-black mt-0.5 font-mono">
+                    TERVERIFIKASI
+                  </div>
+                  <div className="text-[7.5pt] text-gray-600">SOP disetujui koordinator</div>
+                </div>
+              </div>
+
+              {/* Bagian I: Identitas Operasi & Fokus Taktis Lapangan */}
+              <div className="space-y-1.5 pt-1">
+                <div className="flex items-center justify-between text-[10.5pt] font-bold text-black">
+                  <span>I. IDENTITAS OPERASI &amp; FOKUS TAKTIS LAPANGAN</span>
+                  <span className="text-[8.5pt] text-gray-700 font-normal font-mono">
+                    ID Aksi: {brief.id}
+                  </span>
+                </div>
+
+                <table className="w-full text-left border-collapse border border-black text-[9pt]">
+                  <tbody>
+                    <tr className="border-b border-black">
+                      <td className="py-2 px-2.5 font-bold w-44 bg-gray-100 border-r border-black">Nama Gerakan Aksi</td>
+                      <td className="py-2 px-2.5 font-bold">{brief.title}</td>
+                      <td className="py-2 px-2.5 font-bold w-36 bg-gray-100 border-r border-l border-black">Ekosistem</td>
+                      <td className="py-2 px-2.5">{ecoLabel}</td>
+                    </tr>
+                    <tr className="border-b border-black">
+                      <td className="py-2 px-2.5 font-bold bg-gray-100 border-r border-black">Lokasi Sektor Target</td>
+                      <td className="py-2 px-2.5">{brief.location_name}</td>
+                      <td className="py-2 px-2.5 font-bold bg-gray-100 border-r border-l border-black">Koordinat GPS</td>
+                      <td className="py-2 px-2.5 font-mono">{brief.latitude.toFixed(4)}, {brief.longitude.toFixed(4)}</td>
+                    </tr>
+                    <tr className="border-b border-black">
+                      <td className="py-2 px-2.5 font-bold bg-gray-100 border-r border-black">Koordinator Lapangan</td>
+                      <td className="py-2 px-2.5">{brief.coordinator_name}</td>
+                      <td className="py-2 px-2.5 font-bold bg-gray-100 border-r border-l border-black">Tautan Temuan</td>
+                      <td className="py-2 px-2.5 font-mono">{brief.report_id || 'OPS-RESTORE-BKL'}</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 px-2.5 font-bold bg-gray-100 border-r border-black align-top">Fokus Taktis Operasi</td>
+                      <td colSpan={3} className="py-2 px-2.5 leading-relaxed">
+                        {brief.action_brief.ringkasan_taktis}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Bagian II: Daftar Logistik & Alat Lapangan (Checklist) */}
+              <div className="space-y-1.5 pt-1">
+                <div className="flex items-center justify-between text-[10.5pt] font-bold text-black">
+                  <span>II. DAFTAR KEBUTUHAN LOGISTIK &amp; ALAT KERJA (CHECKLIST)</span>
+                  <span className="text-[8.5pt] text-gray-700 font-normal font-mono">
+                    Total: {brief.action_brief.kebutuhan_logistik.length} Item
+                  </span>
+                </div>
+
+                <table className="w-full text-left border-collapse border border-black text-[9pt]">
+                  <thead>
+                    <tr className="bg-gray-100 border-b-2 border-black font-bold">
+                      <th className="py-2 px-2 text-center w-8 border-r border-black">No</th>
+                      <th className="py-2 px-2.5 border-r border-black">Item Logistik &amp; Alat Lapangan</th>
+                      <th className="py-2 px-2.5 w-64 border-r border-black">Standar Kelayakan Lapangan</th>
+                      <th className="py-2 px-2 text-center w-32">Status Verifikasi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {brief.action_brief.kebutuhan_logistik.map((item, idx) => (
+                      <tr key={idx} className="border-b border-black bg-white">
+                        <td className="py-1.5 px-2 text-center font-mono border-r border-black align-top">{idx + 1}</td>
+                        <td className="py-1.5 px-2.5 font-medium border-r border-black align-top">{item}</td>
+                        <td className="py-1.5 px-2.5 text-gray-700 border-r border-black align-top">Standar K3 Konservasi Lingkungan</td>
+                        <td className="py-1.5 px-2 text-center font-mono align-top">[ &nbsp; ] Siap Pakai</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Bagian III: Matriks Pembagian Regu & Penugasan Relawan */}
+              <div className="space-y-1.5 pt-1">
+                <div className="flex items-center justify-between text-[10.5pt] font-bold text-black">
+                  <span>III. STRUKTUR PEMBAGIAN REGU &amp; PENUGASAN RELAWAN</span>
+                  <span className="text-[8.5pt] text-gray-700 font-normal font-mono">
+                    Total: {brief.action_brief.pembagian_tim.length} Regu Siaga
+                  </span>
+                </div>
+
+                <table className="w-full text-left border-collapse border border-black text-[9pt]">
+                  <thead>
+                    <tr className="bg-gray-100 border-b-2 border-black font-bold">
+                      <th className="py-2 px-2 text-center w-8 border-r border-black">No</th>
+                      <th className="py-2 px-2.5 w-48 border-r border-black">Nama Regu Kerja</th>
+                      <th className="py-2 px-2 text-center w-28 border-r border-black">Alokasi Personel</th>
+                      <th className="py-2 px-2.5">Mandat Tugas &amp; Tanggung Jawab Operasional</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {brief.action_brief.pembagian_tim.map((team, idx) => (
+                      <tr key={idx} className="border-b border-black bg-white">
+                        <td className="py-2 px-2 text-center font-mono border-r border-black align-top">{idx + 1}</td>
+                        <td className="py-2 px-2.5 font-bold border-r border-black align-top">{team.nama_regu}</td>
+                        <td className="py-2 px-2 text-center font-mono border-r border-black align-top">{team.kuota} Orang</td>
+                        <td className="py-2 px-2.5 leading-relaxed align-top">{team.tugas}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Catatan Kaki Halaman 1 */}
+              <div className="border-t border-black pt-1.5 text-[8pt] text-gray-700 flex justify-between items-center">
+                <span>Dokumen SOP Operasional GreenScope Bengkulu &bull; Lembar Kerja Resmi Lapangan</span>
+                <span className="font-mono font-semibold">Halaman 1 dari 2</span>
+              </div>
+            </div>
+
+            {/* ============================================================
+                HALAMAN 2: LINIMASA, PROTOKOL K3 & LEMBAR PENGESAHAN
+                ============================================================ */}
+            <div className="print-page-break pt-4 space-y-4">
+              
+              {/* Sub-Header Halaman 2 */}
+              <div className="border-b border-black pb-1.5 flex items-center justify-between text-[9pt] text-black">
+                <span className="font-bold">
+                  STANDAR OPERASIONAL PROSEDUR (SOP) &amp; LEMBAR INSTRUKSI KERJA LAPANGAN
+                </span>
+                <span className="font-mono font-bold">Nomor: {sopDocNumber}</span>
+              </div>
+
+              {/* Bagian IV: Linimasa & Tahapan Eksekusi Lapangan */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-[10.5pt] font-bold text-black">
+                  <span>IV. LINIMASA &amp; TAHAPAN EKSEKUSI OPERASI</span>
+                  <span className="text-[8.5pt] text-gray-700 font-normal font-mono">
+                    Rangkaian Kegiatan Hari-H
+                  </span>
+                </div>
+
+                <table className="w-full text-left border-collapse border border-black text-[9pt]">
+                  <thead>
+                    <tr className="bg-gray-100 border-b-2 border-black font-bold">
+                      <th className="py-2 px-2 text-center w-8 border-r border-black">No</th>
+                      <th className="py-2 px-2.5 w-48 border-r border-black">Waktu Pelaksanaan (WIB)</th>
+                      <th className="py-2 px-2.5">Agenda Kerja &amp; Target Capaian Lapangan</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {brief.action_brief.tahapan_eksekusi.map((stage, idx) => {
+                      const parts = stage.split(': ');
+                      const timePart = parts.length > 1 ? parts[0] : `Tahap ${idx + 1}`;
+                      const descPart = parts.length > 1 ? parts.slice(1).join(': ') : stage;
+                      return (
+                        <tr key={idx} className="border-b border-black bg-white">
+                          <td className="py-2 px-2 text-center font-mono border-r border-black align-top">{idx + 1}</td>
+                          <td className="py-2 px-2.5 font-bold font-mono border-r border-black align-top">{timePart}</td>
+                          <td className="py-2 px-2.5 leading-relaxed align-top">{descPart}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Bagian V: SOP Keselamatan Kerja & Etika Konservasi */}
+              <div className="border border-black p-3 space-y-1.5 text-[9pt] bg-white">
+                <div className="font-bold text-black uppercase text-[9.5pt] tracking-wide">
+                  V. PROTOKOL KESELAMATAN KERJA (K3) &amp; KODE ETIK KONSERVASI
+                </div>
+                <ol className="list-decimal list-inside space-y-1 text-black leading-relaxed">
+                  {brief.action_brief.sop_keselamatan_dan_etika.map((sop, idx) => (
+                    <li key={idx}>
+                      <strong>Protokol {idx + 1}:</strong> {sop}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+
+              {/* Bagian VI: Lembar Pengesahan & Tanda Tangan Resmi */}
+              <div className="pt-3 border-t border-black print-avoid-break space-y-4">
+                <div className="text-right text-[9pt] text-black">
+                  Ditetapkan di: <strong>Bengkulu</strong>, pada tanggal: <strong>{printDate}</strong>
+                </div>
+
+                <div className="grid grid-cols-2 gap-8 text-center text-[9pt]">
+                  {/* Kolom Koordinator Lapangan */}
+                  <div className="space-y-14 p-2">
+                    <div>
+                      <p className="text-[8pt] text-black uppercase font-bold tracking-wider">
+                        Koordinator Pelaksana Operasi:
+                      </p>
+                      <p className="font-bold text-black mt-0.5">{brief.coordinator_name}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="w-48 border-b-2 border-black mx-auto"></div>
+                      <p className="font-bold text-black">{brief.coordinator_name}</p>
+                      <p className="text-[7.5pt] text-gray-700">Koordinator Lapangan &bull; GreenScope Bengkulu</p>
+                    </div>
+                  </div>
+
+                  {/* Kolom Pengawas BKSDA */}
+                  <div className="space-y-14 p-2">
+                    <div>
+                      <p className="text-[8pt] text-black uppercase font-bold tracking-wider">
+                        Mengetahui dan Mengesahkan:
+                      </p>
+                      <p className="font-bold text-black mt-0.5">Pengawas Wilayah Konservasi BKSDA</p>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="w-52 border-b-2 border-black mx-auto"></div>
+                      <p className="font-bold text-black">Rahmat Hidayat, S.Hut., M.Si.</p>
+                      <p className="text-[7.5pt] text-gray-700">NIP. 19850412 201001 1 008 &bull; BKSDA Bengkulu</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Catatan Kaki Legalitas */}
+                <div className="border border-black p-2 flex items-center justify-between text-[7.5pt] text-black bg-white">
+                  <div>
+                    <strong>Sertifikasi Dokumen Operasi:</strong> Diterbitkan melalui modul AI Action Brief GreenScope terverifikasi standar BKSDA Bengkulu.
+                  </div>
+                  <div className="font-mono text-gray-700 shrink-0 ml-2">
+                    Verifikasi: greenscope-phi.vercel.app/aksi
+                  </div>
+                </div>
+              </div>
+
+              {/* Catatan Kaki Halaman 2 */}
+              <div className="border-t border-black pt-1.5 text-[8pt] text-gray-700 flex justify-between items-center">
+                <span>Platform Pemantauan GreenScope &bull; IT RUSH 2026 Web Development Competition</span>
+                <span className="font-mono font-semibold">Halaman 2 dari 2 (Selesai)</span>
+              </div>
+
+            </div>
+
+          </div>
+        );
+      })()}
 
     </div>
   );
