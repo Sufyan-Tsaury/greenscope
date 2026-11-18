@@ -219,13 +219,6 @@ export const CANONICAL_BENGKULU_IDS = [
 ];
 
 /**
- * Mendeteksi apakah koordinat berada di luar zona pemantauan Bengkulu (misal koordinat GPS pengujian di Jawa)
- */
-export function isOutsideBengkuluTest(lat: number, lng: number): boolean {
-  return lat <= -5.8 || lng >= 106.0;
-}
-
-/**
  * Membaca daftar ID laporan yang telah dihapus agar tidak muncul kembali saat refresh
  */
 export function getDeletedReportIds(): string[] {
@@ -272,7 +265,7 @@ export function getLocalReports(): Report[] {
     const parsed: Report[] = raw ? JSON.parse(raw) : [];
     const deleted = getDeletedReportIds();
     return parsed.filter((r) => {
-      if (isOutsideBengkuluTest(r.latitude, r.longitude)) return false;
+      if (r.description === '__GREENSCOPE_DELETED__') return false;
       if (KNOWN_PURGED_IDS.includes(r.id)) return false;
       return !deleted.includes(r.id);
     });
@@ -327,7 +320,7 @@ function ensureSyncChannel() {
         if (msg?.payload) {
           const payload = msg.payload;
           if (payload.report) {
-            if (isOutsideBengkuluTest(payload.report.latitude, payload.report.longitude) || KNOWN_PURGED_IDS.includes(payload.report.id)) {
+            if (payload.report.description === '__GREENSCOPE_DELETED__' || KNOWN_PURGED_IDS.includes(payload.report.id)) {
               return;
             }
           }
@@ -346,21 +339,23 @@ function ensureSyncChannel() {
           
           if (payload.eventType === 'INSERT' && payload.new) {
             const nr = payload.new as Report;
-            if (isOutsideBengkuluTest(nr.latitude, nr.longitude) || KNOWN_PURGED_IDS.includes(nr.id)) {
+            if (nr.description === '__GREENSCOPE_DELETED__' || KNOWN_PURGED_IDS.includes(nr.id)) {
               return;
             }
             eventPayload = { type: 'INSERT', report: nr };
           } else if (payload.eventType === 'UPDATE' && payload.new) {
             const nr = payload.new as Report;
-            if (isOutsideBengkuluTest(nr.latitude, nr.longitude) || KNOWN_PURGED_IDS.includes(nr.id)) {
-              return;
+            if (nr.description === '__GREENSCOPE_DELETED__' || KNOWN_PURGED_IDS.includes(nr.id)) {
+              // Jika ditandai deleted di cloud, siarkan sebagai event DELETE agar semua klien menghilangkannya
+              eventPayload = { type: 'DELETE', id: nr.id };
+            } else {
+              eventPayload = { 
+                type: 'UPDATE', 
+                report: nr, 
+                id: nr.id, 
+                status: nr.status 
+              };
             }
-            eventPayload = { 
-              type: 'UPDATE', 
-              report: nr, 
-              id: nr.id, 
-              status: nr.status 
-            };
           } else if (payload.eventType === 'DELETE' && payload.old) {
             eventPayload = { type: 'DELETE', id: payload.old.id };
           }
@@ -493,6 +488,8 @@ export async function deleteReport(id: string): Promise<boolean> {
   // 4. Eksekusi penghapusan di Supabase Cloud jika terhubung
   if (isSupabaseConfigured && supabase) {
     try {
+      // Tandai status deleted di database cloud agar tersinkronisasi ke seluruh perangkat
+      await supabase.from('reports').update({ description: '__GREENSCOPE_DELETED__' }).eq('id', id);
       const { error } = await supabase.from('reports').delete().eq('id', id);
       if (error) {
         console.warn('Peringatan saat hapus dari Supabase (RLS):', error.message);
@@ -526,8 +523,8 @@ export async function fetchReports(): Promise<Report[]> {
   const localCustom = getLocalReports();
   const deletedIds = getDeletedReportIds();
 
-  const filterValidBengkulu = (r: Report) => {
-    if (isOutsideBengkuluTest(r.latitude, r.longitude)) return false;
+  const filterValidReport = (r: Report) => {
+    if (r.description === '__GREENSCOPE_DELETED__') return false;
     if (KNOWN_PURGED_IDS.includes(r.id)) return false;
     if (CANONICAL_BENGKULU_IDS.includes(r.id)) return true;
     return !deletedIds.includes(r.id);
@@ -538,13 +535,14 @@ export async function fetchReports(): Promise<Report[]> {
       ...localCustom,
       ...INITIAL_REPORTS.filter((init) => !localCustom.some((c) => c.id === init.id))
     ];
-    return merged.filter(filterValidBengkulu);
+    return merged.filter(filterValidReport);
   }
 
   try {
     const { data, error } = await supabase
       .from('reports')
       .select('*')
+      .neq('description', '__GREENSCOPE_DELETED__')
       .order('created_at', { ascending: false });
 
     if (error || !data || data.length === 0) {
@@ -552,7 +550,7 @@ export async function fetchReports(): Promise<Report[]> {
         ...localCustom,
         ...INITIAL_REPORTS.filter((init) => !localCustom.some((c) => c.id === init.id))
       ];
-      return merged.filter(filterValidBengkulu);
+      return merged.filter(filterValidReport);
     }
 
     // Normalisasi struktur data agar tahan terhadap variasi schema dan field Supabase
@@ -596,13 +594,13 @@ export async function fetchReports(): Promise<Report[]> {
       };
     });
 
-    // Gabungkan laporan buatan lokal dengan data Supabase, dan singkirkan ID terhapus & titik uji luar Bengkulu
+    // Gabungkan laporan buatan lokal dengan data Supabase, dan singkirkan ID terhapus
     const merged = [
       ...localCustom,
       ...normalizedReports.filter((nr) => !localCustom.some((c) => c.id === nr.id))
     ];
 
-    const nonDeleted = merged.filter(filterValidBengkulu);
+    const nonDeleted = merged.filter(filterValidReport);
 
     // Deduplikasi ketat: hilangkan data kembar yang tersimpan akibat ID lokal vs Supabase berbeda
     const seenIds = new Set<string>();
@@ -625,7 +623,7 @@ export async function fetchReports(): Promise<Report[]> {
       ...localCustom,
       ...INITIAL_REPORTS.filter((init) => !localCustom.some((c) => c.id === init.id))
     ];
-    const nonDeleted = merged.filter(filterValidBengkulu);
+    const nonDeleted = merged.filter(filterValidReport);
 
     const seenIds = new Set<string>();
     const seenSignatures = new Set<string>();
