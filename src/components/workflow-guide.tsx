@@ -10,7 +10,6 @@ import {
   ShieldCheck, 
   CheckCircle2, 
   Trees, 
-  Leaf,
   Layers,
   FileCheck
 } from 'lucide-react';
@@ -81,11 +80,6 @@ export default function WorkflowGuide() {
 
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#EAF5E6] text-[#348D32] border border-[#d2ebd0]">
-            <Leaf className="w-3.5 h-3.5 text-[#52B040]" />
-            <span>Panduan Alur Sistem (Closed-Loop Conservation)</span>
-          </div>
-
           <h2 className="text-2xl sm:text-4xl font-bold text-[#202820] tracking-tight">
             Bagaimana GreenScope Bekerja?
           </h2>
@@ -113,7 +107,7 @@ export default function WorkflowGuide() {
                       <Icon className="w-5 h-5" />
                     </div>
                     
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F7F9F6] border border-[#E7ECE5] text-[#348D32] font-mono text-xs font-bold">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#F7F9F6] border border-[#E7ECE5] text-[#348D32] font-mono text-xs font-bold">
                       <span>Tahap {item.step}</span>
                       {idx < WORKFLOW_STEPS.length - 1 && (
                         <ArrowRight className="w-3 h-3 text-[#7A8278] hidden lg:inline" />

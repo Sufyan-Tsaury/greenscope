@@ -242,7 +242,7 @@ export default function Scrollytelling() {
                   <Compass className="w-4 h-4 text-[#52B040]" />
                   Dokumentasi Lapangan Bengkulu
                 </span>
-                <span className="text-[10px] font-semibold text-[#348D32] bg-[#EAF5E6] px-2.5 py-0.5 rounded-full border border-[#d2ebd0]">
+                <span className="text-xs font-mono font-bold text-[#348D32]">
                   Fase 0{activeStep + 1}
                 </span>
               </div>

@@ -7,7 +7,6 @@ import WorkflowGuide from '@/components/workflow-guide';
 import { 
   Camera, 
   MapPin, 
-  Leaf, 
   Compass, 
   AlertTriangle, 
   CheckCircle2, 
@@ -182,11 +181,11 @@ export default function HomePage() {
                 </div>
 
                 <div className="p-5 bg-white text-[#202820] space-y-2 text-left">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-[#348D32] bg-[#EAF5E6] px-2.5 py-0.5 rounded-full border border-[#d2ebd0]">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="font-semibold text-[#348D32] tracking-wider uppercase">
                       {HERO_SLIDES[currentHeroSlide].badge}
                     </span>
-                    <span className="text-[#7A8278] text-[11px] font-mono">
+                    <span className="text-[#7A8278] font-mono">
                       BKL-00{currentHeroSlide + 1}
                     </span>
                   </div>
@@ -230,10 +229,6 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
           <div className="text-center max-w-3xl mx-auto space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-[#EAF5E6] text-[#348D32] border border-[#d2ebd0]">
-              <Leaf className="w-3.5 h-3.5" />
-              <span>Dokumentasi Pemulihan Ekologis</span>
-            </div>
             <h2 className="text-2xl sm:text-4xl font-bold text-[#202820] tracking-tight">
               Transparansi Pemulihan Bentang Alam Pesisir
             </h2>
@@ -255,7 +250,7 @@ export default function HomePage() {
                     sizes="(max-width: 768px) 100vw, 600px"
                   />
                   <div className="absolute top-3 left-3 z-10">
-                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/95 backdrop-blur-md text-rose-700 border border-rose-200 shadow-xs flex items-center gap-1.5">
+                    <span className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-white text-rose-700 border border-rose-200 shadow-xs flex items-center gap-1.5">
                       <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
                       Kondisi Awal: Timbunan Sampah &amp; Abrasi
                     </span>
@@ -264,7 +259,8 @@ export default function HomePage() {
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-0.5 rounded-full">
+                    <span className="font-semibold text-rose-700 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-rose-500"></span>
                       Tingkat Urgensi: Kritis
                     </span>
                     <span className="text-[#7A8278] flex items-center gap-1 font-mono text-[11px]">
@@ -299,7 +295,7 @@ export default function HomePage() {
                     sizes="(max-width: 768px) 100vw, 600px"
                   />
                   <div className="absolute top-3 left-3 z-10">
-                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/95 backdrop-blur-md text-[#348D32] border border-[#d2ebd0] shadow-xs flex items-center gap-1.5">
+                    <span className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-white text-[#348D32] border border-[#d2ebd0] shadow-xs flex items-center gap-1.5">
                       <CheckCircle2 className="w-3.5 h-3.5 text-[#52B040]" />
                       Sasaran Pemulihan: Sabuk Pesisir Asri
                     </span>
@@ -308,7 +304,8 @@ export default function HomePage() {
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-[#348D32] bg-[#EAF5E6] border border-[#d2ebd0] px-2.5 py-0.5 rounded-full">
+                    <span className="font-semibold text-[#348D32] flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-[#52B040]"></span>
                       Target Restorasi Berkelanjutan
                     </span>
                     <span className="text-[#7A8278] flex items-center gap-1 font-mono text-[11px]">
