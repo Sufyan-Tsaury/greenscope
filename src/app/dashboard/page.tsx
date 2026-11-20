@@ -25,6 +25,7 @@ import {
   Eye,
   XCircle,
   ExternalLink,
+  ChevronLeft,
   ChevronRight,
   Info,
   RotateCcw,
@@ -168,6 +169,8 @@ export default function DashboardPage() {
   const [sectorFilter, setSectorFilter] = useState<'all' | 'pesisir' | 'hutan'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | ReportStatus>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 7;
 
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'info' | 'error' } | null>(null);
@@ -320,6 +323,12 @@ export default function DashboardPage() {
       return true;
     });
   }, [reports, sectorFilter, statusFilter, searchQuery]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredReports.length / ITEMS_PER_PAGE));
+  const paginatedReports = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredReports.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredReports, currentPage]);
 
   // Format Helper for Risk Severity (Clean dot + text indicator - Anti-AI-slop)
   const renderRiskBadge = (severity: SeverityLevel) => {
@@ -497,7 +506,7 @@ export default function DashboardPage() {
                 type="button"
                 onClick={handleQuickDemoLogin}
                 disabled={isLoggingInDemo}
-                className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] shadow-xs transition-all cursor-pointer disabled:opacity-50"
+                className="w-full sm:flex-1 btn-matte-primary gap-2 px-5 py-3 text-xs cursor-pointer disabled:opacity-50"
               >
                 {isLoggingInDemo ? (
                   <>
@@ -514,7 +523,7 @@ export default function DashboardPage() {
 
               <Link
                 href="/login?redirect=/dashboard"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs font-semibold text-[#202820] bg-white hover:bg-[#F7F9F6] border border-[#E7ECE5] transition-all"
+                className="w-full sm:w-auto btn-matte-secondary gap-2 px-5 py-3 text-xs"
               >
                 <LogIn className="w-3.5 h-3.5 text-[#52B040]" />
                 <span>Halaman Login Manual</span>
@@ -617,7 +626,7 @@ export default function DashboardPage() {
               <button
                 type="button"
                 onClick={handlePrint}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#E3EAE3] bg-white hover:bg-[#F5F7F4] text-[#17251B] text-xs font-medium transition-colors cursor-pointer shadow-xs whitespace-nowrap"
+                className="btn-matte-secondary gap-1.5 px-3.5 py-1.5 text-xs font-medium cursor-pointer whitespace-nowrap"
                 title="Cetak Berita Acara & Ringkasan Eksekutif (PDF / A4)"
               >
                 <Printer className="w-3.5 h-3.5 text-[#329F45]" />
@@ -882,14 +891,15 @@ export default function DashboardPage() {
 
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-3 border-t border-[#E3EAE3]">
               
-              <div className="flex flex-wrap items-center gap-1.5">
+              <div className="matte-track-container">
                 <button
                   type="button"
-                  onClick={() => setSectorFilter('all')}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors cursor-pointer ${
-                    sectorFilter === 'all'
-                      ? 'bg-[#17251B] text-white shadow-xs'
-                      : 'bg-white text-[#78847B] hover:text-[#17251B] hover:bg-[#F5F7F4] border border-[#E3EAE3]'
+                  onClick={() => {
+                    setSectorFilter('all');
+                    setCurrentPage(1);
+                  }}
+                  className={`matte-track-item ${
+                    sectorFilter === 'all' ? 'matte-track-item-active' : ''
                   }`}
                 >
                   Semua Sektor ({counts.total})
@@ -897,11 +907,12 @@ export default function DashboardPage() {
 
                 <button
                   type="button"
-                  onClick={() => setSectorFilter('pesisir')}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors cursor-pointer ${
-                    sectorFilter === 'pesisir'
-                      ? 'bg-[#17251B] text-white shadow-xs'
-                      : 'bg-white text-[#78847B] hover:text-[#17251B] hover:bg-[#F5F7F4] border border-[#E3EAE3]'
+                  onClick={() => {
+                    setSectorFilter('pesisir');
+                    setCurrentPage(1);
+                  }}
+                  className={`matte-track-item ${
+                    sectorFilter === 'pesisir' ? 'matte-track-item-active' : ''
                   }`}
                 >
                   Pesisir &amp; Mangrove ({counts.pesisir})
@@ -909,11 +920,12 @@ export default function DashboardPage() {
 
                 <button
                   type="button"
-                  onClick={() => setSectorFilter('hutan')}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors cursor-pointer ${
-                    sectorFilter === 'hutan'
-                      ? 'bg-[#17251B] text-white shadow-xs'
-                      : 'bg-white text-[#78847B] hover:text-[#17251B] hover:bg-[#F5F7F4] border border-[#E3EAE3]'
+                  onClick={() => {
+                    setSectorFilter('hutan');
+                    setCurrentPage(1);
+                  }}
+                  className={`matte-track-item ${
+                    sectorFilter === 'hutan' ? 'matte-track-item-active' : ''
                   }`}
                 >
                   Hutan Tropis ({counts.hutan})
@@ -924,7 +936,10 @@ export default function DashboardPage() {
               <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
                 <select
                   value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value as any)}
+                  onChange={(e) => {
+                    setStatusFilter(e.target.value as any);
+                    setCurrentPage(1);
+                  }}
                   className="px-3 py-1.5 rounded-full border border-[#E3EAE3] bg-white text-xs text-[#17251B] focus:outline-hidden focus:border-[#329F45] cursor-pointer shadow-xs"
                   aria-label="Filter status verifikasi"
                 >
@@ -940,14 +955,20 @@ export default function DashboardPage() {
                   <input
                     type="text"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setCurrentPage(1);
+                    }}
                     placeholder="Cari temuan, lokasi..."
                     className="w-full pl-8 pr-3 py-1.5 rounded-full border border-[#E3EAE3] text-xs text-[#17251B] bg-white placeholder-[#78847B] focus:outline-hidden focus:border-[#329F45] shadow-xs"
                   />
                   {searchQuery && (
                     <button
                       type="button"
-                      onClick={() => setSearchQuery('')}
+                      onClick={() => {
+                        setSearchQuery('');
+                        setCurrentPage(1);
+                      }}
                       className="absolute right-2.5 top-2.5 text-[#78847B] hover:text-[#17251B]"
                     >
                       <X className="w-3 h-3" />
@@ -959,7 +980,7 @@ export default function DashboardPage() {
                 <button
                   type="button"
                   onClick={handleResetData}
-                  className="px-3 py-1.5 rounded-full border border-[#E3EAE3] text-[#78847B] hover:text-rose-700 hover:bg-rose-50 hover:border-rose-200 text-xs font-medium transition-colors cursor-pointer inline-flex items-center gap-1 shrink-0"
+                  className="btn-matte-secondary gap-1 px-3 py-1.5 text-xs text-[#78847B] hover:text-rose-700 hover:border-rose-200 shrink-0"
                   title="Bersihkan laporan uji lokal dan kembalikan ke data awal Bengkulu"
                 >
                   <RotateCcw className="w-3 h-3" />
@@ -985,8 +1006,8 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E3EAE3]">
-                {filteredReports.length > 0 ? (
-                  filteredReports.map((rep) => (
+                {paginatedReports.length > 0 ? (
+                  paginatedReports.map((rep) => (
                     <tr 
                       key={rep.id} 
                       className="hover:bg-[#F9FAF8] transition-colors duration-150 group"
@@ -1058,7 +1079,7 @@ export default function DashboardPage() {
                             <button
                               type="button"
                               onClick={() => setSelectedReport(rep)}
-                              className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] transition-colors cursor-pointer shadow-xs"
+                              className="btn-matte-primary px-3.5 py-1.5 text-xs cursor-pointer"
                             >
                               Verifikasi
                             </button>
@@ -1066,7 +1087,7 @@ export default function DashboardPage() {
                             <button
                               type="button"
                               onClick={() => setSelectedReport(rep)}
-                              className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-white bg-[#176B35] hover:bg-[#17251B] transition-colors cursor-pointer shadow-xs"
+                              className="btn-matte-dark px-3.5 py-1.5 text-xs cursor-pointer"
                             >
                               Lanjutkan
                             </button>
@@ -1074,7 +1095,7 @@ export default function DashboardPage() {
                             <button
                               type="button"
                               onClick={() => setSelectedReport(rep)}
-                              className="px-3 py-1.5 rounded-full text-xs font-medium text-[#78847B] bg-white border border-[#E3EAE3] hover:bg-[#F5F7F4] transition-colors cursor-pointer shadow-xs"
+                              className="btn-matte-secondary px-3 py-1.5 text-xs text-[#78847B] cursor-pointer"
                             >
                               Lihat Alasan
                             </button>
@@ -1083,13 +1104,13 @@ export default function DashboardPage() {
                               <button
                                 type="button"
                                 onClick={() => setSelectedReport(rep)}
-                                className="px-3 py-1.5 rounded-full text-xs font-medium text-[#17251B] bg-white border border-[#E3EAE3] hover:bg-[#F5F7F4] transition-colors cursor-pointer shadow-xs"
+                                className="btn-matte-secondary px-3 py-1.5 text-xs cursor-pointer"
                               >
                                 Detail
                               </button>
                               <Link
                                 href="/aksi"
-                                className="p-1.5 rounded-full border border-[#E3EAE3] text-[#78847B] hover:text-[#329F45] hover:bg-[#F5F7F4] transition-colors"
+                                className="btn-matte-secondary p-1.5 text-[#78847B] hover:text-[#329F45]"
                                 title="Buka lembar aksi"
                               >
                                 <ArrowRight className="w-3.5 h-3.5" />
@@ -1114,8 +1135,8 @@ export default function DashboardPage() {
 
           {/* Mobile / Tablet Responsive Stacked List View */}
           <div className="lg:hidden divide-y divide-[#E3EAE3]">
-            {filteredReports.length > 0 ? (
-              filteredReports.map((rep) => (
+            {paginatedReports.length > 0 ? (
+              paginatedReports.map((rep) => (
                 <div key={rep.id} className="p-4 space-y-3 hover:bg-[#F9FAF8] transition-colors">
                   <div className="flex items-start gap-3">
                     <button
@@ -1168,7 +1189,7 @@ export default function DashboardPage() {
                         <button
                           type="button"
                           onClick={() => setSelectedReport(rep)}
-                          className="px-4 py-1.5 rounded-full text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] shadow-xs"
+                          className="btn-matte-primary px-4 py-1.5 text-xs"
                         >
                           Verifikasi
                         </button>
@@ -1176,7 +1197,7 @@ export default function DashboardPage() {
                         <button
                           type="button"
                           onClick={() => setSelectedReport(rep)}
-                          className="px-3.5 py-1.5 rounded-full text-xs font-medium text-[#17251B] bg-white border border-[#E3EAE3] hover:bg-[#F5F7F4] shadow-xs"
+                          className="btn-matte-secondary px-3.5 py-1.5 text-xs"
                         >
                           Detail
                         </button>
@@ -1192,10 +1213,54 @@ export default function DashboardPage() {
             )}
           </div>
 
-          <div className="p-4 bg-[#F5F7F4] border-t border-[#E3EAE3] flex items-center justify-between text-xs text-[#78847B]">
+          <div className="p-4 bg-[#F5F7F4] border-t border-[#E3EAE3] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#78847B]">
             <span>
-              Menampilkan <strong className="text-[#17251B]">{filteredReports.length}</strong> dari {reports.length} total laporan lapangan
+              Menampilkan <strong className="text-[#17251B]">
+                {filteredReports.length > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0}–{Math.min(currentPage * ITEMS_PER_PAGE, filteredReports.length)}
+              </strong> dari {filteredReports.length} total laporan lapangan
             </span>
+
+            {totalPages > 1 && (
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="btn-matte-secondary w-8 h-8 !p-0 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
+                  title="Halaman sebelumnya"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
+                  const isActive = pageNum === currentPage;
+                  return (
+                    <button
+                      key={pageNum}
+                      type="button"
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`w-8 h-8 !p-0 text-xs font-semibold cursor-pointer ${
+                        isActive
+                          ? 'btn-matte-dark'
+                          : 'btn-matte-secondary'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="btn-matte-secondary w-8 h-8 !p-0 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
+                  title="Halaman berikutnya"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
           </div>
 
         </div>
@@ -1321,7 +1386,7 @@ export default function DashboardPage() {
                       <button
                         type="button"
                         onClick={() => handleDeleteReport(selectedReport.id)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-medium transition-colors cursor-pointer"
+                        className="btn-matte-danger gap-1 px-3 py-1.5 text-xs cursor-pointer"
                         title="Hapus permanen laporan ini dari sistem"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -1331,7 +1396,7 @@ export default function DashboardPage() {
                       <button
                         type="button"
                         onClick={() => handleUpdateStatus(selectedReport.id, 'ditolak')}
-                        className="px-3 py-1.5 rounded-full border border-[#E3EAE3] text-[#DC3545] hover:bg-white text-xs font-medium transition-colors cursor-pointer"
+                        className="btn-matte-secondary px-3 py-1.5 text-xs !text-rose-600 !border-rose-200 hover:!bg-rose-50 cursor-pointer"
                       >
                         Tolak Temuan
                       </button>
@@ -1339,7 +1404,7 @@ export default function DashboardPage() {
                       <button
                         type="button"
                         onClick={() => handleUpdateStatus(selectedReport.id, 'dalam_aksi')}
-                        className="px-3 py-1.5 rounded-full border border-[#E3EAE3] bg-white text-[#17251B] hover:bg-[#F5F7F4] text-xs font-medium transition-colors cursor-pointer"
+                        className="btn-matte-secondary px-3 py-1.5 text-xs cursor-pointer"
                       >
                         Tandai Ditinjau
                       </button>
@@ -1348,7 +1413,7 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/aksi?report_id=${selectedReport.id}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#E3EAE3] bg-white text-[#17251B] hover:bg-[#F5F7F4] text-xs font-medium transition-colors"
+                        className="btn-matte-secondary gap-1.5 px-3 py-1.5 text-xs"
                       >
                         <span>Jadikan Rencana Aksi</span>
                         <ExternalLink className="w-3 h-3 text-[#78847B]" />
@@ -1357,7 +1422,7 @@ export default function DashboardPage() {
                       <button
                         type="button"
                         onClick={() => handleUpdateStatus(selectedReport.id, 'terverifikasi')}
-                        className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] shadow-xs transition-colors cursor-pointer"
+                        className="btn-matte-primary gap-1.5 px-4 py-1.5 text-xs cursor-pointer"
                       >
                         <Check className="w-3.5 h-3.5" />
                         <span>Setujui &amp; Verifikasi</span>
@@ -1373,14 +1438,14 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-2 shrink-0">
                       <Link
                         href={`/aksi?report_id=${selectedReport.id}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#E3EAE3] bg-white text-[#17251B] text-xs font-medium transition-colors"
+                        className="btn-matte-secondary gap-1.5 px-3 py-1.5 text-xs"
                       >
                         <span>Lihat Rencana Aksi</span>
                         <ExternalLink className="w-3 h-3 text-[#78847B]" />
                       </Link>
                       <Link
                         href="/login?redirect=/dashboard"
-                        className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] transition-colors shadow-xs"
+                        className="btn-matte-primary gap-1.5 px-4 py-1.5 text-xs"
                       >
                         <ShieldCheck className="w-3.5 h-3.5" />
                         <span>Masuk Koordinator</span>

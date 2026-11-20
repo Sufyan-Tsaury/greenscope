@@ -119,6 +119,150 @@ body {
 }
 
 /* ============================================================
+   PURE MATTE TACTILE BUTTON SYSTEM (Zero-Gloss, Soft Ambient Depth)
+   Referensi Desain: Squircle doff, bayangan menyebar empuk, tanpa kilau
+   ============================================================ */
+
+/* Primary Tactile Button (GreenScope Brand Green) */
+.btn-matte-primary {
+  background-color: #52B040;
+  color: #FFFFFF;
+  border-radius: 16px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px -1px rgba(52, 141, 50, 0.35), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+.btn-matte-primary:hover {
+  background-color: #348D32;
+  box-shadow: 0 6px 18px -1px rgba(52, 141, 50, 0.42), 0 3px 6px -1px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+.btn-matte-primary:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 6px -1px rgba(52, 141, 50, 0.25);
+}
+
+/* Secondary Tactile Button (Clean White/Neutral) */
+.btn-matte-secondary {
+  background-color: #FFFFFF;
+  color: #202820;
+  border: 1px solid #E7ECE5;
+  border-radius: 16px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.06), 0 1px 3px -1px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+.btn-matte-secondary:hover {
+  background-color: #F7F9F6;
+  border-color: #DCE2D9;
+  box-shadow: 0 6px 16px -2px rgba(0, 0, 0, 0.09);
+  transform: translateY(-1px);
+}
+.btn-matte-secondary:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Dark Tactile Button (Like 'Storage' & '1' in Reference) */
+.btn-matte-dark {
+  background-color: #17251B;
+  color: #FFFFFF;
+  border-radius: 14px;
+  font-weight: 600;
+  box-shadow: 0 5px 14px -1px rgba(0, 0, 0, 0.24), 0 2px 4px -1px rgba(0, 0, 0, 0.12);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+.btn-matte-dark:hover {
+  background-color: #202820;
+  box-shadow: 0 7px 18px -1px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px);
+}
+.btn-matte-dark:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18);
+}
+
+/* Danger Tactile Button (Tolak / Hapus) */
+.btn-matte-danger {
+  background-color: #e11d48;
+  color: #FFFFFF;
+  border-radius: 16px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px -1px rgba(225, 29, 72, 0.35), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+.btn-matte-danger:hover {
+  background-color: #be123c;
+  box-shadow: 0 6px 18px -1px rgba(225, 29, 72, 0.42);
+  transform: translateY(-1px);
+}
+.btn-matte-danger:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 6px -1px rgba(225, 29, 72, 0.25);
+}
+
+/* Segmented Capsule Track (Wadah kapsul referensi) */
+.matte-track-container {
+  background-color: #FFFFFF;
+  border: 1px solid #E7ECE5;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.04);
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Tab Item in Track */
+.matte-track-item {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #7A8278;
+  border-radius: 12px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.matte-track-item:hover {
+  color: #202820;
+  background-color: #F7F9F6;
+}
+.matte-track-item-active {
+  background-color: #17251B;
+  color: #FFFFFF !important;
+  font-weight: 600;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}
+.matte-track-item-active-brand {
+  background-color: #52B040;
+  color: #FFFFFF !important;
+  font-weight: 600;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px -1px rgba(52, 141, 50, 0.32);
+}
+
+/* ============================================================
    PRINT MEDIA STYLES - GREENSCOPE OFFICIAL DOSSIER REPORT
    ============================================================ */
 @media screen {

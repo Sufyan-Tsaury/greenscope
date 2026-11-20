@@ -150,7 +150,7 @@ export default function WorkflowGuide() {
 
                   <Link
                     href={item.actionHref}
-                    className="inline-flex items-center justify-between w-full py-2.5 px-3.5 rounded-full text-xs font-semibold text-[#202820] bg-[#F7F9F6] group-hover:bg-[#52B040] group-hover:text-white border border-[#E7ECE5] group-hover:border-[#52B040] transition-all shadow-2xs cursor-pointer"
+                    className="w-full btn-matte-secondary py-2.5 px-3.5 text-xs justify-between group-hover:bg-[#52B040] group-hover:text-white group-hover:border-[#52B040] cursor-pointer"
                   >
                     <span>{item.actionText}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -178,13 +178,13 @@ export default function WorkflowGuide() {
           <div className="flex items-center gap-2 shrink-0">
             <Link
               href="/peta"
-              className="px-4 py-2 rounded-full border border-[#E7ECE5] bg-white hover:bg-[#EEF1EC] text-[#202820] text-xs font-medium transition-colors"
+              className="btn-matte-secondary px-4 py-2 text-xs font-medium"
             >
               Pantau Peta Geospasial
             </Link>
             <Link
               href="/lapor"
-              className="px-4 py-2 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] transition-colors"
+              className="btn-matte-primary px-4 py-2 text-xs"
             >
               Unggah Foto Sekarang
             </Link>

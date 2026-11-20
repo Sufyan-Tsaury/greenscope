@@ -258,7 +258,7 @@ function PetaContent() {
 
             <Link
               href="/lapor"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] shadow-xs transition-all"
+              className="hidden sm:inline-flex btn-matte-primary gap-1.5 px-3.5 py-1.5 text-xs"
             >
               <Camera className="w-3.5 h-3.5" />
               <span>Pindai Lokasi Baru</span>
@@ -362,7 +362,7 @@ function PetaContent() {
               <div className="pt-2 flex items-center gap-2">
                 <Link
                   href={`/aksi?report_id=${selectedReport.id}`}
-                  className="flex-1 py-2.5 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] flex items-center justify-center gap-1.5 shadow-xs transition-colors"
+                  className="flex-1 btn-matte-primary py-2.5 text-xs gap-1.5"
                 >
                   <Users className="w-3.5 h-3.5" />
                   <span>Jadikan Kampanye Aksi</span>
@@ -373,7 +373,7 @@ function PetaContent() {
                   <button
                     type="button"
                     onClick={() => handleDeleteReport(selectedReport.id)}
-                    className="p-2.5 rounded-full text-rose-600 bg-rose-50 border border-rose-200 hover:bg-rose-100 transition-colors cursor-pointer"
+                    className="btn-matte-danger p-2.5 !rounded-xl cursor-pointer"
                     title="Hapus titik laporan ini (Akses Koordinator)"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -381,7 +381,7 @@ function PetaContent() {
                 ) : (
                   <Link
                     href={`/login?redirect=/peta`}
-                    className="p-2.5 rounded-full text-[#7A8278] bg-[#F7F9F6] border border-[#E7ECE5] hover:text-[#348D32] transition-colors"
+                    className="btn-matte-secondary p-2.5 !rounded-xl text-[#7A8278]"
                     title="Masuk sebagai Koordinator untuk mengelola titik pantau"
                   >
                     <Lock className="w-4 h-4" />
@@ -450,7 +450,7 @@ function PetaContent() {
             <div className="flex items-center gap-2 pt-1">
               <Link
                 href={`/aksi?report_id=${selectedReport.id}`}
-                className="flex-1 py-2.5 rounded-full text-xs font-semibold text-white bg-[#52B040] flex items-center justify-center gap-1.5 shadow-xs"
+                className="flex-1 btn-matte-primary py-2.5 text-xs gap-1.5"
               >
                 <span>Aksi Restorasi</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -460,7 +460,7 @@ function PetaContent() {
                 <button
                   type="button"
                   onClick={() => handleDeleteReport(selectedReport.id)}
-                  className="p-2.5 rounded-full text-rose-600 bg-rose-50 border border-rose-200 hover:bg-rose-100 transition-colors cursor-pointer"
+                  className="btn-matte-danger p-2.5 !rounded-xl cursor-pointer"
                   title="Hapus titik laporan ini"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -468,7 +468,7 @@ function PetaContent() {
               ) : (
                 <Link
                   href="/login?redirect=/peta"
-                  className="p-2.5 rounded-full text-[#7A8278] bg-[#F7F9F6] border border-[#E7ECE5]"
+                  className="btn-matte-secondary p-2.5 !rounded-xl text-[#7A8278]"
                   title="Masuk Koordinator untuk menghapus"
                 >
                   <Lock className="w-4 h-4" />

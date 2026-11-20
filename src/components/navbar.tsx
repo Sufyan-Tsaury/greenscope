@@ -141,7 +141,7 @@ export default function Navbar() {
               {/* Bagian 3: Tombol Aksi Utama Laporkan Temuan */}
               <Link
                 href="/lapor"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] shadow-xs transition-all transform active:scale-95 whitespace-nowrap shrink-0 ml-0.5"
+                className="btn-matte-primary px-4 py-2 text-xs gap-2 shrink-0 ml-0.5"
               >
                 <Camera className="w-3.5 h-3.5 shrink-0" />
                 <span>Laporkan Temuan</span>
@@ -153,7 +153,7 @@ export default function Navbar() {
             <div className="flex lg:hidden items-center gap-2">
               <Link
                 href="/lapor"
-                className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-xs font-semibold text-white bg-[#52B040]"
+                className="btn-matte-primary px-3.5 py-1.5 text-xs gap-1.5"
               >
                 <Camera className="w-3.5 h-3.5" />
                 <span>Lapor</span>

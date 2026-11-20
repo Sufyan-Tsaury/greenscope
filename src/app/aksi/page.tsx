@@ -362,7 +362,7 @@ function AksiContent() {
               setLinkedReportId('none');
               setIsModalOpen(true);
             }}
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] shadow-sm transition-all shrink-0 cursor-pointer"
+            className="btn-matte-primary gap-2 px-6 py-3.5 text-xs shrink-0 cursor-pointer"
           >
             <Plus className="w-4 h-4 text-white" />
             <span>Rancang Rencana Aksi Baru</span>
@@ -478,7 +478,7 @@ function AksiContent() {
                       <button
                         type="button"
                         onClick={() => setSelectedBrief(camp)}
-                        className="flex-1 py-2.5 px-4 rounded-full border border-[#E7ECE5] hover:bg-[#F7F9F6] bg-white text-xs font-semibold text-[#202820] transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                        className="flex-1 btn-matte-secondary py-2.5 px-4 text-xs gap-1.5 cursor-pointer"
                       >
                         <FileText className="w-3.5 h-3.5 text-[#52B040]" />
                         <span>Lembar Rencana</span>
@@ -495,10 +495,10 @@ function AksiContent() {
                             setVolunteerCamp(camp);
                           }
                         }}
-                        className={`flex-1 py-2.5 px-4 rounded-full text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs ${
+                        className={`flex-1 py-2.5 px-4 text-xs gap-1.5 cursor-pointer ${
                           hasJoined
-                            ? 'bg-[#EAF5E6] text-[#348D32] border border-[#d2ebd0] hover:bg-[#d8eed4]'
-                            : 'bg-[#52B040] hover:bg-[#348D32] text-white'
+                            ? 'btn-matte-secondary !bg-[#EAF5E6] !text-[#348D32] !border-[#d2ebd0] hover:!bg-[#d8eed4]'
+                            : 'btn-matte-primary'
                         }`}
                       >
                         {hasJoined ? (
@@ -667,7 +667,7 @@ function AksiContent() {
                 <button
                   type="button"
                   onClick={handlePrintSop}
-                  className="px-4 py-2.5 rounded-full text-xs font-medium text-[#202820] bg-white border border-[#E7ECE5] hover:bg-[#F7F9F6] flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  className="btn-matte-secondary gap-1.5 px-4 py-2.5 text-xs font-medium cursor-pointer"
                 >
                   <Printer className="w-3.5 h-3.5 text-[#52B040]" />
                   <span>Cetak SOP Lapangan</span>
@@ -679,7 +679,7 @@ function AksiContent() {
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2.5 rounded-full text-xs font-medium text-[#348D32] bg-[#EAF5E6] border border-[#d2ebd0] hover:bg-[#d8eed4] flex items-center gap-1.5"
+                  className="btn-matte-secondary gap-1.5 px-4 py-2.5 text-xs font-medium !text-[#348D32] !bg-[#EAF5E6] !border-[#d2ebd0] hover:!bg-[#d8eed4]"
                 >
                   <Phone className="w-3.5 h-3.5" />
                   <span>Hubungi Koordinator (WA)</span>
@@ -689,7 +689,7 @@ function AksiContent() {
               <button
                 type="button"
                 onClick={() => setSelectedBrief(null)}
-                className="px-6 py-2.5 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] transition-colors cursor-pointer"
+                className="btn-matte-primary px-6 py-2.5 text-xs cursor-pointer"
               >
                 Tutup Lembar Rencana
               </button>
@@ -813,14 +813,14 @@ function AksiContent() {
                 <button
                   type="button"
                   onClick={() => setVolunteerCamp(null)}
-                  className="flex-1 py-3 rounded-full text-xs font-semibold text-[#4A5449] bg-[#F7F9F6] hover:bg-stone-200 transition-colors cursor-pointer"
+                  className="flex-1 btn-matte-secondary py-3 text-xs cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmittingVol}
-                  className="flex-1 py-3 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] shadow-xs flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                  className="flex-1 btn-matte-primary py-3 text-xs gap-2 cursor-pointer"
                 >
                   <Check className="w-4 h-4" />
                   <span>{isSubmittingVol ? 'Mendaftarkan...' : 'Konfirmasi Gabung'}</span>
@@ -951,7 +951,7 @@ function AksiContent() {
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="flex-1 py-3 rounded-full text-xs font-semibold text-[#4A5449] bg-[#F7F9F6] hover:bg-stone-200 transition-colors cursor-pointer"
+                className="flex-1 btn-matte-secondary py-3 text-xs cursor-pointer"
               >
                 Batal
               </button>
@@ -959,7 +959,7 @@ function AksiContent() {
                 type="button"
                 onClick={handleGenerateNewCampaign}
                 disabled={isGeneratingBrief}
-                className="flex-1 py-3 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] shadow-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                className="flex-1 btn-matte-primary py-3 text-xs gap-2 cursor-pointer"
               >
                 {isGeneratingBrief ? (
                   <>

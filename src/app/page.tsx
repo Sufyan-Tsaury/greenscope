@@ -112,7 +112,7 @@ export default function HomePage() {
               <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5">
                 <Link
                   href="/lapor"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] shadow-sm hover:shadow-md transition-all transform active:scale-95"
+                  className="w-full sm:w-auto btn-matte-primary gap-2.5 px-7 py-3.5 text-xs"
                 >
                   <Camera className="w-4 h-4" />
                   <span>Pindai Bukti Lapangan</span>
@@ -120,7 +120,7 @@ export default function HomePage() {
 
                 <Link
                   href="/peta"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-xs font-semibold text-[#202820] bg-white hover:bg-[#F7F9F6] border border-[#E7ECE5] shadow-xs transition-all"
+                  className="w-full sm:w-auto btn-matte-secondary gap-2.5 px-7 py-3.5 text-xs"
                 >
                   <MapPin className="w-4 h-4 text-[#52B040]" />
                   <span>Jelajahi Peta Pantau WebGIS</span>
@@ -342,13 +342,13 @@ export default function HomePage() {
             <div className="flex items-center gap-3 shrink-0">
               <Link
                 href="/peta"
-                className="px-4 py-2 rounded-full font-semibold text-[#202820] bg-white border border-[#E7ECE5] hover:bg-[#EEF1EC] transition-all"
+                className="btn-matte-secondary px-4 py-2 text-xs"
               >
                 Buka Peta Pantau
               </Link>
               <Link
                 href="/aksi"
-                className="px-4 py-2 rounded-full font-semibold text-white bg-[#52B040] hover:bg-[#348D32] transition-all"
+                className="btn-matte-primary px-4 py-2 text-xs"
               >
                 Ikuti Aksi Restorasi
               </Link>
@@ -473,7 +473,7 @@ export default function HomePage() {
                 <div className="pt-2">
                   <Link
                     href="/aksi"
-                    className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] shadow-sm transition-all"
+                    className="w-full btn-matte-primary gap-2 px-6 py-3.5 text-xs"
                   >
                     <span>Daftar Aksi Penanaman Lapangan</span>
                     <ArrowRight className="w-4 h-4" />
@@ -506,14 +506,14 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 font-sans">
               <Link
                 href="/lapor"
-                className="w-full sm:w-auto px-7 py-3.5 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] shadow-sm transition-all flex items-center justify-center gap-2"
+                className="w-full sm:w-auto btn-matte-primary gap-2 px-7 py-3.5 text-xs"
               >
                 <Camera className="w-4 h-4" />
                 <span>Unggah Bukti Lapangan</span>
               </Link>
               <Link
                 href="/peta"
-                className="w-full sm:w-auto px-7 py-3.5 rounded-full text-xs font-semibold text-[#202820] bg-white hover:bg-[#F7F9F6] border border-[#E7ECE5] transition-all flex items-center justify-center gap-2"
+                className="w-full sm:w-auto btn-matte-secondary gap-2 px-7 py-3.5 text-xs"
               >
                 <MapPin className="w-4 h-4 text-[#52B040]" />
                 <span>Jelajahi WebGIS Pesisir</span>

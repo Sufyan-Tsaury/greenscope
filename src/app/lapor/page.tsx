@@ -323,7 +323,7 @@ export default function LaporPage() {
             <button
               type="button"
               onClick={() => setShowGuide(!showGuide)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-[#348D32] bg-[#EAF5E6] hover:bg-[#d6edcf] border border-[#d2ebd0] transition-colors cursor-pointer self-start sm:self-auto shrink-0"
+              className="btn-matte-secondary gap-1.5 px-4 py-2 text-xs !text-[#348D32] !bg-[#EAF5E6] hover:!bg-[#d6edcf] !border-[#d2ebd0] self-start sm:self-auto shrink-0"
             >
               <span>{showGuide ? 'Sembunyikan Panduan SOP' : 'Buka Panduan Pemotretan'}</span>
               <span className="text-[10px]">{showGuide ? '▲' : '▼'}</span>
@@ -481,7 +481,7 @@ export default function LaporPage() {
                       type="button"
                       onClick={handleGetActualLocation}
                       disabled={isLocating}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold text-[#348D32] bg-[#EAF5E6] hover:bg-[#d6edcf] border border-[#d2ebd0] transition-colors cursor-pointer disabled:opacity-50"
+                      className="btn-matte-secondary gap-1 px-3 py-1.5 text-[11px] font-semibold !text-[#348D32] !bg-[#EAF5E6] hover:!bg-[#d6edcf] !border-[#d2ebd0] disabled:opacity-50"
                       title="Ambil koordinat garis lintang dan bujur otomatis dari sensor GPS perangkat"
                     >
                       {isLocating ? (
@@ -544,7 +544,7 @@ export default function LaporPage() {
                 type="button"
                 onClick={handleRunAnalysis}
                 disabled={isAnalyzing || !selectedImage}
-                className="w-full py-3.5 px-6 rounded-full font-semibold text-xs text-white bg-[#52B040] hover:bg-[#348D32] shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
+                className="w-full btn-matte-primary py-3.5 px-6 text-xs gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {isAnalyzing ? (
                   <>
@@ -715,14 +715,14 @@ export default function LaporPage() {
                           <div className="flex flex-col sm:flex-row items-center gap-2 pt-1">
                             <Link
                               href={savedReportId ? `/peta?report_id=${savedReportId}` : '/peta'}
-                              className="w-full sm:w-auto px-5 py-2.5 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] transition-colors shadow-xs flex items-center justify-center gap-1.5"
+                              className="w-full sm:w-auto btn-matte-primary gap-1.5 px-5 py-2.5 text-xs"
                             >
                               <MapPin className="w-3.5 h-3.5" />
                               <span>Buka Posisi di Peta WebGIS</span>
                             </Link>
                             <Link
                               href={savedReportId ? `/aksi?report_id=${savedReportId}` : '/aksi'}
-                              className="w-full sm:w-auto px-5 py-2.5 rounded-full text-xs font-semibold text-[#17251B] bg-white border border-[#E7ECE5] hover:bg-[#F7F9F6] transition-colors flex items-center justify-center gap-1.5 shadow-xs"
+                              className="w-full sm:w-auto btn-matte-secondary gap-1.5 px-5 py-2.5 text-xs"
                             >
                               <Users className="w-3.5 h-3.5 text-[#52B040]" />
                               <span>Jadikan Rencana Aksi Lapangan</span>
@@ -735,7 +735,7 @@ export default function LaporPage() {
                           type="button"
                           onClick={handleSaveToMap}
                           disabled={isSaving}
-                          className="w-full py-3.5 px-6 rounded-full font-semibold text-xs text-white bg-[#52B040] hover:bg-[#348D32] transition-colors shadow-sm disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+                          className="w-full btn-matte-primary py-3.5 px-6 text-xs gap-2 disabled:opacity-50"
                         >
                           {isSaving ? (
                             <>

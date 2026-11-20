@@ -81,7 +81,7 @@ function LoginFormContent() {
       <div className="max-w-md w-full mx-auto flex items-center justify-between pb-6">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs font-medium text-[#7A8278] hover:text-[#202820] bg-white px-3.5 py-1.5 rounded-full border border-[#E7ECE5] shadow-xs transition-colors"
+          className="btn-matte-secondary gap-2 px-3.5 py-1.5 text-xs font-medium"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Kembali ke Beranda</span>
@@ -124,7 +124,7 @@ function LoginFormContent() {
           <button
             type="button"
             onClick={handleUseDemoCredentials}
-            className="w-full py-2 px-3 rounded-xl bg-white hover:bg-[#F2F5F0] border border-[#E7ECE5] text-xs font-semibold text-[#348D32] flex items-center justify-center gap-2 shadow-xs transition-all active:scale-98 cursor-pointer"
+            className="w-full btn-matte-secondary py-2.5 px-3 text-xs font-semibold !text-[#348D32] gap-2 cursor-pointer"
           >
             <Sparkles className="w-3.5 h-3.5 text-[#52B040]" />
             <span>1-Klik Isi Kredensial Koordinator</span>
@@ -198,7 +198,7 @@ function LoginFormContent() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] shadow-sm transition-all transform active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer mt-2"
+            className="w-full btn-matte-primary py-3 text-xs gap-2 cursor-pointer mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {loading ? (
               <>

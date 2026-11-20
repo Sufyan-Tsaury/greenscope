@@ -261,7 +261,7 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
       <div ref={mapContainerRef} className="w-full h-full" />
 
       <div className="absolute top-3 left-14 z-[999] flex flex-wrap items-center gap-2">
-        <div className="flex items-center p-1 rounded-full bg-white/95 backdrop-blur-md border border-[#E7ECE5] shadow-md text-xs">
+        <div className="matte-track-container">
           {(['satellite', 'streets', 'topo'] as BaseLayerType[]).map((layerKey) => {
             const isActive = baseLayer === layerKey;
             return (
@@ -269,10 +269,8 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
                 key={layerKey}
                 type="button"
                 onClick={() => setBaseLayer(layerKey)}
-                className={`px-3 py-1 rounded-full font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
-                  isActive
-                    ? 'bg-[#52B040] text-white font-semibold shadow-xs'
-                    : 'text-[#4A5449] hover:text-[#202820] hover:bg-stone-100'
+                className={`matte-track-item gap-1.5 ${
+                  isActive ? 'matte-track-item-active-brand' : ''
                 }`}
               >
                 {layerKey === 'satellite' && <Globe className="w-3 h-3" />}
@@ -287,10 +285,10 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
         <button
           type="button"
           onClick={() => setShowBufferZone(!showBufferZone)}
-          className={`px-3 py-1.5 rounded-full text-xs font-medium border shadow-md transition-all cursor-pointer flex items-center gap-1.5 ${
+          className={`btn-matte-secondary gap-1.5 px-3 py-1.5 text-xs font-medium cursor-pointer ${
             showBufferZone
-              ? 'bg-[#EAF5E6] text-[#348D32] border-[#d2ebd0] font-semibold'
-              : 'bg-white/95 text-[#4A5449] border-[#E7ECE5] hover:bg-stone-50'
+              ? '!bg-[#EAF5E6] !text-[#348D32] !border-[#d2ebd0] font-semibold'
+              : ''
           }`}
           title="Tampilkan / sembunyikan radius sempadan konservasi 350m"
         >
@@ -302,7 +300,7 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
         <button
           type="button"
           onClick={handleRecenter}
-          className="px-3 py-1.5 rounded-full text-xs font-medium bg-white/95 hover:bg-[#F7F9F6] text-[#202820] border border-[#E7ECE5] shadow-md transition-all cursor-pointer flex items-center gap-1.5"
+          className="btn-matte-secondary gap-1.5 px-3 py-1.5 text-xs font-medium cursor-pointer"
           title="Pusatkan kembali kamera ke Pesisir Bengkulu"
         >
           <Compass className="w-3.5 h-3.5 text-[#52B040]" />
