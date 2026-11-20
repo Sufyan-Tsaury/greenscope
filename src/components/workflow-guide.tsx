@@ -5,9 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { 
   ArrowRight, 
-  FileCheck,
-  ChevronLeft,
-  ChevronRight
+  FileCheck
 } from 'lucide-react';
 
 interface StepItem {
@@ -150,8 +148,8 @@ export default function WorkflowGuide() {
                 key={item.step}
                 type="button"
                 onClick={() => selectStep(idx)}
-                className="group flex flex-col gap-2 text-left cursor-pointer focus:outline-hidden"
-                aria-label={`Pindah ke Tahap ${item.step}: ${item.title}`}
+                className="group flex flex-col gap-2 text-center cursor-pointer focus:outline-hidden"
+                aria-label={`Pindah ke Tahap: ${item.title}`}
               >
                 {/* Thin Segment Progress Bar */}
                 <div className="w-full h-1.5 sm:h-2 rounded-full bg-[#E7ECE5] overflow-hidden">
@@ -164,13 +162,10 @@ export default function WorkflowGuide() {
                   />
                 </div>
 
-                {/* Step Label (Hidden on small mobile for clean minimal look) */}
-                <div className="hidden sm:flex items-center justify-between text-xs font-semibold">
-                  <span className={isCurrent ? 'text-[#348D32]' : 'text-[#7A8278] group-hover:text-[#202820]'}>
-                    Tahap {item.step}
-                  </span>
-                  <span className={`text-[10px] ${isCurrent ? 'text-[#348D32] font-bold' : 'text-[#A0A89E]'}`}>
-                    {item.badge.split(' ')[0]}
+                {/* Badge Label Rata Tengah */}
+                <div className="text-center text-xs font-semibold">
+                  <span className={isCurrent ? 'text-[#348D32] font-bold' : 'text-[#7A8278] group-hover:text-[#202820]'}>
+                    {item.badge}
                   </span>
                 </div>
               </button>
@@ -190,33 +185,21 @@ export default function WorkflowGuide() {
           className="relative rounded-3xl border border-[#E7ECE5] bg-[#F7F9F6] p-6 sm:p-8 lg:p-10 shadow-xs overflow-hidden transition-all duration-300 focus:ring-2 focus:ring-[#52B040]/30 focus:outline-hidden"
         >
 
-          {/* Invisible Left Click Zone (Go to Previous Step) */}
+          {/* Invisible Left Click Zone (Go to Previous Step - No Visible Clutter) */}
           <div
             onClick={goToPrev}
-            className="absolute inset-y-0 left-0 w-1/2 z-10 cursor-pointer group/left"
-            title="Klik sisi kiri untuk mundur (Tahap Sebelumnya)"
+            className="absolute inset-y-0 left-0 w-1/2 z-10 cursor-pointer"
+            title="Tahap Sebelumnya"
             aria-label="Tahap Sebelumnya"
-          >
-            {/* Subtle On-Hover Visual Feedback (No Permanent Clutter) */}
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 opacity-0 group-hover/left:opacity-90 transition-all duration-200 pointer-events-none hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-full bg-black/60 text-white text-xs font-medium backdrop-blur-xs shadow-md">
-              <ChevronLeft className="w-3.5 h-3.5" />
-              <span>Sebelumnya</span>
-            </div>
-          </div>
+          />
 
-          {/* Invisible Right Click Zone (Go to Next Step) */}
+          {/* Invisible Right Click Zone (Go to Next Step - No Visible Clutter) */}
           <div
             onClick={goToNext}
-            className="absolute inset-y-0 right-0 w-1/2 z-10 cursor-pointer group/right"
-            title="Klik sisi kanan untuk maju (Tahap Berikutnya)"
+            className="absolute inset-y-0 right-0 w-1/2 z-10 cursor-pointer"
+            title="Tahap Berikutnya"
             aria-label="Tahap Berikutnya"
-          >
-            {/* Subtle On-Hover Visual Feedback (No Permanent Clutter) */}
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover/right:opacity-90 transition-all duration-200 pointer-events-none hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-full bg-black/60 text-white text-xs font-medium backdrop-blur-xs shadow-md">
-              <span>Selanjutnya</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </div>
-          </div>
+          />
 
           {/* Content Container (z-20 to ensure buttons, links & text remain crisp and directly clickable) */}
           <div className="relative z-20 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center pointer-events-none">
