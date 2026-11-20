@@ -91,10 +91,10 @@ export default function Navbar() {
                     <Link
                       key={item.href}
                       href={item.href}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border outline-hidden focus:outline-hidden focus:ring-0 transition-colors duration-150 ${
                         isActive 
-                          ? 'bg-white text-[#348D32] font-semibold shadow-xs border border-[#E7ECE5]' 
-                          : 'text-[#7A8278] hover:text-[#202820] hover:bg-white/60'
+                          ? 'bg-white text-[#348D32] font-semibold shadow-xs border-[#E7ECE5]' 
+                          : 'border-transparent text-[#7A8278] hover:text-[#202820] hover:bg-white/60'
                       }`}
                     >
                       <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-[#52B040]' : 'text-[#7A8278]'}`} />

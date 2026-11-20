@@ -210,18 +210,18 @@ export default function HomePage() {
               {/* Right Column: Carbon Estimation Box (Hijau GreenScope + Teks Putih & Hitam) */}
               <div className="lg:col-span-5 border-t lg:border-t-0 lg:border-l border-[#EEF1EC] pt-8 lg:pt-0 lg:pl-10 space-y-8 text-left font-sans">
                 
-                {/* Kotak Hijau GreenScope dengan Teks Putih & Hitam */}
-                <div className="space-y-2 p-6 rounded-2xl bg-[#52B040] border border-[#439633] text-white shadow-sm">
-                  <div className="inline-block px-2.5 py-0.5 rounded-md bg-black/15 text-black font-extrabold text-[11px] uppercase tracking-wider">
-                    Estimasi Serapan Karbon Tahunan
+                {/* Kotak Bersih Minimalis Opsi 2 (Top Accent GreenScope) */}
+                <div className="space-y-3 p-6 rounded-2xl bg-white border border-[#E7ECE5] border-t-4 border-t-[#52B040] shadow-xs">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#EAF5E6] text-[#2B7A27] font-semibold text-[11px] uppercase tracking-wider">
+                    <span>Estimasi Serapan Karbon Tahunan</span>
                   </div>
-                  <div className="text-4xl sm:text-5xl font-extrabold text-white font-mono tracking-tight tabular-nums flex items-baseline gap-2">
+                  <div className="text-4xl sm:text-5xl font-extrabold text-[#2B7A27] font-mono tracking-tight tabular-nums flex items-baseline gap-2">
                     <span>{calculatedCO2.toLocaleString('id-ID')}</span>
-                    <span className="text-base sm:text-lg font-bold text-black font-sans">
+                    <span className="text-base sm:text-lg font-medium text-[#606B5E] font-sans">
                       kg CO₂e/tahun
                     </span>
                   </div>
-                  <p className="text-xs text-white/90 leading-relaxed pt-1">
+                  <p className="text-xs text-[#7A8278] leading-relaxed">
                     Estimasi biomassa tersimpan dalam sedimen tanah dan tegakan pohon setelah fase pemantauan 12 bulan.
                   </p>
                 </div>
