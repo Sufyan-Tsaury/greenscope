@@ -278,52 +278,36 @@ export default function LaporPage() {
     <div className="py-8 sm:py-12 bg-[#F7F9F6] min-h-[calc(100vh-4rem)] text-[#202820]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#E7ECE5]">
-          <div className="space-y-2">
+        <div className="pb-6 border-b border-[#E7ECE5]">
+          <div className="space-y-2 max-w-3xl">
             <h1 className="text-2xl sm:text-4xl font-bold text-[#202820] tracking-tight">
               Pindai &amp; Diagnosis Kerusakan Bentang Alam
             </h1>
-            <p className="text-[#7A8278] text-sm max-w-2xl leading-relaxed">
-              Unggah foto kondisi lingkungan (pantai, mangrove, hutan, atau muara). AI ScopeLens akan <strong>mendeteksi ekosistem secara otomatis</strong>, mengevaluasi kerusakan visual, dan merekomendasikan vegetasi botani pemulih secara presisi.
+            <p className="text-[#7A8278] text-sm sm:text-base leading-relaxed">
+              Unggah foto kondisi lingkungan (pantai, mangrove, hutan, atau muara). ScopeLens akan <strong>mendeteksi ekosistem secara otomatis</strong>, mengevaluasi kerusakan visual, dan merekomendasikan vegetasi botani pemulih secara presisi.
             </p>
-          </div>
-
-          <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white border border-[#E7ECE5] max-w-sm shrink-0 shadow-xs">
-            <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#E7ECE5] shrink-0 bg-[#EAF5E6]">
-              <Image 
-                src="/mascot-scopey.jpg" 
-                alt="Scopey Assistant" 
-                fill 
-                className="object-cover" 
-                sizes="40px" 
-              />
-            </div>
-            <div className="text-xs">
-              <span className="font-bold text-[#202820] block">ScopeLens AI Aktif</span>
-              <span className="text-[#7A8278]">Deteksi ekosistem &amp; taksonomi botani otomatis.</span>
-            </div>
           </div>
         </div>
 
-        <div className="rounded-3xl bg-white border border-[#E7ECE5] p-5 sm:p-6 shadow-xs space-y-4">
+        <div className="rounded-3xl bg-white border border-[#E7ECE5] p-5 sm:p-6 shadow-xs space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-[#EAF5E6] text-[#348D32] border border-[#d2ebd0] flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-white text-[#52B040] border border-[#E7ECE5] shadow-xs flex items-center justify-center shrink-0">
                 <HelpCircle className="w-4 h-4 text-[#52B040]" />
               </div>
               <div>
-                <h3 className="text-xs sm:text-sm font-bold text-[#202820]">
+                <h3 className="text-sm font-bold text-[#202820]">
                   Panduan Standar Pemotretan Bukti Konservasi ScopeLens
                 </h3>
-                <p className="text-[11px] text-[#7A8278]">
-                  4 kaidah visual lapangan agar Computer Vision Gemini mendiagnosis ekosistem dan botani pemulih secara presisi.
+                <p className="text-xs text-[#7A8278]">
+                  4 kaidah visual lapangan agar sistem mendiagnosis ekosistem dan botani pemulih secara presisi.
                 </p>
               </div>
             </div>
             <button
               type="button"
               onClick={() => setShowGuide(!showGuide)}
-              className="btn-matte-secondary gap-1.5 px-4 py-2 text-xs !text-[#348D32] !bg-[#EAF5E6] hover:!bg-[#d6edcf] !border-[#d2ebd0] self-start sm:self-auto shrink-0"
+              className="btn-matte-secondary gap-1.5 px-4 py-2 text-xs self-start sm:self-auto shrink-0 cursor-pointer"
             >
               <span>{showGuide ? 'Sembunyikan Panduan SOP' : 'Buka Panduan Pemotretan'}</span>
               <span className="text-[10px]">{showGuide ? '▲' : '▼'}</span>
@@ -331,45 +315,45 @@ export default function LaporPage() {
           </div>
 
           {showGuide && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-3 border-t border-[#EEF1EC] text-xs animate-in fade-in-50 duration-300">
-              <div className="p-3.5 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] space-y-1">
-                <div className="flex items-center gap-1.5 font-bold text-[#202820]">
-                  <Maximize2 className="w-3.5 h-3.5 text-[#52B040]" />
-                  <span>1. Jarak 3–8 Meter</span>
-                </div>
-                <p className="text-[11px] text-[#4A5449] leading-relaxed">
-                  Potret dengan sudut yang memperlihatkan skala kerusakan dan batas sempadan vegetasi, hindari foto terlalu makro/dekat.
-                </p>
-              </div>
-
-              <div className="p-3.5 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] space-y-1">
-                <div className="flex items-center gap-1.5 font-bold text-[#202820]">
-                  <Sun className="w-3.5 h-3.5 text-[#52B040]" />
-                  <span>2. Cahaya Alami</span>
-                </div>
-                <p className="text-[11px] text-[#4A5449] leading-relaxed">
-                  Gunakan pencahayaan alami di siang hari. Hindari silau matahari langsung (*backlight*) atau foto malam tanpa penerangan.
-                </p>
-              </div>
-
-              <div className="p-3.5 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] space-y-1">
-                <div className="flex items-center gap-1.5 font-bold text-[#202820]">
-                  <Trees className="w-3.5 h-3.5 text-[#52B040]" />
-                  <span>3. Elemen Kunci Lanskap</span>
-                </div>
-                <p className="text-[11px] text-[#4A5449] leading-relaxed">
-                  Pastikan elemen kunci terlihat: akar napas bakau, garis pasang sampah, tebing abrasi pantai, atau tajuk kanopi.
-                </p>
-              </div>
-
-              <div className="p-3.5 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] space-y-1">
-                <div className="flex items-center gap-1.5 font-bold text-[#202820]">
-                  <Scan className="w-3.5 h-3.5 text-[#52B040]" />
-                  <span>4. Validitas Lanskap Alami</span>
-                </div>
-                <p className="text-[11px] text-[#4A5449] leading-relaxed">
-                  Sistem otomatis menolak foto selfie, kertas, atau ruangan kantor untuk menjaga integritas basis data konservasi.
-                </p>
+            <div className="pt-4 border-t border-[#EEF1EC] animate-in fade-in-50 duration-300">
+              {/* Timeline Horizontal Berurutan: 1 -> 2 -> 3 -> 4 */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {[
+                  {
+                    num: '1',
+                    title: 'Jarak 3–8 Meter',
+                    desc: 'Potret dengan sudut yang memperlihatkan skala kerusakan dan batas sempadan vegetasi, hindari foto terlalu makro/dekat.'
+                  },
+                  {
+                    num: '2',
+                    title: 'Cahaya Alami',
+                    desc: 'Gunakan pencahayaan alami di siang hari. Hindari silau matahari langsung (backlight) atau foto malam tanpa penerangan.'
+                  },
+                  {
+                    num: '3',
+                    title: 'Elemen Kunci Lanskap',
+                    desc: 'Pastikan elemen kunci terlihat: akar napas bakau, garis pasang sampah, tebing abrasi pantai, atau tajuk kanopi.'
+                  },
+                  {
+                    num: '4',
+                    title: 'Validitas Lanskap Alami',
+                    desc: 'Sistem otomatis menolak foto selfie, kertas, atau ruangan kantor untuk menjaga integritas basis data konservasi.'
+                  }
+                ].map((step) => (
+                  <div key={step.num} className="p-4 rounded-2xl bg-white border border-[#E7ECE5] shadow-2xs space-y-2 text-left">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-full bg-[#52B040] text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
+                        {step.num}
+                      </div>
+                      <h4 className="text-xs font-bold text-[#202820]">
+                        {step.title}
+                      </h4>
+                    </div>
+                    <p className="text-[11px] text-[#4A5449] leading-relaxed pl-9">
+                      {step.desc}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
           )}
@@ -442,7 +426,7 @@ export default function LaporPage() {
                     onClick={() => fileInputRef.current?.click()}
                     className="h-full flex flex-col items-center justify-center p-6 text-center text-[#7A8278] cursor-pointer hover:bg-[#F7F9F6] transition-colors space-y-3"
                   >
-                    <div className="w-16 h-16 rounded-full bg-[#EAF5E6] flex items-center justify-center text-[#52B040] group-hover:scale-105 transition-transform">
+                    <div className="w-16 h-16 rounded-2xl bg-white border border-[#E7ECE5] shadow-xs flex items-center justify-center text-[#52B040] group-hover:scale-105 transition-transform">
                       <UploadCloud className="w-8 h-8" />
                     </div>
                     <div className="space-y-1">
@@ -481,7 +465,7 @@ export default function LaporPage() {
                       type="button"
                       onClick={handleGetActualLocation}
                       disabled={isLocating}
-                      className="btn-matte-secondary gap-1 px-3 py-1.5 text-[11px] font-semibold !text-[#348D32] !bg-[#EAF5E6] hover:!bg-[#d6edcf] !border-[#d2ebd0] disabled:opacity-50"
+                      className="btn-matte-secondary gap-1.5 px-3 py-1.5 text-[11px] font-semibold text-[#202820] disabled:opacity-50 cursor-pointer shadow-xs"
                       title="Ambil koordinat garis lintang dan bujur otomatis dari sensor GPS perangkat"
                     >
                       {isLocating ? (
@@ -508,10 +492,10 @@ export default function LaporPage() {
 
                   {/* Status GPS Indikator */}
                   {coordinates ? (
-                    <div className="p-2.5 rounded-xl bg-[#EAF5E6] border border-[#d2ebd0] text-xs flex items-center justify-between text-[#348D32]">
+                    <div className="p-2.5 rounded-xl bg-white border border-[#E7ECE5] shadow-2xs text-xs flex items-center justify-between text-[#202820]">
                       <div className="flex items-center gap-1.5">
                         <CheckCircle2 className="w-4 h-4 text-[#52B040] shrink-0" />
-                        <span className="font-mono text-[11px]">
+                        <span className="font-mono text-[11px] font-medium">
                           Lat: {coordinates.lat.toFixed(6)}, Lng: {coordinates.lng.toFixed(6)}
                           {gpsAccuracy !== null && ` (Akurasi: ±${gpsAccuracy}m)`}
                         </span>
@@ -544,7 +528,11 @@ export default function LaporPage() {
                 type="button"
                 onClick={handleRunAnalysis}
                 disabled={isAnalyzing || !selectedImage}
-                className="w-full btn-matte-primary py-3.5 px-6 text-xs gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                className={`w-full py-3.5 px-6 rounded-2xl text-xs font-semibold gap-2 transition-all flex items-center justify-center ${
+                  !selectedImage 
+                    ? 'bg-[#E8EDE6] text-[#7A8278] border border-[#D5DDD2] cursor-not-allowed shadow-none'
+                    : 'btn-matte-primary cursor-pointer'
+                }`}
               >
                 {isAnalyzing ? (
                   <>
@@ -758,7 +746,7 @@ export default function LaporPage() {
             ) : (
               /* Placeholder State when no analysis has been run yet */
               <div className="h-full min-h-[420px] rounded-3xl border border-dashed border-[#E7ECE5] bg-white p-8 flex flex-col items-center justify-center text-center space-y-4 shadow-xs">
-                <div className="relative w-16 h-16 rounded-full overflow-hidden border border-[#E7ECE5] shadow-xs bg-[#EAF5E6]">
+                <div className="relative w-16 h-16 rounded-full overflow-hidden border border-[#E7ECE5] shadow-xs bg-white">
                   <Image src="/mascot-scopey.jpg" alt="Scopey" fill className="object-cover" sizes="64px" />
                 </div>
                 <div className="max-w-sm space-y-1.5">
@@ -776,15 +764,14 @@ export default function LaporPage() {
         <div className="rounded-3xl border border-[#E7ECE5] bg-white p-6 space-y-4 shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="space-y-0.5">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#202820] flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-[#52B040]" />
-                <span>Uji Coba Cepat dengan Spesimen Lapangan Bengkulu:</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#202820]">
+                Uji Coba Cepat dengan Spesimen Lapangan Bengkulu:
               </span>
               <p className="text-[11px] text-[#7A8278]">
                 Tidak memiliki foto saat ini? Klik salah satu spesimen riil di bawah untuk mengisi foto, koordinat, dan menguji diagnosis AI:
               </p>
             </div>
-            <span className="text-[10px] font-semibold text-[#176B35] bg-[#EAF5E6] px-2.5 py-1 rounded-full uppercase self-start sm:self-auto border border-[#d2ebd0]">
+            <span className="text-[10px] font-semibold text-[#202820] bg-[#F7F9F6] px-2.5 py-1 rounded-full uppercase self-start sm:self-auto border border-[#E7ECE5]">
               4 Spesimen Uji
             </span>
           </div>
@@ -800,8 +787,8 @@ export default function LaporPage() {
                   onClick={() => handleSelectSample(sample)}
                   className={`text-left p-3 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-2.5 ${
                     isSelected 
-                      ? 'bg-[#EAF5E6]/60 border-[#52B040] shadow-sm' 
-                      : 'bg-[#F7F9F6] border-[#E7ECE5] hover:bg-white text-[#202820]'
+                      ? 'bg-white border-2 border-[#52B040] shadow-sm ring-2 ring-[#52B040]/15' 
+                      : 'bg-white border border-[#E7ECE5] hover:border-[#52B040]/50 text-[#202820]'
                   }`}
                 >
                   <div className="relative aspect-16/10 rounded-xl overflow-hidden bg-stone-900 border border-[#E7ECE5]">
