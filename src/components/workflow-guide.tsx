@@ -177,10 +177,10 @@ export default function WorkflowGuide() {
 
           <div className="flex items-center gap-2 shrink-0">
             <Link
-              href="/dashboard"
+              href="/peta"
               className="px-4 py-2 rounded-full border border-[#E7ECE5] bg-white hover:bg-[#EEF1EC] text-[#202820] text-xs font-medium transition-colors"
             >
-              Pantau Antrean Verifikasi
+              Pantau Peta Geospasial
             </Link>
             <Link
               href="/lapor"

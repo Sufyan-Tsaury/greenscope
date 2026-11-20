@@ -34,7 +34,10 @@ import {
   Radio,
   Compass,
   Layers,
-  Sparkles
+  Sparkles,
+  ShieldAlert,
+  KeyRound,
+  Camera
 } from 'lucide-react';
 import { INITIAL_REPORTS, INITIAL_CAMPAIGNS } from '@/lib/mock-data';
 import { 
@@ -47,6 +50,7 @@ import {
   subscribeToReportsRealtime,
   subscribeToAuthChange,
   signOutCoordinator,
+  signInCoordinator,
   CoordinatorSession
 } from '@/lib/supabase';
 import { Report, Campaign, ReportStatus, SeverityLevel } from '@/types';
@@ -393,6 +397,158 @@ export default function DashboardPage() {
         );
     }
   };
+
+  const [isLoggingInDemo, setIsLoggingInDemo] = useState(false);
+
+  const handleQuickDemoLogin = async () => {
+    setIsLoggingInDemo(true);
+    try {
+      const res = await signInCoordinator('koordinator.greenscope@gmail.com', 'GreenScope2026!');
+      if (res.success && res.session) {
+        setCoordinator(res.session);
+        showToast('Berhasil masuk sebagai Koordinator Konservasi Bengkulu', 'success');
+      } else {
+        showToast(res.error || 'Gagal masuk sesi demo', 'error');
+      }
+    } catch {
+      showToast('Terjadi kendala saat menghubungkan sesi koordinator', 'error');
+    } finally {
+      setIsLoggingInDemo(false);
+    }
+  };
+
+  // --- RESTRICTED ACCESS GATEKEEPER FOR NON-COORDINATORS ---
+  if (!coordinator?.isAuthenticated) {
+    return (
+      <div className="min-h-[calc(100vh-4rem)] bg-[#F7F9F6] text-[#202820] py-12 sm:py-20 px-4 sm:px-6 lg:px-8 flex items-center justify-center font-sans">
+        <AnimatePresence>
+          {toastMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className={`fixed top-20 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg border border-[#E7ECE5] bg-white text-xs font-medium border-l-4 ${
+                toastMessage.type === 'success'
+                  ? 'border-l-[#348D32] text-[#202820]'
+                  : toastMessage.type === 'error'
+                  ? 'border-l-[#DC3545] text-[#202820]'
+                  : 'border-l-[#2563EB] text-[#202820]'
+              }`}
+            >
+              {toastMessage.type === 'success' && <CheckCircle2 className="w-4 h-4 text-[#348D32]" />}
+              {toastMessage.type === 'error' && <XCircle className="w-4 h-4 text-[#DC3545]" />}
+              {toastMessage.type === 'info' && <Info className="w-4 h-4 text-[#2563EB]" />}
+              <span>{toastMessage.text}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="max-w-2xl w-full mx-auto space-y-8 text-center">
+          
+          {/* Institutional Badge */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white border border-[#E7ECE5] text-[#348D32] shadow-xs">
+            <ShieldAlert className="w-4 h-4 text-[#52B040]" />
+            <span>Kawasan Konservasi &amp; Restorasi Bengkulu</span>
+          </div>
+
+          {/* Heading & Subtitle */}
+          <div className="space-y-3">
+            <h1 className="text-3xl sm:text-4xl font-bold text-[#202820] tracking-tight">
+              Pusat Kendali &amp; Verifikasi Terproteksi
+            </h1>
+            <p className="text-sm sm:text-base text-[#7A8278] max-w-xl mx-auto leading-relaxed">
+              Dashboard ini merupakan instrumen operasional khusus Koordinator BKSDA Bengkulu &amp; Pengawas Konservasi untuk validasi bukti lapangan, mitigasi degradasi ekologis, dan penerbitan Berita Acara resmi.
+            </p>
+          </div>
+
+          {/* Evaluator / Dewan Juri Access Card */}
+          <div className="bg-white rounded-3xl border border-[#E7ECE5] p-6 sm:p-8 shadow-sm text-left space-y-5">
+            <div className="flex items-center justify-between pb-4 border-b border-[#EEF1EC]">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-full bg-[#EAF5E6] border border-[#d2ebd0] flex items-center justify-center text-[#348D32] shrink-0">
+                  <KeyRound className="w-4 h-4" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold text-[#202820]">Portal Evaluasi Juri &amp; Koordinator</h2>
+                  <p className="text-[11px] text-[#7A8278]">Gunakan kredensial resmi di bawah ini untuk menguji seluruh fitur komando:</p>
+                </div>
+              </div>
+              <span className="hidden sm:inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#EAF5E6] text-[#348D32] border border-[#d2ebd0]">
+                Akun Resmi Demo
+              </span>
+            </div>
+
+            {/* Credential Box */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-[#F7F9F6] p-4 rounded-2xl border border-[#E7ECE5] text-xs">
+              <div className="space-y-1">
+                <span className="text-[#7A8278] block text-[11px]">Email Koordinator:</span>
+                <span className="font-mono font-semibold text-[#202820] select-all">koordinator.greenscope@gmail.com</span>
+              </div>
+              <div className="space-y-1">
+                <span className="text-[#7A8278] block text-[11px]">Kata Sandi:</span>
+                <span className="font-mono font-semibold text-[#202820] select-all">GreenScope2026!</span>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <button
+                type="button"
+                onClick={handleQuickDemoLogin}
+                disabled={isLoggingInDemo}
+                className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] shadow-xs transition-all cursor-pointer disabled:opacity-50"
+              >
+                {isLoggingInDemo ? (
+                  <>
+                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Membuka Sesi Koordinator...</span>
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>1-Klik Masuk Sebagai Koordinator</span>
+                  </>
+                )}
+              </button>
+
+              <Link
+                href="/login?redirect=/dashboard"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs font-semibold text-[#202820] bg-white hover:bg-[#F7F9F6] border border-[#E7ECE5] transition-all"
+              >
+                <LogIn className="w-3.5 h-3.5 text-[#52B040]" />
+                <span>Halaman Login Manual</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Public Features Alternative */}
+          <div className="pt-2 text-center space-y-4">
+            <span className="text-xs text-[#7A8278]">Bukan koordinator? Anda dapat menjelajahi seluruh fitur publik:</span>
+            <div className="flex flex-wrap items-center justify-center gap-2 text-xs">
+              <Link href="/lapor" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border border-[#E7ECE5] text-[#202820] hover:text-[#348D32] hover:bg-[#F7F9F6] transition-colors shadow-xs">
+                <Camera className="w-3.5 h-3.5 text-[#52B040]" />
+                <span>ScopeLens (Pindai AI)</span>
+              </Link>
+              <Link href="/peta" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border border-[#E7ECE5] text-[#202820] hover:text-[#348D32] hover:bg-[#F7F9F6] transition-colors shadow-xs">
+                <MapPin className="w-3.5 h-3.5 text-[#52B040]" />
+                <span>Peta Pantau WebGIS</span>
+              </Link>
+              <Link href="/aksi" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border border-[#E7ECE5] text-[#202820] hover:text-[#348D32] hover:bg-[#F7F9F6] transition-colors shadow-xs">
+                <Users className="w-3.5 h-3.5 text-[#52B040]" />
+                <span>Kampanye Aksi</span>
+              </Link>
+              <Link href="/" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border border-[#E7ECE5] text-[#7A8278] hover:text-[#202820] hover:bg-[#F7F9F6] transition-colors shadow-xs">
+                <Compass className="w-3.5 h-3.5" />
+                <span>Beranda</span>
+              </Link>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="py-8 sm:py-12 bg-[#F5F7F4] min-h-[calc(100vh-4rem)] text-[#17251B] font-sans print:bg-white print:p-0 print:m-0 print:min-h-0">

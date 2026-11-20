@@ -40,7 +40,9 @@ export default function Navbar() {
     { href: '/lapor', label: 'ScopeLens', icon: Camera },
     { href: '/peta', label: 'Peta Pantau', icon: MapPin },
     { href: '/aksi', label: 'Kampanye Aksi', icon: Users },
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    ...(coordinator?.isAuthenticated
+      ? [{ href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard }]
+      : []),
   ];
 
   const handleLogout = async () => {

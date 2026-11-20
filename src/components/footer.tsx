@@ -46,7 +46,7 @@ export default function Footer() {
                 <Link href="/aksi" className="hover:text-[#348D32] transition-colors">Kampanye &amp; Aksi Lapangan</Link>
               </li>
               <li>
-                <Link href="/dashboard" className="hover:text-[#348D32] transition-colors">Dashboard Verifikasi</Link>
+                <Link href="/dashboard" className="hover:text-[#348D32] transition-colors">Portal Koordinator (BKSDA)</Link>
               </li>
             </ul>
           </div>

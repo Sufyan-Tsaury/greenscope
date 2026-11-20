@@ -84,8 +84,8 @@ const STEPS: StepData[] = [
     description: 'Aksi dituntaskan dengan dokumentasi pemulihan transparan. Kalkulator karbon langsung menghitung estimasi serapan biomassa aktif dan garis pantai yang terlindungi.',
     metricLabel: 'Estimasi Serapan Karbon',
     metricValue: '5.350 kg CO₂e/tahun',
-    ctaText: 'Pelajari Dashboard Dampak',
-    ctaHref: '/dashboard'
+    ctaText: 'Jelajahi Peta Dampak',
+    ctaHref: '/peta'
   }
 ];
 
