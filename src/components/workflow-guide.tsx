@@ -4,8 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
-  ArrowRight, 
-  FileCheck
+  ArrowRight
 } from 'lucide-react';
 
 interface StepItem {
@@ -266,34 +265,6 @@ export default function WorkflowGuide() {
 
           </div>
 
-        </div>
-
-        {/* Bottom Banner: Closed-Loop Assurance */}
-        <div className="p-4 sm:p-5 rounded-2xl border border-[#E7ECE5] bg-white flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#7A8278]">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-[#EAF5E6] border border-[#d2ebd0] flex items-center justify-center shrink-0 text-[#348D32]">
-              <FileCheck className="w-4 h-4 text-[#52B040]" />
-            </div>
-            <div>
-              <strong className="text-[#202820] block">Semua Tahap Terhubung Transparan</strong>
-              <span>Setiap foto laporan warga berujung pada aksi nyata gotong royong dan pemulihan karbon terukur.</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 shrink-0">
-            <Link
-              href="/peta"
-              className="btn-matte-secondary px-4 py-2 text-xs font-medium"
-            >
-              Pantau Peta Geospasial
-            </Link>
-            <Link
-              href="/lapor"
-              className="btn-matte-primary px-4 py-2 text-xs"
-            >
-              Unggah Foto Sekarang
-            </Link>
-          </div>
         </div>
 
       </div>
