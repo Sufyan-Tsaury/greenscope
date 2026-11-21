@@ -786,6 +786,7 @@ export async function fetchCampaigns(): Promise<Campaign[]> {
     const { data, error } = await supabase
       .from('campaigns')
       .select('*')
+      .neq('description', '__GREENSCOPE_DELETED__')
       .order('created_at', { ascending: false });
 
     if (error || !data || data.length === 0) {
@@ -795,20 +796,50 @@ export async function fetchCampaigns(): Promise<Campaign[]> {
       ];
     }
 
-    const sanitizedData = (data as Campaign[]).map((c) => {
-      if (c.after_image_url && c.after_image_url.includes('photo-1511497584788-87676104235f')) {
-        return {
-          ...c,
-          after_image_url: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=1200&q=80'
-        };
+    const normalizedSupabase: Campaign[] = data.map((item: any) => {
+      const brief = item.action_brief || {};
+      const customId = brief.custom_id || item.id;
+      let afterUrl = item.after_image_url;
+      if (afterUrl && afterUrl.includes('photo-1511497584788-87676104235f')) {
+        afterUrl = 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=1200&q=80';
       }
-      return c;
+
+      return {
+        id: customId,
+        report_id: brief.linked_report_id || item.report_id || 'rep-custom',
+        coordinator_name: brief.coordinator_name || 'Dr. Ilham Maulana (Koordinator Konservasi Lapangan)',
+        title: item.title,
+        description: item.description || '',
+        event_date: item.event_date,
+        location_name: item.location_name,
+        latitude: typeof item.latitude === 'number' ? item.latitude : parseFloat(item.latitude) || -3.8214,
+        longitude: typeof item.longitude === 'number' ? item.longitude : parseFloat(item.longitude) || 102.2741,
+        target_volunteers: item.target_volunteers || 20,
+        volunteers_count: brief.volunteers_count !== undefined ? brief.volunteers_count : (item.target_volunteers ? Math.floor(item.target_volunteers * 0.7) : 15),
+        target_trees: item.target_trees || 0,
+        target_waste_kg: item.target_waste_kg || 0,
+        actual_trees: item.actual_trees || 0,
+        actual_waste_kg: item.actual_waste_kg || 0,
+        estimated_co2_kg: item.estimated_co2_kg || 0,
+        before_image_url: brief.before_image_url || 'https://images.unsplash.com/photo-1544979590-37e9b47eb705?auto=format&fit=crop&w=1200&q=80',
+        after_image_url: afterUrl || undefined,
+        status: item.status || 'direncanakan',
+        action_brief: brief,
+        created_at: item.created_at || new Date().toISOString()
+      };
     });
 
-    return [
-      ...localCustom,
-      ...sanitizedData.filter((c) => !localCustom.some((lc) => lc.id === c.id))
+    // Gabungkan data Supabase dengan localCustom dan fallback INITIAL_CAMPAIGNS
+    const combined = [
+      ...normalizedSupabase,
+      ...localCustom.filter((lc) => !normalizedSupabase.some((sc) => sc.id === lc.id || sc.title.trim().toLowerCase() === lc.title.trim().toLowerCase())),
+      ...INITIAL_CAMPAIGNS.filter((init) => 
+        !normalizedSupabase.some((sc) => sc.id === init.id || sc.title.trim().toLowerCase() === init.title.trim().toLowerCase()) &&
+        !localCustom.some((lc) => lc.id === init.id || lc.title.trim().toLowerCase() === init.title.trim().toLowerCase())
+      )
     ];
+
+    return combined;
   } catch (err) {
     console.warn('Gagal memuat kampanye Supabase:', err);
     return [
@@ -819,25 +850,67 @@ export async function fetchCampaigns(): Promise<Campaign[]> {
 }
 
 /**
- * Menyimpan kampanye restorasi baru
+ * Menyimpan kampanye restorasi baru (Sinkronisasi Multi-Perangkat: Supabase + LocalStorage)
  */
 export async function saveCampaign(campaign: Campaign): Promise<Campaign> {
   saveLocalCampaign(campaign);
 
   if (isSupabaseConfigured && supabase) {
     try {
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(campaign.id);
+      const isReportUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(campaign.report_id);
+
+      const payload: any = {
+        title: campaign.title,
+        description: campaign.description || '',
+        event_date: campaign.event_date || new Date().toISOString(),
+        location_name: campaign.location_name,
+        latitude: campaign.latitude,
+        longitude: campaign.longitude,
+        target_volunteers: campaign.target_volunteers || 20,
+        target_trees: campaign.target_trees || 0,
+        target_waste_kg: campaign.target_waste_kg || 0,
+        actual_trees: campaign.actual_trees || 0,
+        actual_waste_kg: campaign.actual_waste_kg || 0,
+        estimated_co2_kg: campaign.estimated_co2_kg || 0,
+        status: campaign.status || 'direncanakan',
+        after_image_url: campaign.after_image_url || null,
+        report_id: isReportUUID ? campaign.report_id : null,
+        action_brief: {
+          ...(campaign.action_brief || {}),
+          custom_id: campaign.id,
+          linked_report_id: campaign.report_id,
+          coordinator_name: campaign.coordinator_name || 'Dr. Ilham Maulana (Koordinator Konservasi Lapangan)',
+          volunteers_count: campaign.volunteers_count || 1,
+          before_image_url: campaign.before_image_url || 'https://images.unsplash.com/photo-1544979590-37e9b47eb705?auto=format&fit=crop&w=1200&q=80',
+        }
+      };
+
+      if (isUUID) {
+        payload.id = campaign.id;
+      }
+
       const { data, error } = await supabase
         .from('campaigns')
-        .insert([campaign])
+        .upsert([payload])
         .select()
         .single();
+
       if (!error && data) {
-        const saved = data as Campaign;
-        saveLocalCampaign(saved);
-        return saved;
+        const savedCampaign: Campaign = {
+          ...campaign,
+          id: data.action_brief?.custom_id || data.id,
+          coordinator_name: data.action_brief?.coordinator_name || campaign.coordinator_name,
+          before_image_url: data.action_brief?.before_image_url || campaign.before_image_url,
+          volunteers_count: data.action_brief?.volunteers_count ?? campaign.volunteers_count,
+        };
+        saveLocalCampaign(savedCampaign);
+        return savedCampaign;
+      } else if (error) {
+        console.warn('Gagal upsert kampanye ke Supabase:', error.message);
       }
     } catch (err) {
-      console.error('Gagal simpan kampanye ke Supabase:', err);
+      console.error('Error saat simpan kampanye ke Supabase:', err);
     }
   }
 
@@ -845,16 +918,45 @@ export async function saveCampaign(campaign: Campaign): Promise<Campaign> {
 }
 
 /**
- * Menambah jumlah relawan pada kampanye tertentu secara persisten
+ * Menambah jumlah relawan pada kampanye tertentu secara persisten di cloud & lokal
  */
-export function incrementCampaignVolunteer(campaignId: string): void {
-  if (typeof window === 'undefined') return;
-  try {
-    const local = getLocalCampaigns();
-    const updated = local.map((c) => (c.id === campaignId ? { ...c, volunteers_count: c.volunteers_count + 1 } : c));
-    localStorage.setItem(LOCAL_STORAGE_CAMPAIGNS_KEY, JSON.stringify(updated));
-  } catch (err) {
-    console.warn('Gagal update volunteer count:', err);
+export async function incrementCampaignVolunteer(campaignId: string): Promise<void> {
+  if (typeof window !== 'undefined') {
+    try {
+      const local = getLocalCampaigns();
+      const updated = local.map((c) => (c.id === campaignId ? { ...c, volunteers_count: c.volunteers_count + 1 } : c));
+      localStorage.setItem(LOCAL_STORAGE_CAMPAIGNS_KEY, JSON.stringify(updated));
+    } catch (err) {
+      console.warn('Gagal update volunteer count lokal:', err);
+    }
+  }
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(campaignId);
+      let target: any = null;
+      if (isUUID) {
+        const { data } = await supabase.from('campaigns').select('*').eq('id', campaignId).maybeSingle();
+        target = data;
+      } else {
+        const { data } = await supabase.from('campaigns').select('*');
+        if (data) {
+          target = data.find((c: any) => c.action_brief?.custom_id === campaignId);
+        }
+      }
+
+      if (target) {
+        const currentCount = target.action_brief?.volunteers_count ?? target.target_volunteers ?? 10;
+        await supabase.from('campaigns').update({
+          action_brief: {
+            ...(target.action_brief || {}),
+            volunteers_count: currentCount + 1
+          }
+        }).eq('id', target.id);
+      }
+    } catch (err) {
+      console.warn('Gagal sinkron volunteer count ke Supabase:', err);
+    }
   }
 }
 
@@ -874,7 +976,18 @@ export async function deleteCampaign(id: string): Promise<boolean> {
 
   if (isSupabaseConfigured && supabase) {
     try {
-      await supabase.from('campaigns').delete().eq('id', id);
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+      if (isUUID) {
+        await supabase.from('campaigns').update({ description: '__GREENSCOPE_DELETED__' }).eq('id', id);
+      } else {
+        const { data } = await supabase.from('campaigns').select('id, action_brief');
+        if (data) {
+          const target = data.find((c: any) => c.action_brief?.custom_id === id);
+          if (target) {
+            await supabase.from('campaigns').update({ description: '__GREENSCOPE_DELETED__' }).eq('id', target.id);
+          }
+        }
+      }
     } catch (err) {
       console.error('Error saat menghapus kampanye dari Supabase:', err);
     }

@@ -195,6 +195,51 @@ export const INITIAL_CAMPAIGNS: Campaign[] = [
   },
   {
     id: 'camp-02',
+    report_id: 'rep-bengkulu-02',
+    coordinator_name: 'Dr. Ilham Maulana (Koordinator Konservasi Lapangan)',
+    title: 'Restorasi Sabuk Mangrove Alami Pulau Baai (Tahap 2)',
+    description: 'Gerakan pemulihan ekologis dan penanaman 300 bibit mangrove Rhizophora apiculata untuk memulihkan sabuk hijau pelindung pesisir Teluk Pulau Baai.',
+    event_date: '2026-11-28T08:00:00Z',
+    location_name: 'Kawasan Konservasi Mangrove Pulau Baai, Bengkulu',
+    latitude: -3.9056,
+    longitude: 102.3021,
+    target_volunteers: 30,
+    volunteers_count: 18,
+    target_trees: 300,
+    target_waste_kg: 150,
+    actual_trees: 0,
+    actual_waste_kg: 0,
+    estimated_co2_kg: 3600,
+    before_image_url: 'https://images.unsplash.com/photo-1544979590-37e9b47eb705?auto=format&fit=crop&w=1200&q=80',
+    status: 'direncanakan',
+    created_at: '2026-11-10T09:00:00Z',
+    action_brief: {
+      ringkasan_taktis: 'Operasi pemulihan sabuk mangrove Pulau Baai dengan pembersihan sedimen sampah dan penanaman serentak bibit bakau berakar tunjang.',
+      kebutuhan_logistik: [
+        '300 Bibit Rhizophora apiculata',
+        '300 Ajir bambu penopang ombak',
+        '30 Pasang sarung tangan tebal anti-lumpur',
+        'Kotak P3K standar lapangan'
+      ],
+      pembagian_tim: [
+        { nama_regu: 'Regu Bersih Lumpur & Sampah', tugas: 'Mengangkat sampah plastik yang menjerat akar mangrove', kuota: 10 },
+        { nama_regu: 'Regu Tanam Bibit Rhizophora', tugas: 'Menancapkan bibit pada pola zonasi pasang surut', kuota: 15 },
+        { nama_regu: 'Regu Logistik & Pasang Ajir', tugas: 'Mengikat bibit ke pancang pelindung ombak', kuota: 5 }
+      ],
+      tahapan_eksekusi: [
+        '07.30 - 08.00: Briefing taktis & pembagian regu kerja di dermaga Pulau Baai',
+        '08.00 - 10.30: Pembersihan sampah jeratan dan penanaman bibit',
+        '10.30 - 11.30: Pemasangan ajir pelindung ombak & dokumentasi data'
+      ],
+      sop_keselamatan_dan_etika: [
+        'Waspada terhadap pasang laut mendadak dan biota lumpur pesisir',
+        'Wajib mengenakan alas kaki khusus lumpur/sepatu tertutup',
+        'Dilarang merusak anakan bakau alami yang sudah tumbuh'
+      ]
+    }
+  },
+  {
+    id: 'camp-03',
     report_id: 'rep-bengkulu-04',
     coordinator_name: 'Dr. Ilham Maulana (Dosen Kehutanan & Pembina)',
     title: 'Restorasi Sabuk Hijau Bukit Barisan (Tahap 1 Selesai)',
@@ -213,6 +258,29 @@ export const INITIAL_CAMPAIGNS: Campaign[] = [
     before_image_url: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1200&q=80',
     after_image_url: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=1200&q=80',
     status: 'selesai',
-    created_at: '2026-10-25T08:00:00Z'
+    created_at: '2026-10-25T08:00:00Z',
+    action_brief: {
+      ringkasan_taktis: 'Reboisasi tebing lereng curam Bukit Barisan dengan bibit pohon keras berakar tunjang untuk mencegah longsor susulan.',
+      kebutuhan_logistik: [
+        '200 Bibit Shorea leprosula & Bambu Petung',
+        '40 Cangkul & sekop tanam',
+        'Kotak P3K pegunungan'
+      ],
+      pembagian_tim: [
+        { nama_regu: 'Regu Terasering Alami', tugas: 'Membuat pancang bambu penahan longsor', kuota: 15 },
+        { nama_regu: 'Regu Penanaman Pohon', tugas: 'Menanam bibit Shorea di kontur lereng', kuota: 20 },
+        { nama_regu: 'Regu Logistik & Dokumentasi', tugas: 'Pencatatan biometrik pertumbuhan', kuota: 5 }
+      ],
+      tahapan_eksekusi: [
+        '08.00 - 08.30: Persiapan bibit dan pembagian kelompok di pos desa',
+        '08.30 - 11.30: Penanaman di lereng kritis',
+        '11.30 - 12.00: Pencatatan total 220 bibit tertanam'
+      ],
+      sop_keselamatan_dan_etika: [
+        'Gunakan sepatu gunung dengan cengkeraman kuat pada medan miring',
+        'Berhati-hati pada tepi tebing lereng curam',
+        'Jangan buang puntung rokok atau sampah di kawasan hutan'
+      ]
+    }
   }
 ];
