@@ -367,7 +367,7 @@ export default function MapInner({
       <div ref={mapContainerRef} className="w-full h-full" />
 
       {/* Geolocation Coordinate Indicator (Subtle at bottom) */}
-      <div className="absolute bottom-2 left-28 z-[999] hidden sm:flex items-center gap-2 bg-white/90 backdrop-blur-md border border-[#E7ECE5] px-3 py-1 rounded-full text-[11px] font-mono text-[#4A5449] shadow-sm">
+      <div className="absolute bottom-2 left-28 z-10 hidden sm:flex items-center gap-2 bg-white/95 border border-[#E7ECE5] px-3 py-1 rounded-full text-[11px] font-mono text-[#4A5449] shadow-xs">
         <Crosshair className="w-3 h-3 text-[#52B040]" />
         {cursorCoords ? (
           <span>

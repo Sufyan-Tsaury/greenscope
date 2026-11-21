@@ -330,35 +330,35 @@ export default function DashboardPage() {
     return filteredReports.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredReports, currentPage]);
 
-  // Format Helper for Risk Severity (Clean dot + text indicator - Anti-AI-slop)
+  // Format Helper for Risk Severity (Clean solid badge - Anti-AI-slop)
   const renderRiskBadge = (severity: SeverityLevel) => {
     switch (severity) {
       case 'kritis':
         return (
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#DC3545]">
-            <span className="w-2 h-2 rounded-full bg-[#DC3545]"></span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+            <span className="w-2 h-2 rounded-full bg-rose-600"></span>
             Kritis
           </span>
         );
       case 'tinggi':
         return (
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#D97706]">
-            <span className="w-2 h-2 rounded-full bg-[#D97706]"></span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+            <span className="w-2 h-2 rounded-full bg-amber-600"></span>
             Tinggi
           </span>
         );
       case 'sedang':
         return (
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#CA8A04]">
-            <span className="w-2 h-2 rounded-full bg-[#CA8A04]"></span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-50 text-yellow-800 border border-yellow-200">
+            <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
             Sedang
           </span>
         );
       case 'rendah':
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#329F45]">
-            <span className="w-2 h-2 rounded-full bg-[#329F45]"></span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+            <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
             Rendah
           </span>
         );
@@ -370,38 +370,38 @@ export default function DashboardPage() {
     switch (status) {
       case 'menunggu':
         return (
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#78847B]">
-            <Clock className="w-3.5 h-3.5 text-[#D97706] shrink-0" />
-            <span className="text-[#17251B]">Menunggu Verifikasi</span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+            <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+            <span>Menunggu Verifikasi</span>
           </span>
         );
       case 'dalam_aksi':
         return (
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#78847B]">
-            <Eye className="w-3.5 h-3.5 text-[#2563EB] shrink-0" />
-            <span className="text-[#17251B]">Sedang Ditinjau</span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200">
+            <Eye className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+            <span>Sedang Ditinjau</span>
           </span>
         );
       case 'terverifikasi':
         return (
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#78847B]">
-            <CheckCircle2 className="w-3.5 h-3.5 text-[#329F45] shrink-0" />
-            <span className="text-[#17251B]">Terverifikasi</span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+            <span>Terverifikasi</span>
           </span>
         );
       case 'ditolak':
         return (
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#78847B]">
-            <XCircle className="w-3.5 h-3.5 text-[#DC3545] shrink-0" />
-            <span className="text-[#17251B]">Ditolak</span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200">
+            <XCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+            <span>Ditolak</span>
           </span>
         );
       case 'pulih':
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#78847B]">
-            <Trees className="w-3.5 h-3.5 text-[#329F45] shrink-0" />
-            <span className="text-[#17251B]">Siklus Pulih</span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+            <Trees className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+            <span>Siklus Pulih</span>
           </span>
         );
     }
@@ -475,7 +475,7 @@ export default function DashboardPage() {
           <div className="bg-white rounded-3xl border border-[#E7ECE5] p-6 sm:p-8 shadow-sm text-left space-y-5">
             <div className="flex items-center justify-between pb-4 border-b border-[#EEF1EC]">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-full bg-[#EAF5E6] border border-[#d2ebd0] flex items-center justify-center text-[#348D32] shrink-0">
+                <div className="w-9 h-9 rounded-full bg-[#F2F5F0] border border-[#E7ECE5] flex items-center justify-center text-[#348D32] shrink-0">
                   <KeyRound className="w-4 h-4" />
                 </div>
                 <div>
@@ -483,8 +483,8 @@ export default function DashboardPage() {
                   <p className="text-[11px] text-[#7A8278]">Gunakan kredensial resmi di bawah ini untuk menguji seluruh fitur komando:</p>
                 </div>
               </div>
-              <span className="hidden sm:inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#EAF5E6] text-[#348D32] border border-[#d2ebd0]">
-                Akun Resmi Demo
+              <span className="hidden sm:inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-white text-[#202820] border border-[#E7ECE5]">
+                Akses Resmi Evaluasi
               </span>
             </div>
 
@@ -602,15 +602,15 @@ export default function DashboardPage() {
 
             <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap shrink-0">
               {coordinator?.isAuthenticated ? (
-                <div className="flex items-center gap-2 p-1 rounded-full bg-white border border-[#E3EAE3] shadow-xs">
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#EAF5E6] text-xs font-semibold text-[#176B35]">
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#329F45]" />
-                    <span className="truncate max-w-[150px]">{coordinator.name || coordinator.email}</span>
+                <div className="flex items-center gap-1.5 p-1 rounded-full bg-white border border-[#E7ECE5] shadow-xs">
+                  <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#348D32] text-xs font-semibold text-white shadow-2xs">
+                    <ShieldCheck className="w-3.5 h-3.5 text-white" />
+                    <span className="truncate max-w-[170px]">{coordinator.name || coordinator.email}</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => signOutCoordinator()}
-                    className="p-1.5 text-[#78847B] hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors cursor-pointer"
+                    className="p-1.5 text-[#7A8278] hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors cursor-pointer"
                     title="Keluar dari sesi koordinator"
                   >
                     <LogOut className="w-3.5 h-3.5" />
@@ -869,7 +869,7 @@ export default function DashboardPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h3 className="text-base sm:text-lg font-bold text-[#17251B] flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-[#329F45]" />
+                  <FileText className="w-4 h-4 text-[#348D32]" />
                   <span>Antrean Verifikasi Laporan Warga</span>
                 </h3>
                 <p className="text-xs text-[#78847B] mt-0.5">
@@ -877,29 +877,31 @@ export default function DashboardPage() {
                 </p>
               </div>
 
-              <div className="flex items-center gap-4 text-xs text-[#78847B]">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-[#D97706]"></span>
-                  <span>Menunggu ({counts.menunggu})</span>
+              <div className="flex items-center gap-2 text-xs">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 shadow-2xs">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                  <span>Menunggu: {counts.menunggu}</span>
                 </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-[#329F45]"></span>
-                  <span>Terverifikasi ({counts.terverifikasi})</span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-2xs">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span>Terverifikasi: {counts.terverifikasi}</span>
                 </span>
               </div>
             </div>
 
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-3 border-t border-[#E3EAE3]">
               
-              <div className="matte-track-container">
+              <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#F7F9F6] border border-[#E7ECE5]">
                 <button
                   type="button"
                   onClick={() => {
                     setSectorFilter('all');
                     setCurrentPage(1);
                   }}
-                  className={`matte-track-item ${
-                    sectorFilter === 'all' ? 'matte-track-item-active' : ''
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    sectorFilter === 'all' 
+                      ? 'bg-[#202820] text-white shadow-2xs' 
+                      : 'text-[#7A8278] hover:text-[#202820] hover:bg-white'
                   }`}
                 >
                   Semua Sektor ({counts.total})
@@ -911,8 +913,10 @@ export default function DashboardPage() {
                     setSectorFilter('pesisir');
                     setCurrentPage(1);
                   }}
-                  className={`matte-track-item ${
-                    sectorFilter === 'pesisir' ? 'matte-track-item-active' : ''
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    sectorFilter === 'pesisir' 
+                      ? 'bg-[#202820] text-white shadow-2xs' 
+                      : 'text-[#7A8278] hover:text-[#202820] hover:bg-white'
                   }`}
                 >
                   Pesisir &amp; Mangrove ({counts.pesisir})
@@ -924,8 +928,10 @@ export default function DashboardPage() {
                     setSectorFilter('hutan');
                     setCurrentPage(1);
                   }}
-                  className={`matte-track-item ${
-                    sectorFilter === 'hutan' ? 'matte-track-item-active' : ''
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    sectorFilter === 'hutan' 
+                      ? 'bg-[#202820] text-white shadow-2xs' 
+                      : 'text-[#7A8278] hover:text-[#202820] hover:bg-white'
                   }`}
                 >
                   Hutan Tropis ({counts.hutan})
@@ -940,7 +946,7 @@ export default function DashboardPage() {
                     setStatusFilter(e.target.value as any);
                     setCurrentPage(1);
                   }}
-                  className="px-3 py-1.5 rounded-full border border-[#E3EAE3] bg-white text-xs text-[#17251B] focus:outline-hidden focus:border-[#329F45] cursor-pointer shadow-xs"
+                  className="px-3 py-1.5 rounded-xl border border-[#E7ECE5] bg-white text-xs font-medium text-[#202820] focus:outline-hidden focus:border-[#348D32] cursor-pointer shadow-2xs"
                   aria-label="Filter status verifikasi"
                 >
                   <option value="all">Semua Status Verifikasi</option>
@@ -960,7 +966,7 @@ export default function DashboardPage() {
                       setCurrentPage(1);
                     }}
                     placeholder="Cari temuan, lokasi..."
-                    className="w-full pl-8 pr-3 py-1.5 rounded-full border border-[#E3EAE3] text-xs text-[#17251B] bg-white placeholder-[#78847B] focus:outline-hidden focus:border-[#329F45] shadow-xs"
+                    className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-[#E7ECE5] text-xs text-[#202820] bg-white placeholder-[#78847B] focus:outline-hidden focus:border-[#348D32] shadow-2xs"
                   />
                   {searchQuery && (
                     <button
@@ -980,7 +986,7 @@ export default function DashboardPage() {
                 <button
                   type="button"
                   onClick={handleResetData}
-                  className="btn-matte-secondary gap-1 px-3 py-1.5 text-xs text-[#78847B] hover:text-rose-700 hover:border-rose-200 shrink-0"
+                  className="btn-matte-secondary gap-1 px-3 py-1.5 rounded-xl text-xs text-[#78847B] hover:text-rose-700 hover:border-rose-200 shrink-0"
                   title="Bersihkan laporan uji lokal dan kembalikan ke data awal Bengkulu"
                 >
                   <RotateCcw className="w-3 h-3" />
@@ -994,29 +1000,29 @@ export default function DashboardPage() {
 
           <div className="hidden lg:block overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#F5F7F4] border-b border-[#E3EAE3] text-[#78847B] font-semibold uppercase tracking-wider text-[11px]">
+              <thead className="bg-[#F7F9F6] border-b border-[#E7ECE5] text-[#7A8278] font-bold uppercase tracking-wider text-[11px]">
                 <tr>
                   <th className="py-3 px-4 w-16 text-center">Bukti</th>
                   <th className="py-3 px-4">Temuan &amp; Lokasi</th>
-                  <th className="py-3 px-4 w-28">Tingkat Risiko</th>
+                  <th className="py-3 px-4 w-32">Tingkat Risiko</th>
                   <th className="py-3 px-4 w-36">Skor &amp; AI Conf</th>
                   <th className="py-3 px-4">Rekomendasi Botani</th>
                   <th className="py-3 px-4 w-44">Status Verifikasi</th>
                   <th className="py-3 px-4 w-36 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E3EAE3]">
+              <tbody className="divide-y divide-[#E7ECE5]">
                 {paginatedReports.length > 0 ? (
                   paginatedReports.map((rep) => (
                     <tr 
                       key={rep.id} 
                       className="hover:bg-[#F9FAF8] transition-colors duration-150 group"
                     >
-                      <td className="py-3.5 px-4 text-center">
+                      <td className="py-4 px-4 text-center">
                         <button
                           type="button"
                           onClick={() => setSelectedReport(rep)}
-                          className="relative w-12 h-12 rounded-xl overflow-hidden border border-[#E3EAE3] block mx-auto group-hover:border-[#329F45] transition-colors cursor-pointer"
+                          className="relative w-14 h-14 rounded-xl overflow-hidden border border-[#E7ECE5] block mx-auto group-hover:border-[#348D32] transition-colors cursor-pointer shadow-2xs"
                           title="Klik untuk pratinjau bukti"
                         >
                           <Image
@@ -1024,62 +1030,68 @@ export default function DashboardPage() {
                             alt={rep.title}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-300"
-                            sizes="48px"
+                            sizes="56px"
                           />
+                          <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded-sm bg-black/65 text-white text-[9px] font-mono leading-none">
+                            {rep.ecosystem === 'mangrove' ? 'Mangrove' : rep.ecosystem === 'pesisir_pantai' ? 'Pesisir' : rep.ecosystem === 'muara_sungai' ? 'Muara' : 'Hutan'}
+                          </span>
                         </button>
                       </td>
 
-                      <td className="py-3.5 px-4 max-w-sm">
+                      <td className="py-4 px-4 max-w-sm">
                         <div 
                           onClick={() => setSelectedReport(rep)}
-                          className="font-bold text-[#17251B] text-sm hover:text-[#329F45] transition-colors cursor-pointer line-clamp-1"
+                          className="font-bold text-[#202820] text-sm hover:text-[#348D32] transition-colors cursor-pointer line-clamp-1"
                           title={rep.title}
                         >
                           {rep.title}
                         </div>
                         
-                        <div className="flex items-center gap-1.5 text-[11px] text-[#78847B] mt-1 font-mono">
-                          <MapPin className="w-3 h-3 text-[#329F45] shrink-0" />
-                          <span className="truncate max-w-[220px]">{rep.location_name}</span>
-                          <span className="text-[#E3EAE3]">&bull;</span>
-                          <span className="shrink-0">{rep.reporter_name.split(' ')[0]}</span>
+                        <div className="flex items-center gap-1.5 text-[11px] text-[#7A8278] mt-1.5">
+                          <MapPin className="w-3.5 h-3.5 text-[#348D32] shrink-0" />
+                          <span className="truncate max-w-[200px]">{rep.location_name}</span>
+                          <span className="text-[#E7ECE5]">&bull;</span>
+                          <span className="px-2 py-0.5 rounded-full bg-[#F7F9F6] border border-[#E7ECE5] text-[10px] text-[#4A5449] shrink-0 font-medium">
+                            {rep.reporter_name.split(' ')[0]}
+                          </span>
                         </div>
                       </td>
 
-                      <td className="py-3.5 px-4 whitespace-nowrap">
+                      <td className="py-4 px-4 whitespace-nowrap">
                         {renderRiskBadge(rep.severity)}
                       </td>
 
-                      <td className="py-3.5 px-4 whitespace-nowrap font-mono">
-                        <div className="text-xs font-bold text-[#17251B]">
-                          {rep.urgency_score}<span className="text-[10px] text-[#78847B] font-normal">/100</span>
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-sm font-bold font-mono text-[#202820]">{rep.urgency_score}</span>
+                          <span className="text-[10px] text-[#7A8278] font-mono">/100</span>
                         </div>
-                        <div className="text-[10px] text-[#78847B] font-sans">
-                          AI Conf: <strong className="font-mono text-[#17251B]">{rep.ai_analysis?.confidence_score || 94}%</strong>
-                        </div>
-                      </td>
-
-                      <td className="py-3.5 px-4 max-w-xs text-[11px]">
-                        <div className="flex items-center gap-1 text-[#176B35] font-medium truncate" title={rep.ai_analysis?.spesies_rekomendasi}>
-                          <Leaf className="w-3 h-3 text-[#329F45] shrink-0" />
-                          <span className="truncate">{rep.ai_analysis?.spesies_rekomendasi?.split(',')[0]}</span>
-                        </div>
-                        <div className="text-[10px] text-[#78847B] truncate">
-                          {rep.ai_analysis?.kategori}
+                        <div className="text-[11px] text-[#7A8278] mt-0.5">
+                          Gemini AI: <strong className="font-mono text-[#202820]">{rep.ai_analysis?.confidence_score || 94}%</strong>
                         </div>
                       </td>
 
-                      <td className="py-3.5 px-4 whitespace-nowrap">
+                      <td className="py-4 px-4 max-w-xs text-xs">
+                        <div className="flex items-center gap-1.5 text-[#348D32] font-semibold truncate" title={rep.ai_analysis?.spesies_rekomendasi}>
+                          <Leaf className="w-3.5 h-3.5 text-[#348D32] shrink-0" />
+                          <span className="italic truncate">{rep.ai_analysis?.spesies_rekomendasi?.split(',')[0]}</span>
+                        </div>
+                        <div className="text-[11px] text-[#7A8278] truncate mt-0.5">
+                          {rep.ai_analysis?.kategori || 'Restorasi Vegetasi'}
+                        </div>
+                      </td>
+
+                      <td className="py-4 px-4 whitespace-nowrap">
                         {renderStatusBadge(rep.status)}
                       </td>
 
-                      <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                      <td className="py-4 px-4 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1.5">
                           {rep.status === 'menunggu' ? (
                             <button
                               type="button"
                               onClick={() => setSelectedReport(rep)}
-                              className="btn-matte-primary px-3.5 py-1.5 text-xs cursor-pointer"
+                              className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white bg-[#348D32] hover:bg-[#2A7328] transition-colors shadow-2xs cursor-pointer"
                             >
                               Verifikasi
                             </button>
@@ -1087,7 +1099,7 @@ export default function DashboardPage() {
                             <button
                               type="button"
                               onClick={() => setSelectedReport(rep)}
-                              className="btn-matte-dark px-3.5 py-1.5 text-xs cursor-pointer"
+                              className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white bg-[#202820] hover:bg-black transition-colors shadow-2xs cursor-pointer"
                             >
                               Lanjutkan
                             </button>
@@ -1095,7 +1107,7 @@ export default function DashboardPage() {
                             <button
                               type="button"
                               onClick={() => setSelectedReport(rep)}
-                              className="btn-matte-secondary px-3 py-1.5 text-xs text-[#78847B] cursor-pointer"
+                              className="px-3 py-1.5 rounded-xl text-xs font-medium text-[#78847B] bg-white border border-[#E7ECE5] hover:bg-[#F7F9F6] transition-colors shadow-2xs cursor-pointer"
                             >
                               Lihat Alasan
                             </button>
@@ -1104,13 +1116,13 @@ export default function DashboardPage() {
                               <button
                                 type="button"
                                 onClick={() => setSelectedReport(rep)}
-                                className="btn-matte-secondary px-3 py-1.5 text-xs cursor-pointer"
+                                className="px-3 py-1.5 rounded-xl text-xs font-medium text-[#202820] bg-white border border-[#E7ECE5] hover:bg-[#F7F9F6] transition-colors shadow-2xs cursor-pointer"
                               >
                                 Detail
                               </button>
                               <Link
                                 href="/aksi"
-                                className="btn-matte-secondary p-1.5 text-[#78847B] hover:text-[#329F45]"
+                                className="p-1.5 rounded-xl text-[#7A8278] hover:text-[#348D32] hover:bg-[#F7F9F6] border border-transparent hover:border-[#E7ECE5] transition-colors"
                                 title="Buka lembar aksi"
                               >
                                 <ArrowRight className="w-3.5 h-3.5" />
@@ -1189,7 +1201,7 @@ export default function DashboardPage() {
                         <button
                           type="button"
                           onClick={() => setSelectedReport(rep)}
-                          className="btn-matte-primary px-4 py-1.5 text-xs"
+                          className="px-4 py-1.5 rounded-xl text-xs font-semibold text-white bg-[#348D32] hover:bg-[#2A7328] shadow-2xs"
                         >
                           Verifikasi
                         </button>
@@ -1197,7 +1209,7 @@ export default function DashboardPage() {
                         <button
                           type="button"
                           onClick={() => setSelectedReport(rep)}
-                          className="btn-matte-secondary px-3.5 py-1.5 text-xs"
+                          className="px-3.5 py-1.5 rounded-xl text-xs font-medium text-[#202820] bg-white border border-[#E7ECE5] hover:bg-[#F7F9F6] shadow-2xs"
                         >
                           Detail
                         </button>
@@ -1270,7 +1282,7 @@ export default function DashboardPage() {
       {/* Modal Verifikasi & Detail Dossier Temuan */}
       <AnimatePresence>
         {selectedReport && (
-          <div className="no-print print:hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="no-print print:hidden fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
             <motion.div
               initial={{ opacity: 0, scale: 0.96, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
