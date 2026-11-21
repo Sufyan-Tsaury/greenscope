@@ -19,7 +19,6 @@ import {
   Clock,
   Radio,
   FileText,
-  Sparkles,
   Printer,
   ExternalLink,
   Check,
@@ -36,7 +35,9 @@ import {
   updateLocalReportStatus,
   getLocalVolunteerRegistrations,
   saveLocalVolunteerRegistration,
-  incrementCampaignVolunteer
+  incrementCampaignVolunteer,
+  subscribeToAuthChange,
+  CoordinatorSession
 } from '@/lib/supabase';
 import { INITIAL_CAMPAIGNS } from '@/lib/mock-data';
 
@@ -73,6 +74,7 @@ function AksiContent() {
   const [volunteerCamp, setVolunteerCamp] = useState<Campaign | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [coordinator, setCoordinator] = useState<CoordinatorSession | null>(null);
 
   const [printDate, setPrintDate] = useState<string>('18 November 2026');
   const [printTime, setPrintTime] = useState<string>('08:00 WIB');
@@ -104,6 +106,11 @@ function AksiContent() {
   const [isGeneratingBrief, setIsGeneratingBrief] = useState(false);
 
   useEffect(() => {
+    // 1. Berlangganan status sesi koordinator resmi (RBAC)
+    const unsubAuth = subscribeToAuthChange((session) => {
+      setCoordinator(session);
+    });
+
     async function loadData() {
       const [campData, reportData] = await Promise.all([
         fetchCampaigns(),
@@ -152,6 +159,7 @@ function AksiContent() {
     window.addEventListener('afterprint', handleAfterPrint);
 
     return () => {
+      unsubAuth();
       window.removeEventListener('afterprint', handleAfterPrint);
     };
   }, [urlReportId]);
@@ -317,8 +325,12 @@ function AksiContent() {
     }
   };
 
-  // Handle delete custom campaign
+  // Handle delete custom campaign (Akses Terbatas: Hanya Koordinator Resmi)
   const handleDeleteCampaign = async (campId: string) => {
+    if (!coordinator?.isAuthenticated) {
+      alert('Akses Terbatas: Hanya koordinator yang berhak menghapus rencana aksi.');
+      return;
+    }
     if (!confirm('Apakah Anda yakin ingin menghapus rencana aksi ini?')) return;
     await deleteCampaign(campId);
     setCampaigns((prev) => prev.filter((c) => c.id !== campId));
@@ -344,8 +356,8 @@ function AksiContent() {
         
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#E7ECE5]">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-semibold bg-[#EAF5E6] text-[#348D32] border border-[#d2ebd0]">
-              <Sparkles className="w-3.5 h-3.5 text-[#52B040]" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-semibold bg-white text-[#202820] border border-[#E7ECE5] shadow-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#52B040]"></span>
               <span>Tahap 4: Closed-Loop Conservation — Aksi Gotong Royong</span>
             </div>
             <h1 className="text-3xl sm:text-5xl font-bold text-[#202820] tracking-tight">
@@ -385,7 +397,11 @@ function AksiContent() {
                 <div>
                   <div className="relative aspect-16/9 bg-stone-900">
                     <Image
-                      src={camp.after_image_url || camp.before_image_url}
+                      src={
+                        (camp.after_image_url && !camp.after_image_url.includes('photo-1511497584788-87676104235f'))
+                          ? camp.after_image_url
+                          : camp.before_image_url || 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=1200&q=80'
+                      }
                       alt={camp.title}
                       fill
                       className="object-cover"
@@ -397,13 +413,13 @@ function AksiContent() {
                       <span className={`px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider ${
                         camp.status === 'selesai' 
                           ? 'bg-[#52B040] text-white shadow-xs' 
-                          : 'bg-white/95 backdrop-blur-md text-[#348D32] border border-[#d2ebd0] shadow-xs'
+                          : 'bg-white text-[#202820] border border-[#E7ECE5] shadow-xs'
                       }`}>
                         {camp.status === 'selesai' ? '✓ Aksi Selesai Pulih' : '● Sedang Berlangsung'}
                       </span>
 
                       {linkedRep && (
-                        <span className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-black/60 backdrop-blur-md text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-black/75 text-white border border-white/20 flex items-center gap-1 shadow-xs">
                           <CheckCircle2 className="w-3 h-3 text-[#52B040]" />
                           <span>Terhubung Temuan Lapangan</span>
                         </span>
@@ -435,7 +451,7 @@ function AksiContent() {
                           {camp.volunteers_count} / {camp.target_volunteers} Orang ({progressPercent}%)
                         </span>
                       </div>
-                      <div className="h-2 w-full bg-[#EAF5E6] rounded-full overflow-hidden">
+                      <div className="h-2 w-full bg-[#EEF1EC] rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-[#52B040] transition-all duration-500 rounded-full"
                           style={{ width: `${progressPercent}%` }}
@@ -450,8 +466,8 @@ function AksiContent() {
                           {camp.target_trees > 0 ? `${camp.target_trees} Bibit` : `${camp.target_waste_kg} kg Sampah`}
                         </span>
                       </div>
-                      <div className="p-3 rounded-2xl bg-[#EAF5E6] border border-[#d2ebd0] space-y-0.5">
-                        <span className="text-[#348D32] text-[10px] uppercase font-semibold block">Estimasi Serapan Karbon:</span>
+                      <div className="p-3 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5] space-y-0.5">
+                        <span className="text-[#4A5449] text-[10px] uppercase font-semibold block">Estimasi Serapan Karbon:</span>
                         <span className="font-bold text-[#348D32] text-sm">
                           +{camp.estimated_co2_kg} kg CO₂e/th
                         </span>
@@ -497,7 +513,7 @@ function AksiContent() {
                         }}
                         className={`flex-1 py-2.5 px-4 text-xs gap-1.5 cursor-pointer ${
                           hasJoined
-                            ? 'btn-matte-secondary !bg-[#EAF5E6] !text-[#348D32] !border-[#d2ebd0] hover:!bg-[#d8eed4]'
+                            ? 'btn-matte-secondary !bg-white !text-[#202820] !border-[#E7ECE5] shadow-xs'
                             : 'btn-matte-primary'
                         }`}
                       >
@@ -516,14 +532,14 @@ function AksiContent() {
                     )}
                   </div>
 
-                  {isCustom && (
+                  {coordinator?.isAuthenticated && (
                     <div className="flex justify-end pt-1">
                       <button
                         type="button"
                         onClick={() => handleDeleteCampaign(camp.id)}
-                        className="text-[11px] text-rose-500 hover:text-rose-700 hover:underline flex items-center gap-1 cursor-pointer"
+                        className="text-[11px] text-rose-600 hover:text-rose-700 hover:underline flex items-center gap-1 cursor-pointer font-medium"
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <Trash2 className="w-3 h-3 text-rose-500" />
                         <span>Hapus Aksi Rencana Ini</span>
                       </button>
                     </div>
@@ -547,7 +563,7 @@ function AksiContent() {
             <div className="flex items-start justify-between pb-4 border-b border-[#EEF1EC]">
               <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] uppercase font-semibold bg-[#EAF5E6] text-[#348D32] border border-[#d2ebd0]">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] uppercase font-semibold bg-[#F7F9F6] text-[#202820] border border-[#E7ECE5]">
                     <FileText className="w-3.5 h-3.5 text-[#52B040]" />
                     LEMBAR RENCANA OPERASI LAPANGAN (ACTION BRIEF)
                   </span>
@@ -625,7 +641,7 @@ function AksiContent() {
                         </div>
                         <div className="text-[11px] text-[#4A5449] mt-0.5">{team.tugas}</div>
                       </div>
-                      <span className="px-3 py-1 rounded-full text-[11px] font-semibold bg-[#EAF5E6] text-[#348D32] border border-[#d2ebd0] shrink-0">
+                      <span className="px-3 py-1 rounded-full text-[11px] font-semibold bg-white text-[#202820] border border-[#E7ECE5] shadow-xs shrink-0">
                         {team.kuota} Orang
                       </span>
                     </div>
@@ -679,9 +695,9 @@ function AksiContent() {
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-matte-secondary gap-1.5 px-4 py-2.5 text-xs font-medium !text-[#348D32] !bg-[#EAF5E6] !border-[#d2ebd0] hover:!bg-[#d8eed4]"
+                  className="btn-matte-secondary gap-1.5 px-4 py-2.5 text-xs font-medium !text-[#202820] !bg-white !border-[#E7ECE5] shadow-xs hover:!bg-[#F7F9F6]"
                 >
-                  <Phone className="w-3.5 h-3.5" />
+                  <Phone className="w-3.5 h-3.5 text-[#52B040]" />
                   <span>Hubungi Koordinator (WA)</span>
                 </a>
               </div>
@@ -705,7 +721,7 @@ function AksiContent() {
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-5 border border-[#E7ECE5] shadow-xl">
             <div className="flex items-start justify-between pb-3 border-b border-[#EEF1EC]">
               <div>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#EAF5E6] text-[#348D32]">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#F7F9F6] text-[#202820] border border-[#E7ECE5]">
                   Pendaftaran Relawan Aksi
                 </span>
                 <h3 className="text-lg font-bold text-[#202820] mt-1">
@@ -781,7 +797,7 @@ function AksiContent() {
                       key={item.squad}
                       className={`flex items-start gap-3 p-3 rounded-2xl border cursor-pointer transition-all ${
                         volSquad === item.squad 
-                          ? 'border-[#52B040] bg-[#EAF5E6]/60 text-[#202820]' 
+                          ? 'border-[#52B040] bg-white text-[#202820] shadow-xs ring-1 ring-[#52B040]' 
                           : 'border-[#E7ECE5] hover:bg-[#F7F9F6] text-[#4A5449]'
                       }`}
                     >
@@ -837,7 +853,7 @@ function AksiContent() {
           <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-5 border border-[#E7ECE5] shadow-xl [scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:#CBD5E1_transparent]">
             <div className="flex items-start justify-between pb-3 border-b border-[#EEF1EC]">
               <div>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#EAF5E6] text-[#348D32]">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#F7F9F6] text-[#202820] border border-[#E7ECE5]">
                   Closed-Loop Conservation
                 </span>
                 <h3 className="text-lg font-bold text-[#202820] mt-1">
@@ -859,15 +875,15 @@ function AksiContent() {
 
             <div className="space-y-3.5 text-xs">
               
-              <div className="space-y-1 p-3.5 rounded-2xl bg-[#EAF5E6]/40 border border-[#d2ebd0]">
+              <div className="space-y-1 p-3.5 rounded-2xl bg-[#F7F9F6] border border-[#E7ECE5]">
                 <label className="font-bold text-[#17251B] block flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5 text-[#348D32]" />
+                  <Layers className="w-3.5 h-3.5 text-[#52B040]" />
                   <span>Tautkan dengan Laporan Temuan Lapangan:</span>
                 </label>
                 <select
                   value={linkedReportId}
                   onChange={(e) => handleSelectReport(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-[#d2ebd0] bg-white text-[#202820] font-medium focus:ring-2 focus:ring-[#52B040] focus:outline-hidden"
+                  className="w-full px-3 py-2 rounded-xl border border-[#E7ECE5] bg-white text-[#202820] font-medium focus:ring-2 focus:ring-[#52B040] focus:outline-hidden"
                 >
                   <option value="none">-- Input Mandiri (Tanpa Tautan Laporan) --</option>
                   {reports.map((r) => (
@@ -963,12 +979,12 @@ function AksiContent() {
               >
                 {isGeneratingBrief ? (
                   <>
-                    <Sparkles className="w-4 h-4 animate-spin" />
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     <span>Menyusun AI Brief...</span>
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-4 h-4" />
+                    <FileText className="w-4 h-4" />
                     <span>Susun Rencana Aksi</span>
                   </>
                 )}

@@ -793,9 +793,19 @@ export async function fetchCampaigns(): Promise<Campaign[]> {
       ];
     }
 
+    const sanitizedData = (data as Campaign[]).map((c) => {
+      if (c.after_image_url && c.after_image_url.includes('photo-1511497584788-87676104235f')) {
+        return {
+          ...c,
+          after_image_url: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=1200&q=80'
+        };
+      }
+      return c;
+    });
+
     return [
       ...localCustom,
-      ...(data as Campaign[]).filter((c) => !localCustom.some((lc) => lc.id === c.id))
+      ...sanitizedData.filter((c) => !localCustom.some((lc) => lc.id === c.id))
     ];
   } catch (err) {
     console.warn('Gagal memuat kampanye Supabase:', err);

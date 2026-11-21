@@ -211,7 +211,7 @@ export const INITIAL_CAMPAIGNS: Campaign[] = [
     actual_waste_kg: 65,
     estimated_co2_kg: 2400,
     before_image_url: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1200&q=80',
-    after_image_url: 'https://images.unsplash.com/photo-1511497584788-87676104235f?auto=format&fit=crop&w=1200&q=80',
+    after_image_url: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=1200&q=80',
     status: 'selesai',
     created_at: '2026-10-25T08:00:00Z'
   }
