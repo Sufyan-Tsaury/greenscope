@@ -84,10 +84,10 @@ export default function InteractiveScopey({
   } else if (isPasswordFocused) {
     if (showPassword) {
       // Peeking look!
-      targetPupilX = 7;
-      targetPupilY = 4;
+      targetPupilX = 6;
+      targetPupilY = 5;
       targetTiltX = -2;
-      targetTiltY = 6;
+      targetTiltY = 5;
     } else {
       targetPupilX = 0;
       targetPupilY = 0;
@@ -122,7 +122,7 @@ export default function InteractiveScopey({
     tiltY.set(targetTiltY);
   }, [targetPupilX, targetPupilY, targetTiltX, targetTiltY, pupilX, pupilY, tiltX, tiltY]);
 
-  // Hand positions logic
+  // Hand states
   const isHandsCovering = isPasswordFocused && !showPassword;
   const isPeeking = isPasswordFocused && showPassword;
 
@@ -189,6 +189,12 @@ export default function InteractiveScopey({
               <stop offset="100%" stopColor="#348D32" />
             </linearGradient>
 
+            {/* Arm Segment Gradient */}
+            <linearGradient id="armGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#FFFFFF" />
+              <stop offset="100%" stopColor="#D4DDD2" />
+            </linearGradient>
+
             {/* LED Glow Filter */}
             <filter id="ledGlow" x="-20%" y="-20%" width="140%" height="140%">
               <feGaussianBlur stdDeviation="3.5" result="blur" />
@@ -197,12 +203,6 @@ export default function InteractiveScopey({
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
-
-            {/* Soft Ambient Shadow */}
-            <radialGradient id="hologramPod" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#52B040" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#52B040" stopOpacity="0" />
-            </radialGradient>
           </defs>
 
           {/* --- PROPULSION LEAF WINGS (SIDES) --- */}
@@ -261,7 +261,6 @@ export default function InteractiveScopey({
           </motion.g>
 
           {/* --- SPHERICAL DRONE BODY --- */}
-          {/* Main White Sphere Shell */}
           <circle
             cx="130"
             cy="135"
@@ -271,7 +270,7 @@ export default function InteractiveScopey({
             strokeWidth="3.5"
           />
 
-          {/* Subtle Panel Seam Lines for Tech/Robotic Look */}
+          {/* Panel Seam Lines */}
           <path
             d="M 130 63 C 158 63 182 78 194 100"
             stroke="#C9D6C7"
@@ -285,10 +284,9 @@ export default function InteractiveScopey({
             strokeLinecap="round"
           />
 
-          {/* Side Botanical Emblems (Eco Drone Port) */}
+          {/* Side Botanical Emblems */}
           <circle cx="198" cy="130" r="14" fill="#348D32" />
           <circle cx="198" cy="130" r="11" fill="#FFFFFF" />
-          {/* Tiny Embossed Leaf in Port */}
           <path
             d="M 198 123 C 193 126 193 134 198 137 C 203 134 203 126 198 123 Z"
             fill="#348D32"
@@ -306,21 +304,18 @@ export default function InteractiveScopey({
             }}
             style={{ transformOrigin: '130px 65px' }}
           >
-            {/* Sprout Stem */}
             <path
               d="M 130 65 Q 128 45 134 32"
               stroke="#348D32"
               strokeWidth="4"
               strokeLinecap="round"
             />
-            {/* Left Sprout Leaf */}
             <path
               d="M 129 48 C 114 42 110 52 118 60 C 126 62 129 55 129 48 Z"
               fill="url(#leafGrad)"
               stroke="#2A7328"
               strokeWidth="1.5"
             />
-            {/* Glowing Sensor Bulb Tip */}
             <motion.circle
               cx="135"
               cy="31"
@@ -361,16 +356,16 @@ export default function InteractiveScopey({
             fill="url(#visorGrad)"
           />
 
-          {/* Visor Specular Glass Reflection (Curved Arc Highlight) */}
+          {/* Visor Specular Glass Reflection */}
           <path
             d="M 94 106 C 114 100 146 100 166 106 C 160 112 100 112 94 106 Z"
             fill="#FFFFFF"
             opacity="0.14"
           />
 
-          {/* --- DIGITAL LED EYES & EXPRESSION --- */}
+          {/* --- DIGITAL LED EYES & EXPRESSIONS --- */}
           <g filter="url(#ledGlow)">
-            {/* Case A: Success Celebration Eyes (Curved Happy Arcs) */}
+            {/* Case A: Success Celebration Eyes */}
             {isSuccess ? (
               <>
                 <path
@@ -387,7 +382,6 @@ export default function InteractiveScopey({
                   strokeLinecap="round"
                   fill="none"
                 />
-                {/* Big Happy Smile */}
                 <path
                   d="M 122 147 Q 130 156 138 147"
                   stroke="#48E587"
@@ -397,22 +391,34 @@ export default function InteractiveScopey({
                 />
               </>
             ) : isError ? (
-              /* Case B: Error / Confused Eyes */
+              /* Case B: Error Eyes */
               <>
                 <line x1="102" y1="135" x2="118" y2="135" stroke="#F87171" strokeWidth="4.5" strokeLinecap="round" />
                 <line x1="142" y1="135" x2="158" y2="135" stroke="#F87171" strokeWidth="4.5" strokeLinecap="round" />
                 <path d="M 125 152 Q 130 146 135 152" stroke="#F87171" strokeWidth="3" strokeLinecap="round" fill="none" />
               </>
+            ) : isHandsCovering ? (
+              /* Case C: Both hands covering eyes - shy closed eye lines behind hands */
+              <>
+                <path d="M 103 134 Q 110 130 117 134" stroke="#3EE59A" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+                <path d="M 143 134 Q 150 130 157 134" stroke="#3EE59A" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+                <path d="M 125 146 Q 130 150 135 146" stroke="#3EE59A" strokeWidth="3" strokeLinecap="round" fill="none" />
+              </>
+            ) : isPeeking ? (
+              /* Case D: Peeking - left eye closed, right eye open looking out! */
+              <>
+                <path d="M 103 134 Q 110 130 117 134" stroke="#3EE59A" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+                <motion.g style={{ x: pupilX, y: pupilY }}>
+                  <ellipse cx="150" cy="133" rx="7.5" ry="10.5" fill="#3EE59A" />
+                  <circle cx="152" cy="130" r="2.5" fill="#FFFFFF" />
+                </motion.g>
+                <path d="M 125 148 Q 130 154 135 148" stroke="#3EE59A" strokeWidth="3" strokeLinecap="round" fill="none" />
+              </>
             ) : (
-              /* Case C: Interactive Eyes with Dynamic Tracking */
+              /* Case E: Default live interactive cursor tracking */
               <>
                 {/* Left Eye */}
-                <motion.g
-                  style={{
-                    x: pupilX,
-                    y: pupilY,
-                  }}
-                >
+                <motion.g style={{ x: pupilX, y: pupilY }}>
                   <motion.ellipse
                     cx="110"
                     cy="133"
@@ -421,19 +427,11 @@ export default function InteractiveScopey({
                     fill="#3EE59A"
                     transition={{ duration: 0.1 }}
                   />
-                  {/* Eye Sparkle / Pupil Light */}
-                  {!isBlinking && (
-                    <circle cx="112" cy="130" r="2.5" fill="#FFFFFF" />
-                  )}
+                  {!isBlinking && <circle cx="112" cy="130" r="2.5" fill="#FFFFFF" />}
                 </motion.g>
 
                 {/* Right Eye */}
-                <motion.g
-                  style={{
-                    x: pupilX,
-                    y: pupilY,
-                  }}
-                >
+                <motion.g style={{ x: pupilX, y: pupilY }}>
                   <motion.ellipse
                     cx="150"
                     cy="133"
@@ -442,10 +440,7 @@ export default function InteractiveScopey({
                     fill="#3EE59A"
                     transition={{ duration: 0.1 }}
                   />
-                  {/* Eye Sparkle / Pupil Light */}
-                  {!isBlinking && (
-                    <circle cx="152" cy="130" r="2.5" fill="#FFFFFF" />
-                  )}
+                  {!isBlinking && <circle cx="152" cy="130" r="2.5" fill="#FFFFFF" />}
                 </motion.g>
 
                 {/* Friendly Smile */}
@@ -455,10 +450,7 @@ export default function InteractiveScopey({
                   strokeWidth="3.2"
                   strokeLinecap="round"
                   fill="none"
-                  style={{
-                    x: pupilX,
-                    y: pupilY,
-                  }}
+                  style={{ x: pupilX, y: pupilY }}
                 />
               </>
             )}
@@ -480,88 +472,100 @@ export default function InteractiveScopey({
             />
           )}
 
-          {/* --- ROBOTIC HANDS / PRIVACY GESTURE --- */}
-          {/* Left Hand */}
+          {/* --- FIXED SHOULDER JOINT SOCKETS (ANCHORED PERMANENTLY TO DRONE BODY) --- */}
+          <circle cx="76" cy="160" r="8" fill="#E4ECE2" stroke="#348D32" strokeWidth="2.5" />
+          <circle cx="76" cy="160" r="4" fill="#348D32" />
+          
+          <circle cx="184" cy="160" r="8" fill="#E4ECE2" stroke="#348D32" strokeWidth="2.5" />
+          <circle cx="184" cy="160" r="4" fill="#348D32" />
+
+          {/* --- FULLY ARTICULATED ROBOTIC ARMS (PIVOTED AT SHOULDER SOCKETS) --- */}
+          
+          {/* Left Arm & Hand - PIVOTED AT (76, 160) */}
           <motion.g
-            animate={
-              isHandsCovering || isPeeking
-                ? {
-                    // Both hands raised to cover visor
-                    x: 35,
-                    y: -36,
-                    rotate: 22,
-                  }
-                : {
-                    // Resting cute side pose
-                    x: 0,
-                    y: 0,
-                    rotate: 0,
-                  }
-            }
+            animate={{
+              // When covering eyes: rotate upward by -128 degrees to cover the left eye
+              rotate: isHandsCovering || isPeeking ? -128 : 0,
+            }}
             transition={{
               type: 'spring',
-              stiffness: 260,
+              stiffness: 240,
               damping: 20,
             }}
-            style={{ transformOrigin: '75px 175px' }}
+            style={{ transformOrigin: '76px 160px' }}
           >
-            {/* White Arm Segment */}
+            {/* White Arm Segment anchored at (76, 160) */}
             <path
-              d="M 80 165 Q 70 178 78 188"
-              stroke="#D6E0D4"
-              strokeWidth="7"
+              d="M 76 160 L 72 182 L 76 198"
+              stroke="url(#armGrad)"
+              strokeWidth="9"
               strokeLinecap="round"
+              strokeLinejoin="round"
             />
-            {/* Hand Palm / Claws in Green */}
-            <circle cx="78" cy="188" r="10" fill="#348D32" stroke="#2A7328" strokeWidth="2" />
-            <circle cx="73" cy="184" r="3.5" fill="#52B040" />
-            <circle cx="77" cy="180" r="3.5" fill="#52B040" />
-            <circle cx="83" cy="183" r="3.5" fill="#52B040" />
+            <path
+              d="M 76 160 L 72 182 L 76 198"
+              stroke="#C5D3C2"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+
+            {/* Elbow Joint Hinge */}
+            <circle cx="72" cy="182" r="5" fill="#348D32" />
+
+            {/* Green Robotic Palm */}
+            <ellipse cx="76" cy="200" rx="12" ry="10" fill="#348D32" stroke="#2A7328" strokeWidth="2" />
+            <ellipse cx="76" cy="200" rx="8" ry="6" fill="#52B040" />
+
+            {/* Articulated Green Fingers */}
+            <circle cx="69" cy="206" r="3.5" fill="#348D32" />
+            <circle cx="76" cy="208" r="3.8" fill="#348D32" />
+            <circle cx="83" cy="206" r="3.5" fill="#348D32" />
           </motion.g>
 
-          {/* Right Hand */}
+          {/* Right Arm & Hand - PIVOTED AT (184, 160) */}
           <motion.g
-            animate={
-              isHandsCovering
-                ? {
-                    // Full cover password
-                    x: -35,
-                    y: -36,
-                    rotate: -22,
-                  }
-                : isPeeking
-                ? {
-                    // Peeking! Right hand slightly lowered so right eye peeks
-                    x: -16,
-                    y: -14,
-                    rotate: -10,
-                  }
-                : {
-                    // Resting pose / friendly wave
-                    x: 0,
-                    y: 0,
-                    rotate: 0,
-                  }
-            }
+            animate={{
+              // When covering: rotate upward by +128 degrees to cover the right eye
+              // When peeking: lower hand down to +45 degrees so eye peeks!
+              rotate: isHandsCovering ? 128 : isPeeking ? 45 : 0,
+            }}
             transition={{
               type: 'spring',
-              stiffness: 260,
+              stiffness: 240,
               damping: 20,
             }}
-            style={{ transformOrigin: '185px 175px' }}
+            style={{ transformOrigin: '184px 160px' }}
           >
-            {/* White Arm Segment */}
+            {/* White Arm Segment anchored at (184, 160) */}
             <path
-              d="M 180 165 Q 190 178 182 188"
-              stroke="#D6E0D4"
-              strokeWidth="7"
+              d="M 184 160 L 188 182 L 184 198"
+              stroke="url(#armGrad)"
+              strokeWidth="9"
               strokeLinecap="round"
+              strokeLinejoin="round"
             />
-            {/* Hand Palm / Claws in Green */}
-            <circle cx="182" cy="188" r="10" fill="#348D32" stroke="#2A7328" strokeWidth="2" />
-            <circle cx="177" cy="183" r="3.5" fill="#52B040" />
-            <circle cx="183" cy="180" r="3.5" fill="#52B040" />
-            <circle cx="187" cy="184" r="3.5" fill="#52B040" />
+            <path
+              d="M 184 160 L 188 182 L 184 198"
+              stroke="#C5D3C2"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+
+            {/* Elbow Joint Hinge */}
+            <circle cx="188" cy="182" r="5" fill="#348D32" />
+
+            {/* Green Robotic Palm */}
+            <ellipse cx="184" cy="200" rx="12" ry="10" fill="#348D32" stroke="#2A7328" strokeWidth="2" />
+            <ellipse cx="184" cy="200" rx="8" ry="6" fill="#52B040" />
+
+            {/* Articulated Green Fingers */}
+            <circle cx="177" cy="206" r="3.5" fill="#348D32" />
+            <circle cx="184" cy="208" r="3.8" fill="#348D32" />
+            <circle cx="191" cy="206" r="3.5" fill="#348D32" />
           </motion.g>
         </svg>
       </motion.div>

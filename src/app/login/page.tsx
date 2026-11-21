@@ -78,7 +78,7 @@ function LoginFormContent() {
         <div className="md:col-span-5 bg-[#F2F5F0] p-6 sm:p-8 flex flex-col justify-between border-b md:border-b-0 md:border-r border-[#E7ECE5] relative">
           
           {/* Top Stage Header */}
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center justify-start">
             <Link
               href="/"
               className="inline-flex items-center gap-2 text-xs font-medium text-[#202820] bg-white border border-[#E7ECE5] rounded-xl px-3.5 py-2 hover:bg-[#F7F9F6] transition-colors"
@@ -86,15 +86,10 @@ function LoginFormContent() {
               <ArrowLeft className="w-3.5 h-3.5 text-[#348D32]" />
               <span>Beranda</span>
             </Link>
-
-            <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#202820] bg-white border border-[#E7ECE5] px-2.5 py-1 rounded-full">
-              <span className="w-2 h-2 rounded-full bg-[#52B040] animate-pulse"></span>
-              <span>Scopey Online</span>
-            </div>
           </div>
 
           {/* Interactive Mascot Center Stage */}
-          <div className="py-6 flex flex-col items-center justify-center">
+          <div className="py-8 flex flex-col items-center justify-center my-auto">
             <InteractiveScopey
               isEmailFocused={isEmailFocused}
               isPasswordFocused={isPasswordFocused}
@@ -103,17 +98,6 @@ function LoginFormContent() {
               isError={Boolean(errorMessage)}
               isLoading={loading}
             />
-          </div>
-
-          {/* Bottom Stage Information */}
-          <div className="bg-white rounded-2xl border border-[#E7ECE5] p-3.5 space-y-1">
-            <div className="flex items-center gap-2 text-xs font-bold text-[#202820]">
-              <span className="w-2 h-2 rounded-full bg-[#348D32]"></span>
-              <span>Scopey &bull; Eco-Drone AI</span>
-            </div>
-            <p className="text-[11px] text-[#7A8278] leading-relaxed">
-              Memandu pengawasan sensor lapangan dan verifikasi restorasi pesisir &amp; hutan tropis Bengkulu.
-            </p>
           </div>
 
         </div>
@@ -175,7 +159,7 @@ function LoginFormContent() {
                   onChange={(e) => setEmail(e.target.value)}
                   onFocus={() => setIsEmailFocused(true)}
                   onBlur={() => setIsEmailFocused(false)}
-                  placeholder="koordinator.greenscope@gmail.com"
+                  placeholder="Masukkan Email"
                   required
                   className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-[#E7ECE5] bg-white text-xs text-[#202820] placeholder:text-[#A0A79E] focus:outline-hidden focus:border-[#348D32] focus:ring-2 focus:ring-[#348D32]/20 transition-all"
                 />
@@ -234,24 +218,10 @@ function LoginFormContent() {
           </form>
 
           {/* Security & Access Info Footer */}
-          <div className="pt-4 border-t border-[#EEF1EC] text-center space-y-2.5">
+          <div className="pt-4 border-t border-[#EEF1EC] text-center">
             <p className="text-[11px] text-[#7A8278] leading-relaxed">
               Masyarakat &amp; relawan dapat melaporkan temuan via ScopeLens tanpa login. Otentikasi hanya diwajibkan untuk koordinator pengelola aksi lapangan.
             </p>
-            <div className="flex items-center justify-center gap-2.5 text-[10px] text-[#202820] pt-0.5">
-              <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-[#E7ECE5]">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#52B040]"></span>
-                RBAC Terproteksi
-              </span>
-              <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-[#E7ECE5]">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#52B040]"></span>
-                Supabase Auth
-              </span>
-              <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-[#E7ECE5]">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#52B040]"></span>
-                TLS 1.3
-              </span>
-            </div>
           </div>
 
         </div>

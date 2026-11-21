@@ -42,7 +42,7 @@ Platform ini dirancang khusus untuk memitigasi krisis degradasi bentang alam di 
 
 6. **Pusat Komando Lapangan (Dual-Mode Dashboard):**
    * Tata letak asimetris yang memprioritaskan peringatan titik kritis di pesisir Bengkulu dan ringkasan capaian kumulatif.
-   * Dilengkapi simulasi peran ganda (*Relawan Lapangan* vs *Koordinator Wilayah*) serta akses akun demo 1-klik untuk Dewan Juri.
+   * Dilengkapi konsol manajemen terproteksi (*Portal Koordinator*) dengan otentikasi peran berbasis RBAC untuk evaluasi Dewan Juri.
 
 ---
 
@@ -83,12 +83,13 @@ Buka [http://localhost:3000](http://localhost:3000) pada browser Anda.
 
 ---
 
-## 🔑 Akun Demo Pengujian Dewan Juri
+## 🔑 Akses Pengujian Portal Koordinator (Dewan Juri)
 
-| Peran | Email | Kata Sandi | Akses |
+> **Catatan Partisipasi Publik:** Seluruh partisipasi warga, pelaporan temuan botani via ScopeLens, eksplorasi peta WebGIS, dan pendaftaran aksi tanam dapat diakses secara langsung tanpa login (*zero-barrier public participation*). Otentikasi hanya diberlakukan khusus untuk **Koordinator Wilayah / Dewan Juri** guna memverifikasi laporan dan menyetujui rencana aksi restorasi.
+
+| Peran | Email | Kata Sandi | Hak Akses |
 | :--- | :--- | :--- | :--- |
-| **Relawan Lapangan** | `relawan@greenscope.id` | `GreenScope2026!` | Pelaporan temuan baru, pendaftaran aksi tanam |
-| **Koordinator / Juri** | `juri@greenscope.id` | `GreenScope2026!` | Verifikasi laporan masuk, penerbitan kampanye aksi |
+| **Koordinator / Dewan Juri** | `juri@greenscope.id` *(atau `koordinator.greenscope@gmail.com`)* | `GreenScope2026!` | Verifikasi laporan lapangan, audit tingkat keparahan, penerbitan rencana taktis aksi restorasi |
 
 ---
 
