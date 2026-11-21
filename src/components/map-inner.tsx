@@ -97,9 +97,9 @@ function createCustomIcon(
   });
 }
 
-type BaseLayerType = 'satellite' | 'streets' | 'topo';
+export type BaseLayerType = 'satellite' | 'streets' | 'topo';
 
-const TILE_LAYERS: Record<BaseLayerType, { name: string; url: string; attribution: string; maxZoom: number }> = {
+export const TILE_LAYERS: Record<BaseLayerType, { name: string; url: string; attribution: string; maxZoom: number }> = {
   satellite: {
     name: 'Satelit',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -120,22 +120,30 @@ const TILE_LAYERS: Record<BaseLayerType, { name: string; url: string; attributio
   }
 };
 
-interface MapInnerProps {
+export interface MapInnerProps {
   reports: Report[];
   selectedReport: Report | null;
   onSelectReport: (report: Report) => void;
+  baseLayer?: BaseLayerType;
+  showBufferZone?: boolean;
+  recenterTrigger?: number;
 }
 
-export default function MapInner({ reports, selectedReport, onSelectReport }: MapInnerProps) {
+export default function MapInner({ 
+  reports, 
+  selectedReport, 
+  onSelectReport,
+  baseLayer = 'satellite',
+  showBufferZone = true,
+  recenterTrigger = 0,
+}: MapInnerProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markersMapRef = useRef<Map<string, L.Marker>>(new Map());
   const activeTileLayerRef = useRef<L.TileLayer | null>(null);
   const bufferCircleRef = useRef<L.Circle | null>(null);
 
-  // Layer & GIS Features State
-  const [baseLayer, setBaseLayer] = useState<BaseLayerType>('satellite');
-  const [showBufferZone, setShowBufferZone] = useState<boolean>(true);
+  // GIS Features State
   const [cursorCoords, setCursorCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [currentZoom, setCurrentZoom] = useState<number>(12);
 
@@ -256,9 +264,9 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
       const eco = ECOSYSTEM_CONFIG[report.ecosystem] || ECOSYSTEM_CONFIG.pesisir_pantai;
       const isCritical = report.severity === 'kritis';
       const isHigh = report.severity === 'tinggi';
-      const sevBg = isCritical ? '#fff1f2' : isHigh ? '#fffbeb' : '#ffffff';
+      const sevBg = '#ffffff';
       const sevText = isCritical ? '#e11d48' : isHigh ? '#d97706' : '#202820';
-      const sevBorder = isCritical ? '#fecdd3' : isHigh ? '#fde68a' : '#E7ECE5';
+      const sevBorder = '#E7ECE5';
       const sevDot = isCritical ? '#e11d48' : isHigh ? '#d97706' : '#52B040';
 
       marker.bindPopup(`
@@ -347,58 +355,18 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
     map.flyTo([-3.8214, 102.2741], 12, { duration: 1.25 });
   };
 
+  // Listen to external recenter trigger from top toolbar
+  useEffect(() => {
+    if (recenterTrigger > 0) {
+      handleRecenter();
+    }
+  }, [recenterTrigger]);
+
   return (
     <div className="relative w-full h-full overflow-hidden select-none">
       <div ref={mapContainerRef} className="w-full h-full" />
 
-      <div className="absolute top-3 left-14 z-[999] flex flex-wrap items-center gap-2">
-        <div className="matte-track-container">
-          {(['satellite', 'streets', 'topo'] as BaseLayerType[]).map((layerKey) => {
-            const isActive = baseLayer === layerKey;
-            return (
-              <button
-                key={layerKey}
-                type="button"
-                onClick={() => setBaseLayer(layerKey)}
-                className={`matte-track-item gap-1.5 ${
-                  isActive ? 'matte-track-item-active-brand' : ''
-                }`}
-              >
-                {layerKey === 'satellite' && <Globe className="w-3 h-3" />}
-                {layerKey === 'streets' && <MapIcon className="w-3 h-3" />}
-                {layerKey === 'topo' && <Layers className="w-3 h-3" />}
-                <span>{TILE_LAYERS[layerKey].name}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setShowBufferZone(!showBufferZone)}
-          className={`gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium cursor-pointer transition-colors border shadow-xs flex items-center ${
-            showBufferZone
-              ? 'bg-[#52B040] text-white border-[#3e8a30] font-semibold'
-              : 'bg-white text-[#202820] border-[#E7ECE5] hover:bg-[#F7F9F6]'
-          }`}
-          title="Tampilkan / sembunyikan radius sempadan konservasi 350m"
-        >
-          <CircleDot className={`w-3.5 h-3.5 ${showBufferZone ? 'text-white' : 'text-[#52B040]'}`} />
-          <span className="hidden sm:inline">Buffer 350m:</span>
-          <span>{showBufferZone ? 'Aktif' : 'Mati'}</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={handleRecenter}
-          className="btn-matte-secondary gap-1.5 px-3 py-1.5 text-xs font-medium cursor-pointer"
-          title="Pusatkan kembali kamera ke Pesisir Bengkulu"
-        >
-          <Compass className="w-3.5 h-3.5 text-[#52B040]" />
-          <span className="hidden md:inline">Pesisir Bengkulu</span>
-        </button>
-      </div>
-
+      {/* Geolocation Coordinate Indicator (Subtle at bottom) */}
       <div className="absolute bottom-2 left-28 z-[999] hidden sm:flex items-center gap-2 bg-white/90 backdrop-blur-md border border-[#E7ECE5] px-3 py-1 rounded-full text-[11px] font-mono text-[#4A5449] shadow-sm">
         <Crosshair className="w-3 h-3 text-[#52B040]" />
         {cursorCoords ? (

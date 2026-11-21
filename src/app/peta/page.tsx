@@ -20,7 +20,10 @@ import {
   Trash2,
   Lock,
   Radio,
-  ShieldCheck
+  ShieldCheck,
+  Globe,
+  CircleDot,
+  Map as MapIcon
 } from 'lucide-react';
 import { Report, EcosystemType, SeverityLevel } from '@/types';
 import { 
@@ -54,6 +57,9 @@ function PetaContent() {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [coordinator, setCoordinator] = useState<CoordinatorSession | null>(null);
   const [realtimeToast, setRealtimeToast] = useState<{ title: string; location: string } | null>(null);
+  const [baseLayer, setBaseLayer] = useState<'satellite' | 'streets' | 'topo'>('satellite');
+  const [showBufferZone, setShowBufferZone] = useState<boolean>(true);
+  const [recenterTrigger, setRecenterTrigger] = useState<number>(0);
 
   useEffect(() => {
     // 1. Berlangganan status login Koordinator (RBAC)
@@ -209,33 +215,77 @@ function PetaContent() {
         </div>
       )}
 
-      <div className="z-20 bg-white/95 backdrop-blur-md border-b border-[#E7ECE5] px-4 py-3 shadow-xs">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      {/* BILAH KONTROL ATAS TERPADU (Di Luar & Di Atas Kanvas Peta, Pisah Penuh dari Peta) */}
+      <div className="z-20 bg-white border-b border-[#E7ECE5] px-3 sm:px-4 py-2.5 shadow-xs">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2.5 overflow-x-auto no-scrollbar">
           
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-white border border-[#E7ECE5] text-[#52B040] shadow-xs flex items-center justify-center shrink-0">
-              <Compass className="w-4 h-4 text-[#52B040]" />
+          {/* Kelompok Kontrol Peta: Satelit / Jalan / Topo + Buffer 350m + Kompas Bengkulu */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Segmented Track Layer Switcher */}
+            <div className="matte-track-container shrink-0">
+              {(
+                [
+                  { id: 'satellite', label: 'Satelit', icon: Globe },
+                  { id: 'streets', label: 'Jalan', icon: MapIcon },
+                  { id: 'topo', label: 'Topografi', icon: Layers },
+                ] as const
+              ).map((item) => {
+                const Icon = item.icon;
+                const isActive = baseLayer === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setBaseLayer(item.id)}
+                    className={`matte-track-item gap-1.5 py-1 px-2.5 sm:px-3 text-xs ${
+                      isActive ? 'matte-track-item-active-brand' : ''
+                    }`}
+                  >
+                    <Icon className="w-3 h-3" />
+                    <span className="text-xs">{item.label}</span>
+                  </button>
+                );
+              })}
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-sm font-bold text-[#202820] flex items-center gap-2">
-                  <span>ScopeMap WebGIS</span>
-                  <span className="text-[10px] font-bold text-[#202820] bg-[#F7F9F6] border border-[#E7ECE5] px-2 py-0.5 rounded-md uppercase font-mono">
-                    BENGKULU
-                  </span>
-                </h1>
-              </div>
-              <span className="text-[11px] text-[#7A8278] hidden sm:block">
-                Menampilkan {filteredReports.length} dari {reports.length} titik pantau
-              </span>
-            </div>
+
+            {/* Toggle Buffer 350m */}
+            <button
+              type="button"
+              onClick={() => setShowBufferZone(!showBufferZone)}
+              className={`gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium cursor-pointer transition-colors border shadow-xs flex items-center shrink-0 ${
+                showBufferZone
+                  ? 'bg-[#52B040] text-white border-[#3e8a30] font-semibold'
+                  : 'bg-white text-[#202820] border-[#E7ECE5] hover:bg-[#F7F9F6]'
+              }`}
+              title="Tampilkan / sembunyikan radius sempadan konservasi 350m"
+            >
+              <CircleDot className={`w-3.5 h-3.5 ${showBufferZone ? 'text-white' : 'text-[#52B040]'}`} />
+              <span className="hidden sm:inline">Buffer 350m:</span>
+              <span>{showBufferZone ? 'Aktif' : 'Mati'}</span>
+            </button>
+
+            {/* Tombol Kompas Recenter Bengkulu */}
+            <button
+              type="button"
+              onClick={() => setRecenterTrigger((prev) => prev + 1)}
+              className="btn-matte-secondary gap-1.5 px-3 py-1.5 text-xs font-medium cursor-pointer shrink-0"
+              title="Pusatkan kembali kamera ke Pesisir Bengkulu"
+            >
+              <Compass className="w-3.5 h-3.5 text-[#52B040]" />
+              <span className="hidden md:inline">Pesisir Bengkulu</span>
+            </button>
           </div>
 
-          <div className="flex items-center gap-2 text-xs">
+          {/* Garis Pembatas Halus */}
+          <div className="h-5 w-px bg-[#E7ECE5] shrink-0 hidden sm:block" />
+
+          {/* Kelompok Filter & Aksi Cepat */}
+          <div className="flex items-center gap-2 text-xs shrink-0">
+            {/* Filter Ekosistem */}
             <select
               value={filterEcosystem}
               onChange={(e) => handleEcosystemChange(e.target.value)}
-              className="px-3 py-1.5 rounded-full border border-[#E7ECE5] bg-white text-[#202820] text-xs font-medium focus:outline-[#52B040] shadow-xs cursor-pointer"
+              className="px-3 py-1.5 rounded-full border border-[#E7ECE5] bg-white text-[#202820] text-xs font-medium focus:outline-[#52B040] shadow-xs cursor-pointer shrink-0"
             >
               <option value="all">Semua Ekosistem</option>
               <option value="pesisir_pantai">Pantai &amp; Pesisir</option>
@@ -244,24 +294,33 @@ function PetaContent() {
               <option value="hutan_tropis">Hutan Tropis</option>
             </select>
 
+            {/* Filter Urgensi */}
             <select
               value={filterSeverity}
               onChange={(e) => handleSeverityChange(e.target.value)}
-              className="px-3 py-1.5 rounded-full border border-[#E7ECE5] bg-white text-[#202820] text-xs font-medium focus:outline-[#52B040] shadow-xs cursor-pointer"
+              className="px-3 py-1.5 rounded-full border border-[#E7ECE5] bg-white text-[#202820] text-xs font-medium focus:outline-[#52B040] shadow-xs cursor-pointer shrink-0"
             >
               <option value="all">Semua Urgensi</option>
-              <option value="kritis">🔴 Kritis (Kerusakan Parah)</option>
-              <option value="tinggi">🟠 Tinggi (Degradasi Signifikan)</option>
-              <option value="sedang">🟡 Sedang (Pemulihan Ringan)</option>
-              <option value="rendah">🟢 Rendah (Observasi Rutin)</option>
+              <option value="kritis">🔴 Kritis</option>
+              <option value="tinggi">🟠 Tinggi</option>
+              <option value="sedang">🟡 Sedang</option>
+              <option value="rendah">🟢 Rendah</option>
             </select>
 
+            {/* Counter Titik Pantau Dinamis (Solid Surface) */}
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white border border-[#E7ECE5] text-[11px] font-semibold text-[#202820] shadow-xs shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#52B040]"></span>
+              <span>{filteredReports.length} dari {reports.length} Titik</span>
+            </span>
+
+            {/* CTA Pindai Lokasi Baru */}
             <Link
               href="/lapor"
-              className="hidden sm:inline-flex btn-matte-primary gap-1.5 px-3.5 py-1.5 text-xs"
+              className="btn-matte-primary gap-1.5 px-3.5 py-1.5 text-xs shrink-0"
             >
               <Camera className="w-3.5 h-3.5" />
-              <span>Pindai Lokasi Baru</span>
+              <span className="hidden sm:inline">Pindai Baru</span>
+              <span className="sm:hidden">Pindai</span>
             </Link>
           </div>
 
@@ -275,6 +334,9 @@ function PetaContent() {
             reports={filteredReports}
             selectedReport={selectedReport}
             onSelectReport={handleSelectReport}
+            baseLayer={baseLayer}
+            showBufferZone={showBufferZone}
+            recenterTrigger={recenterTrigger}
           />
         </div>
 
@@ -282,13 +344,7 @@ function PetaContent() {
           <aside className="hidden lg:flex w-96 bg-white border-l border-[#E7ECE5] flex-col h-full shadow-lg z-20 overflow-y-auto">
             <div className="p-4 border-b border-[#E7ECE5] flex items-center justify-between bg-[#F7F9F6]">
               <div className="flex items-center gap-2">
-                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                  selectedReport.severity === 'kritis' 
-                    ? 'text-rose-700 bg-rose-50 border border-rose-200' 
-                    : selectedReport.severity === 'tinggi'
-                    ? 'text-amber-700 bg-amber-50 border border-amber-200'
-                    : 'text-[#202820] bg-white border border-[#E7ECE5]'
-                }`}>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-[#202820] bg-white border border-[#E7ECE5] shadow-xs">
                   <span className={`w-1.5 h-1.5 rounded-full ${
                     selectedReport.severity === 'kritis' ? 'bg-rose-500' :
                     selectedReport.severity === 'tinggi' ? 'bg-amber-500' : 'bg-[#52B040]'
@@ -404,13 +460,7 @@ function PetaContent() {
           <div className="lg:hidden absolute bottom-16 inset-x-2 z-30 bg-white rounded-3xl p-4 shadow-xl border border-[#E7ECE5] space-y-3 max-h-[75vh] overflow-y-auto animate-in slide-in-from-bottom">
             <div className="flex items-center justify-between pb-1 border-b border-[#EEF1EC]">
               <div>
-                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                  selectedReport.severity === 'kritis' 
-                    ? 'text-rose-700 bg-rose-50 border border-rose-200' 
-                    : selectedReport.severity === 'tinggi'
-                    ? 'text-amber-700 bg-amber-50 border border-amber-200'
-                    : 'text-[#202820] bg-white border border-[#E7ECE5]'
-                }`}>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase text-[#202820] bg-white border border-[#E7ECE5] shadow-xs">
                   <span className={`w-1.5 h-1.5 rounded-full ${
                     selectedReport.severity === 'kritis' ? 'bg-rose-500' :
                     selectedReport.severity === 'tinggi' ? 'bg-amber-500' : 'bg-[#52B040]'

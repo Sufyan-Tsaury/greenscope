@@ -333,3 +333,13 @@ body {
     break-before: page !important;
   }
 }
+
+/* Sembunyikan Next.js dev indicator portal (tombol lingkaran N) */
+nextjs-portal,
+[data-nextjs-dev-tools-button],
+[data-nextjs-toast] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

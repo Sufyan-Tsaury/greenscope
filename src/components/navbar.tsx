@@ -111,10 +111,10 @@ export default function Navbar() {
               {coordinator?.isAuthenticated ? (
                 <div className="flex items-center gap-1">
                   <div 
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#EAF5E6] border border-[#d2ebd0] text-xs font-semibold text-[#348D32] whitespace-nowrap"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#E7ECE5] shadow-xs text-xs font-semibold text-[#202820] whitespace-nowrap"
                     title={`Masuk sebagai ${coordinator.email}`}
                   >
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#348D32] shrink-0" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#52B040] shrink-0" />
                     <span className="whitespace-nowrap">Koordinator</span>
                   </div>
                   <button
@@ -193,9 +193,9 @@ export default function Navbar() {
                 <Link
                   href={`/login?redirect=${pathname}`}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-[#348D32] bg-[#EAF5E6] px-2.5 py-1 rounded-full"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-[#202820] bg-white border border-[#E7ECE5] shadow-xs px-2.5 py-1 rounded-full"
                 >
-                  <LogIn className="w-3 h-3" />
+                  <LogIn className="w-3 h-3 text-[#52B040]" />
                   <span>Masuk Koordinator</span>
                 </Link>
               )}
@@ -210,7 +210,7 @@ export default function Navbar() {
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-colors ${
-                    isActive ? 'bg-[#EAF5E6] text-[#348D32] font-semibold' : 'text-[#7A8278] hover:bg-[#F7F9F6]'
+                    isActive ? 'bg-[#F7F9F6] border border-[#E7ECE5] text-[#202820] font-semibold' : 'text-[#7A8278] hover:bg-[#F7F9F6]'
                   }`}
                 >
                   <Icon className={`w-4 h-4 ${isActive ? 'text-[#52B040]' : 'text-[#7A8278]'}`} />
