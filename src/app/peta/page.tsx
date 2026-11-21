@@ -213,14 +213,14 @@ function PetaContent() {
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
           
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-[#EAF5E6] border border-[#d2ebd0] text-[#348D32] flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-white border border-[#E7ECE5] text-[#52B040] shadow-xs flex items-center justify-center shrink-0">
               <Compass className="w-4 h-4 text-[#52B040]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-sm font-bold text-[#202820] flex items-center gap-2">
                   <span>ScopeMap WebGIS</span>
-                  <span className="text-[10px] font-semibold text-[#348D32] bg-[#EAF5E6] px-2 py-0.5 rounded-full uppercase">
+                  <span className="text-[10px] font-bold text-[#202820] bg-[#F7F9F6] border border-[#E7ECE5] px-2 py-0.5 rounded-md uppercase font-mono">
                     BENGKULU
                   </span>
                 </h1>
@@ -282,12 +282,12 @@ function PetaContent() {
           <aside className="hidden lg:flex w-96 bg-white border-l border-[#E7ECE5] flex-col h-full shadow-lg z-20 overflow-y-auto">
             <div className="p-4 border-b border-[#E7ECE5] flex items-center justify-between bg-[#F7F9F6]">
               <div className="flex items-center gap-2">
-                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                   selectedReport.severity === 'kritis' 
                     ? 'text-rose-700 bg-rose-50 border border-rose-200' 
                     : selectedReport.severity === 'tinggi'
                     ? 'text-amber-700 bg-amber-50 border border-amber-200'
-                    : 'text-[#348D32] bg-[#EAF5E6] border border-[#d2ebd0]'
+                    : 'text-[#202820] bg-white border border-[#E7ECE5]'
                 }`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${
                     selectedReport.severity === 'kritis' ? 'bg-rose-500' :
@@ -346,14 +346,14 @@ function PetaContent() {
                   <Leaf className="w-3.5 h-3.5 text-[#52B040]" />
                   <span>Rekomendasi Restorasi Botani Bengkulu</span>
                 </h3>
-                <div className="p-3 rounded-xl bg-[#EAF5E6]/60 border border-[#d2ebd0] space-y-1.5 text-xs">
-                  <div className="font-semibold text-[#348D32]">
+                <div className="p-3.5 rounded-2xl bg-white border border-[#E7ECE5] shadow-xs space-y-2 text-xs">
+                  <div className="font-bold text-[#202820]">
                     Spesies Prioritas:
                   </div>
-                  <div className="text-[#202820] font-medium text-[11px]">
+                  <div className="text-[#348D32] font-semibold text-xs">
                     {selectedReport.ai_analysis?.spesies_rekomendasi || 'Rhizophora apiculata (Bakau Minyak)'}
                   </div>
-                  <p className="text-[11px] text-[#7A8278] leading-normal pt-1">
+                  <p className="text-[11px] text-[#7A8278] leading-relaxed pt-1 border-t border-[#EEF1EC]">
                     {selectedReport.ai_analysis?.estimasi_risiko || 'Potensi erosi pantai dan kerusakan ekosistem penyangga.'}
                   </p>
                 </div>
@@ -404,12 +404,12 @@ function PetaContent() {
           <div className="lg:hidden absolute bottom-16 inset-x-2 z-30 bg-white rounded-3xl p-4 shadow-xl border border-[#E7ECE5] space-y-3 max-h-[75vh] overflow-y-auto animate-in slide-in-from-bottom">
             <div className="flex items-center justify-between pb-1 border-b border-[#EEF1EC]">
               <div>
-                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
                   selectedReport.severity === 'kritis' 
                     ? 'text-rose-700 bg-rose-50 border border-rose-200' 
                     : selectedReport.severity === 'tinggi'
                     ? 'text-amber-700 bg-amber-50 border border-amber-200'
-                    : 'text-[#348D32] bg-[#EAF5E6] border border-[#d2ebd0]'
+                    : 'text-[#202820] bg-white border border-[#E7ECE5]'
                 }`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${
                     selectedReport.severity === 'kritis' ? 'bg-rose-500' :
@@ -440,9 +440,9 @@ function PetaContent() {
               />
             </div>
 
-            <div className="text-xs space-y-1 text-[#202820]">
-              <div className="font-semibold text-[#348D32]">
-                Spesies: {selectedReport.ai_analysis?.spesies_rekomendasi || 'Rhizophora apiculata (Bakau)'}
+            <div className="p-3.5 rounded-2xl bg-white border border-[#E7ECE5] shadow-xs text-xs space-y-1.5">
+              <div className="font-bold text-[#202820]">
+                Spesies Prioritas: <span className="text-[#348D32] font-semibold">{selectedReport.ai_analysis?.spesies_rekomendasi || 'Rhizophora apiculata (Bakau)'}</span>
               </div>
               <p className="line-clamp-2 text-[11px] text-[#7A8278]">{selectedReport.description}</p>
             </div>

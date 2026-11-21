@@ -5,30 +5,85 @@ import L from 'leaflet';
 import { Layers, Compass, CircleDot, Globe, Map as MapIcon, Crosshair } from 'lucide-react';
 import { Report } from '@/types';
 
-function createCustomIcon(severity: string, status: string, isSelected: boolean = false) {
-  let color = '#52B040'; // Carbonery nature green
-  if (status === 'pulih') {
-    color = '#52B040';
-  } else if (severity === 'kritis') {
-    color = '#e11d48'; // rose-600
-  } else if (severity === 'tinggi') {
-    color = '#d97706'; // amber-600
-  } else if (severity === 'sedang') {
-    color = '#eab308'; // yellow-500
+// Konfigurasi Visual Ekosistem dengan Ikon Vektor SVG Murni (Tanpa Emoji)
+const ECOSYSTEM_CONFIG: Record<string, {
+  name: string;
+  color: string;
+  svgIcon: string;
+}> = {
+  hutan_tropis: {
+    name: 'Hutan Tropis',
+    color: '#1E7B27', // Hijau Hutan Tropis
+    // SVG Vektor: Pohon Kanopi Tropis
+    svgIcon: `
+      <path d="M12 2L5 11h3l-2.5 5h3.5v5h4v-5h3.5l-2.5-5H17L12 2z" fill="#ffffff"/>
+    `
+  },
+  pesisir_pantai: {
+    name: 'Pesisir & Pantai',
+    color: '#0284C7', // Biru Samudra
+    // SVG Vektor: Gelombang Ombak Pesisir
+    svgIcon: `
+      <path d="M3 8c1.5 1.5 3 1.5 4.5 0 1.5-1.5 3-1.5 4.5 0 1.5 1.5 3 1.5 4.5 0 1.5-1.5 3-1.5 4.5 0M3 13c1.5 1.5 3 1.5 4.5 0 1.5-1.5 3-1.5 4.5 0 1.5 1.5 3 1.5 4.5 0 1.5-1.5 3-1.5 4.5 0" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+    `
+  },
+  mangrove: {
+    name: 'Sabuk Mangrove',
+    color: '#0D9488', // Hijau Toska Bakau
+    // SVG Vektor: Tunas Daun Mangrove
+    svgIcon: `
+      <path d="M12 21v-7M12 14c-2.5-3-2.5-6.5 0-9.5 2.5 3 2.5 6.5 0 9.5zM12 16.5c-2.5 0-4.5-1.5-5.5-3.5 2-.5 4.5 0 5.5 3.5zM12 16.5c2.5 0 4.5-1.5 5.5-3.5-2-.5-4.5 0-5.5 3.5z" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="#ffffff" fill-opacity="0.25"/>
+    `
+  },
+  muara_sungai: {
+    name: 'Muara Sungai',
+    color: '#0891B2', // Biru Air Estuari
+    // SVG Vektor: Aliran & Tetesan Air Muara
+    svgIcon: `
+      <path d="M12 3.5c-3 4-6 7.5-6 10.5 0 3.31 2.69 6 6 6s6-2.69 6-6c0-3-3-6.5-6-10.5z" fill="#ffffff"/>
+      <path d="M12 8c-1.5 2-3 3.8-3 5.5 0 1.66 1.34 3 3 3" stroke="#0891B2" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+    `
   }
+};
 
-  const pulseRing = isSelected
-    ? `<div style="position: absolute; width: 48px; height: 48px; border-radius: 50%; background: ${color}33; border: 2px solid ${color}88; animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite; top: -8px; left: -9px; pointer-events: none;"></div>`
+function createCustomIcon(
+  ecosystem: string = 'pesisir_pantai',
+  severity: string = 'sedang',
+  status: string = 'menunggu',
+  isSelected: boolean = false
+) {
+  const eco = ECOSYSTEM_CONFIG[ecosystem] || ECOSYSTEM_CONFIG.pesisir_pantai;
+  const pinColor = status === 'pulih' ? '#52B040' : eco.color;
+
+  let severityColor = '#52B040';
+  if (severity === 'kritis') severityColor = '#e11d48';
+  else if (severity === 'tinggi') severityColor = '#d97706';
+  else if (severity === 'sedang') severityColor = '#eab308';
+
+  const isCritical = severity === 'kritis' && status !== 'pulih';
+  const pulseRing = (isSelected || isCritical)
+    ? `<div style="position: absolute; width: 44px; height: 44px; border-radius: 50%; background: ${severityColor}26; border: 2px solid ${severityColor}80; animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite; top: -6px; left: -5px; pointer-events: none;"></div>`
     : '';
 
   const scale = isSelected ? 'scale(1.22)' : 'scale(1)';
 
   const svgIcon = `
-    <div style="position: relative; display: flex; align-items: center; justify-content: center; transform: ${scale}; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
+    <div style="position: relative; display: flex; align-items: center; justify-content: center; transform: ${scale}; transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
       ${pulseRing}
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="32" height="46" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">
-        <path d="M12 0C5.37 0 0 5.37 0 12c0 9 12 24 12 24s12-15 12-24c0-6.63-5.37-12-12-12z" fill="${color}" stroke="#ffffff" stroke-width="${isSelected ? 2.5 : 2}"/>
-        <circle cx="12" cy="12" r="5" fill="#ffffff"/>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 46" width="34" height="46" style="filter: drop-shadow(0 5px 8px rgba(0,0,0,0.28));">
+        <!-- Pin Teardrop Body -->
+        <path d="M17 0C7.61 0 0 7.61 0 17c0 12 17 29 17 29s17-17 17-29c0-9.39-7.61-17-17-17z" fill="${pinColor}" stroke="#ffffff" stroke-width="${isSelected ? 2.5 : 2}"/>
+        
+        <!-- Circular Center Disc for SVG Icon -->
+        <circle cx="17" cy="17" r="11" fill="rgba(0,0,0,0.18)"/>
+        
+        <!-- Pure SVG Ecosystem Icon (Centered in 24x24 box) -->
+        <g transform="translate(5, 5)">
+          ${eco.svgIcon}
+        </g>
+        
+        <!-- Status / Urgency Indicator Dot on Top Right -->
+        <circle cx="27" cy="7" r="4.5" fill="${severityColor}" stroke="#ffffff" stroke-width="1.5"/>
       </svg>
     </div>
   `;
@@ -36,8 +91,8 @@ function createCustomIcon(severity: string, status: string, isSelected: boolean 
   return L.divIcon({
     className: 'custom-leaflet-marker',
     html: svgIcon,
-    iconSize: [32, 46],
-    iconAnchor: [16, 46],
+    iconSize: [34, 46],
+    iconAnchor: [17, 46],
     popupAnchor: [0, -46],
   });
 }
@@ -188,7 +243,7 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
     // Tambahkan marker laporan
     reports.forEach((report) => {
       const isSelected = selectedReport?.id === report.id;
-      const icon = createCustomIcon(report.severity, report.status, isSelected);
+      const icon = createCustomIcon(report.ecosystem, report.severity, report.status, isSelected);
       const marker = L.marker([report.latitude, report.longitude], { 
         icon, 
         zIndexOffset: isSelected ? 1000 : 0 
@@ -198,12 +253,48 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
           onSelectReport(report);
         });
 
+      const eco = ECOSYSTEM_CONFIG[report.ecosystem] || ECOSYSTEM_CONFIG.pesisir_pantai;
+      const isCritical = report.severity === 'kritis';
+      const isHigh = report.severity === 'tinggi';
+      const sevBg = isCritical ? '#fff1f2' : isHigh ? '#fffbeb' : '#ffffff';
+      const sevText = isCritical ? '#e11d48' : isHigh ? '#d97706' : '#202820';
+      const sevBorder = isCritical ? '#fecdd3' : isHigh ? '#fde68a' : '#E7ECE5';
+      const sevDot = isCritical ? '#e11d48' : isHigh ? '#d97706' : '#52B040';
+
       marker.bindPopup(`
-        <div style="font-family: inherit; padding: 6px; max-width: 230px; border-radius: 12px;">
-          <strong style="font-size: 12px; display: block; color: #202820; margin-bottom: 2px; line-height: 1.35; font-weight: 700;">${report.title}</strong>
-          <span style="font-size: 11px; color: #7A8278; display: block; margin-bottom: 5px;">${report.location_name}</span>
-          <div style="display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 600; background: ${report.severity === 'kritis' ? '#fff1f2' : report.severity === 'tinggi' ? '#fffbeb' : '#EAF5E6'}; color: ${report.severity === 'kritis' ? '#e11d48' : report.severity === 'tinggi' ? '#d97706' : '#348D32'};">
-            URGENSI: ${report.severity.toUpperCase()} • ${report.status.toUpperCase()}
+        <div style="font-family: inherit; padding: 4px; max-width: 240px; background: #ffffff; border-radius: 14px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 8px;">
+            <div style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 6px; background: #F7F9F6; border: 1px solid #E7ECE5; font-size: 10px; font-weight: 700; color: #202820;">
+              <svg width="11" height="11" viewBox="0 0 24 24" style="flex-shrink: 0;">
+                ${eco.svgIcon.replace(/#ffffff/g, eco.color)}
+              </svg>
+              <span>${eco.name}</span>
+            </div>
+            <div style="display: inline-flex; align-items: center; gap: 3.5px; padding: 2px 7px; border-radius: 6px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; background: ${sevBg}; color: ${sevText}; border: 1px solid ${sevBorder};">
+              <span style="width: 5px; height: 5px; border-radius: 50%; background: ${sevDot}; display: inline-block;"></span>
+              <span>${report.severity}</span>
+            </div>
+          </div>
+
+          <strong style="font-size: 13px; display: block; color: #202820; margin-bottom: 4px; line-height: 1.35; font-weight: 700;">
+            ${report.title}
+          </strong>
+
+          <div style="display: flex; align-items: center; gap: 4px; font-size: 11px; color: #7A8278; margin-bottom: 8px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#52B040" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${report.location_name}</span>
+          </div>
+
+          <div style="padding-top: 6px; border-top: 1px solid #EEF1EC; display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-size: 10px; font-family: monospace; color: #52B040; font-weight: 600;">
+              ${report.latitude.toFixed(4)}, ${report.longitude.toFixed(4)}
+            </span>
+            <span style="font-size: 10px; font-weight: 700; color: #348D32; display: inline-flex; align-items: center; gap: 2px;">
+              Klik untuk Detail &rarr;
+            </span>
           </div>
         </div>
       `, { closeButton: false, offset: [0, -10] });
@@ -285,14 +376,14 @@ export default function MapInner({ reports, selectedReport, onSelectReport }: Ma
         <button
           type="button"
           onClick={() => setShowBufferZone(!showBufferZone)}
-          className={`btn-matte-secondary gap-1.5 px-3 py-1.5 text-xs font-medium cursor-pointer ${
+          className={`gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium cursor-pointer transition-colors border shadow-xs flex items-center ${
             showBufferZone
-              ? '!bg-[#EAF5E6] !text-[#348D32] !border-[#d2ebd0] font-semibold'
-              : ''
+              ? 'bg-[#52B040] text-white border-[#3e8a30] font-semibold'
+              : 'bg-white text-[#202820] border-[#E7ECE5] hover:bg-[#F7F9F6]'
           }`}
           title="Tampilkan / sembunyikan radius sempadan konservasi 350m"
         >
-          <CircleDot className="w-3.5 h-3.5 text-[#52B040]" />
+          <CircleDot className={`w-3.5 h-3.5 ${showBufferZone ? 'text-white' : 'text-[#52B040]'}`} />
           <span className="hidden sm:inline">Buffer 350m:</span>
           <span>{showBufferZone ? 'Aktif' : 'Mati'}</span>
         </button>
