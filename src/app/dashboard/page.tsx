@@ -900,8 +900,8 @@ export default function DashboardPage() {
                   }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                     sectorFilter === 'all' 
-                      ? 'bg-[#202820] text-white shadow-2xs' 
-                      : 'text-[#7A8278] hover:text-[#202820] hover:bg-white'
+                      ? 'bg-[#348D32] text-white shadow-2xs' 
+                      : 'text-[#7A8278] hover:text-[#348D32] hover:bg-white'
                   }`}
                 >
                   Semua Sektor ({counts.total})
@@ -915,8 +915,8 @@ export default function DashboardPage() {
                   }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                     sectorFilter === 'pesisir' 
-                      ? 'bg-[#202820] text-white shadow-2xs' 
-                      : 'text-[#7A8278] hover:text-[#202820] hover:bg-white'
+                      ? 'bg-[#348D32] text-white shadow-2xs' 
+                      : 'text-[#7A8278] hover:text-[#348D32] hover:bg-white'
                   }`}
                 >
                   Pesisir &amp; Mangrove ({counts.pesisir})
@@ -930,8 +930,8 @@ export default function DashboardPage() {
                   }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                     sectorFilter === 'hutan' 
-                      ? 'bg-[#202820] text-white shadow-2xs' 
-                      : 'text-[#7A8278] hover:text-[#202820] hover:bg-white'
+                      ? 'bg-[#348D32] text-white shadow-2xs' 
+                      : 'text-[#7A8278] hover:text-[#348D32] hover:bg-white'
                   }`}
                 >
                   Hutan Tropis ({counts.hutan})

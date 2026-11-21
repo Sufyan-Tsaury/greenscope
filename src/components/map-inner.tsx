@@ -60,9 +60,8 @@ function createCustomIcon(
   else if (severity === 'tinggi') severityColor = '#d97706';
   else if (severity === 'sedang') severityColor = '#eab308';
 
-  const isCritical = severity === 'kritis' && status !== 'pulih';
-  const pulseRing = (isSelected || isCritical)
-    ? `<div style="position: absolute; width: 44px; height: 44px; border-radius: 50%; background: ${severityColor}26; border: 2px solid ${severityColor}80; animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite; top: -6px; left: -5px; pointer-events: none;"></div>`
+  const pulseRing = isSelected
+    ? `<div style="position: absolute; width: 44px; height: 44px; border-radius: 50%; background: #348D3226; border: 2px solid #348D3280; animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite; top: -6px; left: -5px; pointer-events: none;"></div>`
     : '';
 
   const scale = isSelected ? 'scale(1.22)' : 'scale(1)';
@@ -81,9 +80,6 @@ function createCustomIcon(
         <g transform="translate(5, 5)">
           ${eco.svgIcon}
         </g>
-        
-        <!-- Status / Urgency Indicator Dot on Top Right -->
-        <circle cx="27" cy="7" r="4.5" fill="${severityColor}" stroke="#ffffff" stroke-width="1.5"/>
       </svg>
     </div>
   `;
