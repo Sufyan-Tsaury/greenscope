@@ -178,7 +178,7 @@ export default function Navbar() {
               <span className="text-xs text-[#7A8278]">Status Akun:</span>
               {coordinator?.isAuthenticated ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-[#348D32] bg-[#EAF5E6] px-2.5 py-0.5 rounded-full">
+                  <span className="text-xs font-semibold text-[#52B040] bg-white border border-[#E7ECE5] px-2.5 py-0.5 rounded-full">
                     Koordinator
                   </span>
                   <button

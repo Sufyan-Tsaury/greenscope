@@ -335,72 +335,72 @@ export default function DashboardPage() {
     switch (severity) {
       case 'kritis':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
-            <span className="w-2 h-2 rounded-full bg-rose-600"></span>
-            Kritis
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-[#DC3545] bg-white border border-[#E7ECE5] shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-[#DC3545]"></span>
+            <span>Kritis</span>
           </span>
         );
       case 'tinggi':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
-            <span className="w-2 h-2 rounded-full bg-amber-600"></span>
-            Tinggi
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-[#D97706] bg-white border border-[#E7ECE5] shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-[#D97706]"></span>
+            <span>Tinggi</span>
           </span>
         );
       case 'sedang':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-50 text-yellow-800 border border-yellow-200">
-            <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
-            Sedang
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-[#CA8A04] bg-white border border-[#E7ECE5] shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-[#CA8A04]"></span>
+            <span>Sedang</span>
           </span>
         );
       case 'rendah':
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
-            <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
-            Rendah
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-[#52B040] bg-white border border-[#E7ECE5] shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-[#52B040]"></span>
+            <span>Rendah</span>
           </span>
         );
     }
   };
 
-  // Format Helper for Verification Status Badge
+  // Format Helper for Verification Status Badge (Clean solid badge - Anti-AI-slop)
   const renderStatusBadge = (status: ReportStatus) => {
     switch (status) {
       case 'menunggu':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
-            <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-[#D97706] bg-white border border-[#E7ECE5] shadow-2xs">
+            <Clock className="w-3.5 h-3.5 text-[#D97706] shrink-0" />
             <span>Menunggu Verifikasi</span>
           </span>
         );
       case 'dalam_aksi':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200">
-            <Eye className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-[#2563EB] bg-white border border-[#E7ECE5] shadow-2xs">
+            <Eye className="w-3.5 h-3.5 text-[#2563EB] shrink-0" />
             <span>Sedang Ditinjau</span>
           </span>
         );
       case 'terverifikasi':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-[#52B040] bg-white border border-[#E7ECE5] shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#52B040] shrink-0" />
             <span>Terverifikasi</span>
           </span>
         );
       case 'ditolak':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200">
-            <XCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-[#DC3545] bg-white border border-[#E7ECE5] shadow-2xs">
+            <XCircle className="w-3.5 h-3.5 text-[#DC3545] shrink-0" />
             <span>Ditolak</span>
           </span>
         );
       case 'pulih':
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
-            <Trees className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-[#52B040] bg-white border border-[#E7ECE5] shadow-2xs">
+            <Trees className="w-3.5 h-3.5 text-[#52B040] shrink-0" />
             <span>Siklus Pulih</span>
           </span>
         );
@@ -603,14 +603,14 @@ export default function DashboardPage() {
             <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap shrink-0">
               {coordinator?.isAuthenticated ? (
                 <div className="flex items-center gap-1.5 p-1 rounded-full bg-white border border-[#E7ECE5] shadow-xs">
-                  <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#348D32] text-xs font-semibold text-white shadow-2xs">
+                  <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#52B040] text-xs font-semibold text-white shadow-2xs">
                     <ShieldCheck className="w-3.5 h-3.5 text-white" />
                     <span className="truncate max-w-[170px]">{coordinator.name || coordinator.email}</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => signOutCoordinator()}
-                    className="p-1.5 text-[#7A8278] hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors cursor-pointer"
+                    className="p-1.5 text-[#7A8278] hover:text-rose-600 hover:bg-[#F7F9F6] rounded-full transition-colors cursor-pointer"
                     title="Keluar dari sesi koordinator"
                   >
                     <LogOut className="w-3.5 h-3.5" />
@@ -618,7 +618,7 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#E3EAE3] bg-white text-xs font-medium text-[#78847B] shadow-xs whitespace-nowrap">
-                  <Leaf className="w-3.5 h-3.5 text-[#329F45]" />
+                  <Leaf className="w-3.5 h-3.5 text-[#52B040]" />
                   <span>Pengamat Publik</span>
                 </div>
               )}
@@ -629,14 +629,14 @@ export default function DashboardPage() {
                 className="btn-matte-secondary gap-1.5 px-3.5 py-1.5 text-xs font-medium cursor-pointer whitespace-nowrap"
                 title="Cetak Berita Acara & Ringkasan Eksekutif (PDF / A4)"
               >
-                <Printer className="w-3.5 h-3.5 text-[#329F45]" />
+                <Printer className="w-3.5 h-3.5 text-[#52B040]" />
                 <span>Cetak Ringkasan</span>
               </button>
 
               {!coordinator?.isAuthenticated && (
                 <Link
                   href="/login?redirect=/dashboard"
-                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold text-white bg-[#176B35] hover:bg-[#0D381E] transition-colors shadow-xs whitespace-nowrap"
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] transition-colors shadow-xs whitespace-nowrap"
                 >
                   <LogIn className="w-3.5 h-3.5" />
                   <span>Masuk Koordinator</span>
@@ -648,7 +648,7 @@ export default function DashboardPage() {
           {!coordinator?.isAuthenticated && (
             <div className="p-4 rounded-2xl bg-white border border-[#E3EAE3] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left">
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-8 h-8 rounded-full bg-white border border-[#E7ECE5] text-[#D97706] flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
                   <Lock className="w-4 h-4" />
                 </div>
                 <div className="space-y-0.5">
@@ -662,7 +662,7 @@ export default function DashboardPage() {
               </div>
               <Link
                 href="/login?redirect=/dashboard"
-                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-white bg-[#329F45] hover:bg-[#176B35] transition-colors shrink-0 shadow-xs cursor-pointer"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] transition-colors shrink-0 shadow-xs cursor-pointer"
               >
                 <ShieldCheck className="w-3.5 h-3.5" />
                 <span>Uji Coba Akun Koordinator</span>
@@ -794,8 +794,9 @@ export default function DashboardPage() {
                     <AlertTriangle className="w-3.5 h-3.5 text-[#DC3545]" />
                     <span>Prioritas Mendesak</span>
                   </span>
-                  <span className="text-[10px] font-semibold text-[#DC3545] bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full">
-                    2 Hotspot
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#DC3545] bg-white border border-[#E7ECE5] px-2.5 py-0.5 rounded-full shadow-2xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#DC3545]"></span>
+                    <span>2 Hotspot</span>
                   </span>
                 </div>
 
@@ -803,7 +804,7 @@ export default function DashboardPage() {
                   {priorityReports.map((item) => (
                     <div 
                       key={item.id}
-                      className="p-3.5 rounded-xl border border-[#E3EAE3] bg-[#FAFCF9] hover:bg-white hover:border-[#329F45] transition-all space-y-2 group cursor-pointer"
+                      className="p-3.5 rounded-xl border border-[#E3EAE3] bg-[#FAFCF9] hover:bg-white hover:border-[#52B040] transition-all space-y-2 group cursor-pointer"
                       onClick={() => {
                         setMapSelectedReport(item);
                         setSelectedReport(item);
@@ -815,11 +816,11 @@ export default function DashboardPage() {
                             <Image src={item.image_url} alt={item.title} fill className="object-cover group-hover:scale-105 transition-transform" sizes="40px" />
                           </div>
                           <div className="truncate">
-                            <h4 className="text-xs font-bold text-[#17251B] truncate group-hover:text-[#329F45] transition-colors">
+                            <h4 className="text-xs font-bold text-[#17251B] truncate group-hover:text-[#52B040] transition-colors">
                               {item.title}
                             </h4>
                             <div className="flex items-center gap-1 text-[10px] text-[#78847B] font-mono truncate">
-                              <MapPin className="w-2.5 h-2.5 text-[#329F45]" />
+                              <MapPin className="w-2.5 h-2.5 text-[#52B040]" />
                               <span>{item.location_name.split(',')[0]}</span>
                             </div>
                           </div>
@@ -832,10 +833,10 @@ export default function DashboardPage() {
                       </p>
 
                       <div className="flex items-center justify-between pt-1 text-[10px] border-t border-[#EEF1EC]">
-                        <span className="text-[#176B35] font-medium truncate max-w-[150px]">
+                        <span className="text-[#348D32] font-medium truncate max-w-[150px]">
                           {item.ai_analysis?.spesies_rekomendasi?.split(',')[0]}
                         </span>
-                        <span className="text-[#329F45] font-semibold inline-flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
+                        <span className="text-[#52B040] font-semibold inline-flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
                           <span>Buka Dossier</span>
                           <ArrowRight className="w-2.5 h-2.5" />
                         </span>
@@ -848,7 +849,7 @@ export default function DashboardPage() {
               <div className="pt-2 border-t border-[#E3EAE3]">
                 <Link
                   href="/aksi"
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-[#176B35] hover:bg-[#0D381E] shadow-xs transition-colors"
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] shadow-2xs transition-colors"
                 >
                   <Users className="w-3.5 h-3.5" />
                   <span>Jadwalkan Aksi Restorasi</span>
@@ -878,13 +879,13 @@ export default function DashboardPage() {
               </div>
 
               <div className="flex items-center gap-2 text-xs">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 shadow-2xs">
-                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                  <span>Menunggu: {counts.menunggu}</span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium text-[#202820] bg-white border border-[#E7ECE5] shadow-2xs">
+                  <span className="w-2 h-2 rounded-full bg-[#D97706]"></span>
+                  <span>Menunggu: <strong className="font-semibold text-[#202820]">{counts.menunggu}</strong></span>
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-2xs">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  <span>Terverifikasi: {counts.terverifikasi}</span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium text-[#202820] bg-white border border-[#E7ECE5] shadow-2xs">
+                  <span className="w-2 h-2 rounded-full bg-[#52B040]"></span>
+                  <span>Terverifikasi: <strong className="font-semibold text-[#202820]">{counts.terverifikasi}</strong></span>
                 </span>
               </div>
             </div>
@@ -900,8 +901,8 @@ export default function DashboardPage() {
                   }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                     sectorFilter === 'all' 
-                      ? 'bg-[#348D32] text-white shadow-2xs' 
-                      : 'text-[#7A8278] hover:text-[#348D32] hover:bg-white'
+                      ? 'bg-[#52B040] text-white shadow-2xs' 
+                      : 'text-[#7A8278] hover:text-[#52B040] hover:bg-white'
                   }`}
                 >
                   Semua Sektor ({counts.total})
@@ -915,8 +916,8 @@ export default function DashboardPage() {
                   }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                     sectorFilter === 'pesisir' 
-                      ? 'bg-[#348D32] text-white shadow-2xs' 
-                      : 'text-[#7A8278] hover:text-[#348D32] hover:bg-white'
+                      ? 'bg-[#52B040] text-white shadow-2xs' 
+                      : 'text-[#7A8278] hover:text-[#52B040] hover:bg-white'
                   }`}
                 >
                   Pesisir &amp; Mangrove ({counts.pesisir})
@@ -930,8 +931,8 @@ export default function DashboardPage() {
                   }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                     sectorFilter === 'hutan' 
-                      ? 'bg-[#348D32] text-white shadow-2xs' 
-                      : 'text-[#7A8278] hover:text-[#348D32] hover:bg-white'
+                      ? 'bg-[#52B040] text-white shadow-2xs' 
+                      : 'text-[#7A8278] hover:text-[#52B040] hover:bg-white'
                   }`}
                 >
                   Hutan Tropis ({counts.hutan})
@@ -946,7 +947,7 @@ export default function DashboardPage() {
                     setStatusFilter(e.target.value as any);
                     setCurrentPage(1);
                   }}
-                  className="px-3 py-1.5 rounded-xl border border-[#E7ECE5] bg-white text-xs font-medium text-[#202820] focus:outline-hidden focus:border-[#348D32] cursor-pointer shadow-2xs"
+                  className="px-3 py-1.5 rounded-xl border border-[#E7ECE5] bg-white text-xs font-medium text-[#202820] focus:outline-hidden focus:border-[#52B040] cursor-pointer shadow-2xs"
                   aria-label="Filter status verifikasi"
                 >
                   <option value="all">Semua Status Verifikasi</option>
@@ -966,7 +967,7 @@ export default function DashboardPage() {
                       setCurrentPage(1);
                     }}
                     placeholder="Cari temuan, lokasi..."
-                    className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-[#E7ECE5] text-xs text-[#202820] bg-white placeholder-[#78847B] focus:outline-hidden focus:border-[#348D32] shadow-2xs"
+                    className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-[#E7ECE5] text-xs text-[#202820] bg-white placeholder-[#78847B] focus:outline-hidden focus:border-[#52B040] shadow-2xs"
                   />
                   {searchQuery && (
                     <button
@@ -1022,7 +1023,7 @@ export default function DashboardPage() {
                         <button
                           type="button"
                           onClick={() => setSelectedReport(rep)}
-                          className="relative w-14 h-14 rounded-xl overflow-hidden border border-[#E7ECE5] block mx-auto group-hover:border-[#348D32] transition-colors cursor-pointer shadow-2xs"
+                          className="relative w-14 h-14 rounded-xl overflow-hidden border border-[#E7ECE5] block mx-auto group-hover:border-[#52B040] transition-colors cursor-pointer shadow-2xs"
                           title="Klik untuk pratinjau bukti"
                         >
                           <Image
@@ -1041,14 +1042,14 @@ export default function DashboardPage() {
                       <td className="py-4 px-4 max-w-sm">
                         <div 
                           onClick={() => setSelectedReport(rep)}
-                          className="font-bold text-[#202820] text-sm hover:text-[#348D32] transition-colors cursor-pointer line-clamp-1"
+                          className="font-bold text-[#202820] text-sm hover:text-[#52B040] transition-colors cursor-pointer line-clamp-1"
                           title={rep.title}
                         >
                           {rep.title}
                         </div>
                         
                         <div className="flex items-center gap-1.5 text-[11px] text-[#7A8278] mt-1.5">
-                          <MapPin className="w-3.5 h-3.5 text-[#348D32] shrink-0" />
+                          <MapPin className="w-3.5 h-3.5 text-[#52B040] shrink-0" />
                           <span className="truncate max-w-[200px]">{rep.location_name}</span>
                           <span className="text-[#E7ECE5]">&bull;</span>
                           <span className="px-2 py-0.5 rounded-full bg-[#F7F9F6] border border-[#E7ECE5] text-[10px] text-[#4A5449] shrink-0 font-medium">
@@ -1072,8 +1073,8 @@ export default function DashboardPage() {
                       </td>
 
                       <td className="py-4 px-4 max-w-xs text-xs">
-                        <div className="flex items-center gap-1.5 text-[#348D32] font-semibold truncate" title={rep.ai_analysis?.spesies_rekomendasi}>
-                          <Leaf className="w-3.5 h-3.5 text-[#348D32] shrink-0" />
+                        <div className="flex items-center gap-1.5 text-[#52B040] font-semibold truncate" title={rep.ai_analysis?.spesies_rekomendasi}>
+                          <Leaf className="w-3.5 h-3.5 text-[#52B040] shrink-0" />
                           <span className="italic truncate">{rep.ai_analysis?.spesies_rekomendasi?.split(',')[0]}</span>
                         </div>
                         <div className="text-[11px] text-[#7A8278] truncate mt-0.5">
@@ -1091,7 +1092,7 @@ export default function DashboardPage() {
                             <button
                               type="button"
                               onClick={() => setSelectedReport(rep)}
-                              className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white bg-[#348D32] hover:bg-[#2A7328] transition-colors shadow-2xs cursor-pointer"
+                              className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] transition-colors shadow-2xs cursor-pointer"
                             >
                               Verifikasi
                             </button>
@@ -1122,7 +1123,7 @@ export default function DashboardPage() {
                               </button>
                               <Link
                                 href="/aksi"
-                                className="p-1.5 rounded-xl text-[#7A8278] hover:text-[#348D32] hover:bg-[#F7F9F6] border border-transparent hover:border-[#E7ECE5] transition-colors"
+                                className="p-1.5 rounded-xl text-[#7A8278] hover:text-[#52B040] hover:bg-[#F7F9F6] border border-transparent hover:border-[#E7ECE5] transition-colors"
                                 title="Buka lembar aksi"
                               >
                                 <ArrowRight className="w-3.5 h-3.5" />
@@ -1201,7 +1202,7 @@ export default function DashboardPage() {
                         <button
                           type="button"
                           onClick={() => setSelectedReport(rep)}
-                          className="px-4 py-1.5 rounded-xl text-xs font-semibold text-white bg-[#348D32] hover:bg-[#2A7328] shadow-2xs"
+                          className="px-4 py-1.5 rounded-xl text-xs font-semibold text-white bg-[#52B040] hover:bg-[#348D32] shadow-2xs"
                         >
                           Verifikasi
                         </button>
@@ -1408,7 +1409,7 @@ export default function DashboardPage() {
                       <button
                         type="button"
                         onClick={() => handleUpdateStatus(selectedReport.id, 'ditolak')}
-                        className="btn-matte-secondary px-3 py-1.5 text-xs !text-rose-600 !border-rose-200 hover:!bg-rose-50 cursor-pointer"
+                        className="btn-matte-secondary px-3 py-1.5 text-xs !text-[#DC3545] !border-[#E7ECE5] hover:!bg-[#F7F9F6] cursor-pointer"
                       >
                         Tolak Temuan
                       </button>
