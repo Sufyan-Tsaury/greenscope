@@ -8,8 +8,8 @@ import { Globe } from 'lucide-react';
 export default function Footer() {
   const pathname = usePathname();
 
-  // Sembunyikan footer di halaman Peta Pantau agar peta membentang penuh 100% layar tanpa scroll
-  if (pathname === '/peta') {
+  // Sembunyikan footer di halaman Peta Pantau & Portal Login agar fokus dan tidak bertumpuk
+  if (pathname === '/peta' || pathname === '/login') {
     return null;
   }
 

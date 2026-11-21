@@ -222,27 +222,29 @@ export default function Navbar() {
         )}
       </header>
 
-      {/* Docked Clean Bottom Navigation Bar for Mobile */}
-      <div className="no-print lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E7ECE5] px-2 py-2">
-        <div className="flex items-center justify-around">
-          {navLinks.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-full transition-colors ${
-                  isActive ? 'text-[#348D32] font-semibold' : 'text-[#7A8278] hover:text-[#202820]'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                <span className="text-[10px]">{item.label}</span>
-              </Link>
-            );
-          })}
+      {/* Docked Clean Bottom Navigation Bar for Mobile (Disembunyikan di /login agar tidak menutupi form & tombol saat keyboard aktif) */}
+      {pathname !== '/login' && (
+        <div className="no-print lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E7ECE5] px-2 py-2">
+          <div className="flex items-center justify-around">
+            {navLinks.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-full transition-colors ${
+                    isActive ? 'text-[#348D32] font-semibold' : 'text-[#7A8278] hover:text-[#202820]'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span className="text-[10px]">{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }

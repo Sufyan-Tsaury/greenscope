@@ -87,6 +87,7 @@ export async function signInCoordinator(email: string, password: string): Promis
       // atau kredensial demo resmi evaluator digunakan:
       const isOfficialDemo = 
         (normalizedEmail === 'koordinator.greenscope@gmail.com' || 
+         normalizedEmail === 'juri@greenscope.id' ||
          normalizedEmail === 'admin@greenscope.id' ||
          normalizedEmail === 'koordinator@greenscope.id') &&
         (password.trim() === 'GreenScope2026!' || password.trim() === 'admin123');
@@ -117,6 +118,7 @@ export async function signInCoordinator(email: string, password: string): Promis
   // 2. Fallback Kredensial Resmi Demo Koordinator
   const isOfficialDemo = 
     (normalizedEmail === 'koordinator.greenscope@gmail.com' || 
+     normalizedEmail === 'juri@greenscope.id' ||
      normalizedEmail === 'admin@greenscope.id' ||
      normalizedEmail === 'koordinator@greenscope.id') &&
     (password.trim() === 'GreenScope2026!' || password.trim() === 'admin123');
